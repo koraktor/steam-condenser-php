@@ -3,7 +3,7 @@
  * @author Sebastian Staudt
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  * @package Steam Condenser (PHP)
- * @subpackage SteamPacket
+ * @subpackage Packets
  * @version $Id$
  */
 
@@ -11,16 +11,16 @@ require_once "steam/packets/SteamPacket.php";
 
 /**
  * @package Steam Condenser (PHP)
- * @subpackage SteamPacket
+ * @subpackage Packets
  */
-class A2A_SERVERQUERY_GETCHALLENGE_RequestPacket extends SteamPacket
-{	
-	/**
-	 * 
-	 */
-	public function __construct()
-	{
-		parent::__construct(SteamPacket::A2A_SERVERQUERY_GETCHALLENGE_REQUEST_HEADER);
-	}
+class A2S_SERVERQUERY_GETCHALLENGE_Packet extends SteamPacket
+{
+  /**
+   *
+   */
+  public function __construct()
+  {
+    parent::__construct(SteamPacket::A2S_SERVERQUERY_GETCHALLENGE_HEADER);
+  }
 }
 ?>

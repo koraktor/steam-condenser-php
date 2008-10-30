@@ -3,7 +3,7 @@
  * @author Sebastian Staudt
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  * @package Steam Condenser (PHP)
- * @subpackage A2A_INFO_RequestPacket
+ * @subpackage Packets
  * @version $Id$
  */
 
@@ -11,16 +11,16 @@ require_once "steam/packets/SteamPacket.php";
 
 /**
  * @package Steam Condenser (PHP)
- * @subpackage A2A_INFO_RequestPacket
+ * @subpackage Packets
  */
-class A2A_INFO_RequestPacket extends SteamPacket
-{	
-	/**
-	 * 
-	 */
-	public function __construct()
-	{
-		parent::__construct(SteamPacket::A2A_INFO_REQUEST_HEADER, "Source Engine Query");
-	}
+class A2S_INFO_Packet extends SteamPacket
+{
+  /**
+   *
+   */
+  public function __construct()
+  {
+    parent::__construct(SteamPacket::A2S_INFO_HEADER, "Source Engine Query");
+  }
 }
 ?>

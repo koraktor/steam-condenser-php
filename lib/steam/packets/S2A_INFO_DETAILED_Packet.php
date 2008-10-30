@@ -3,26 +3,26 @@
  * @author Sebastian Staudt
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  * @package Steam Condenser (PHP)
- * @subpackage SteamPacket
+ * @subpackage Packets
  * @version $Id$
  */
 
-require_once "steam/packets/A2A_INFO_ResponsePacket.php";
+require_once "steam/packets/S2A_INFO_BasePacket.php";
 
 /**
  * @package Steam Condenser (PHP)
- * @subpackage SteamPacket
+ * @subpackage Packets
  */
-class A2A_INFO_GoldSrcResponsePacket extends A2A_INFO_ResponsePacket
+class S2A_INFO_DETAILED_Packet extends S2A_INFO_BasePacket
 {
-	/**	
-	 * 
-	 */
-	public function __construct($data)
-	{
-		parent::__construct(SteamPacket::A2A_INFO_GOLDSRC_RESPONSE_HEADER, $data);
-		
-		$this->serverIp = $this->contentData->getString();
+  /**
+   *
+   */
+  public function __construct($data)
+  {
+    parent::__construct(SteamPacket::S2A_INFO_DETAILED_HEADER, $data);
+
+    $this->serverIp = $this->contentData->getString();
     $this->serverName = $this->contentData->getString();
     $this->mapName = $this->contentData->getString();
     $this->gameDir = $this->contentData->getString();
@@ -34,7 +34,7 @@ class A2A_INFO_GoldSrcResponsePacket extends A2A_INFO_ResponsePacket
     $this->operatingSystem = $this->contentData->getByte();
     $this->passwordProtected = $this->contentData->getByte() == 1;
     $this->isMod = $this->contentData->getByte() == 1;
-    
+
     if($this->isMod)
     {
       $this->modInfo["urlInfo"] = $this->contentData->getString();
@@ -45,9 +45,9 @@ class A2A_INFO_GoldSrcResponsePacket extends A2A_INFO_ResponsePacket
       $this->modInfo["svOnly"] = ($this->contentData->getByte() == 1);
       $this->modInfo["clDll"] = ($this->contentData->getByte() == 1);
     }
-    
+
     $this->secure = $this->contentData->getByte() == 1;
     $this->numberOfBots = $this->contentData->getByte();
-	}
+  }
 }
 ?>
