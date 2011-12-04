@@ -1,4 +1,4 @@
-Steam Condenser
+Steam Condenser [![Build Status](https://secure.travis-ci.org/koraktor/steam-condenser-php.png)](http://travis-ci.org/koraktor/steam-condenser-php)
 ===============
 
 The Steam Condenser is a multi-language library for querying the Steam
