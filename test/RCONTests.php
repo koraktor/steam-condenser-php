@@ -22,7 +22,7 @@ require_once 'PHPUnit/Framework.php';
 class RCONTests extends PHPUnit_Framework_TestCase {
 
     public function testRconLongGoldSrcServer() {
-        $server = new GoldSrcServer(new InetAddress('127.0.0.1'));
+        $server = new GoldSrcServer('127.0.0.1');
         $server->rconAuth('test');
         $rconReply = $server->rconExec('cvarlist');
         echo "$rconReply\n";
@@ -32,7 +32,7 @@ class RCONTests extends PHPUnit_Framework_TestCase {
     }
 
     public function testRconLongSourceServer() {
-        $server = new SourceServer(new InetAddress('127.0.0.1'));
+        $server = new SourceServer('127.0.0.1');
         $server->rconAuth('test');
         $rconReply = $server->rconExec('cvarlist');
         echo "$rconReply\n";
@@ -42,7 +42,7 @@ class RCONTests extends PHPUnit_Framework_TestCase {
     }
 
     public function testRconShortGoldSrcServer() {
-        $server = new GoldSrcServer(new InetAddress('127.0.0.1'));
+        $server = new GoldSrcServer('127.0.0.1');
         $server->rconAuth('test');
         $rconReply = $server->rconExec('version');
         echo "$rconReply\n";
@@ -54,7 +54,7 @@ class RCONTests extends PHPUnit_Framework_TestCase {
     }
 
     public function testRconShortSourceServer() {
-        $server = new SourceServer(new InetAddress('127.0.0.1'));
+        $server = new SourceServer('127.0.0.1');
         $server->rconAuth('test');
         $rconReply = $server->rconExec('version');
         echo "$rconReply\n";
