@@ -12,14 +12,12 @@ error_reporting(E_ALL & ~E_USER_NOTICE);
 
 require_once dirname(__FILE__) . '/../lib/steam-condenser.php';
 
-require_once 'PHPUnit/Framework.php';
-
 /**
  * @author     Sebastian Staudt
  * @package    steam-condenser
  * @subpackage tests
  */
-class RCONTests extends PHPUnit_Framework_TestCase {
+class RCONTest extends PHPUnit_Framework_TestCase {
 
     public function testRconLongGoldSrcServer() {
         $server = new GoldSrcServer('127.0.0.1');
