@@ -13,14 +13,12 @@ error_reporting(E_ALL & ~E_USER_NOTICE);
 require_once dirname(__FILE__) . '/../../../lib/steam-condenser.php';
 require_once STEAM_CONDENSER_PATH . 'steam/community/SteamGroup.php';
 
-require_once 'PHPUnit/Framework.php';
-
 /**
  * @author     Sebastian Staudt
  * @package    steam-condenser
  * @subpackage tests
  */
-class SteamGroupTests extends PHPUnit_Framework_TestCase {
+class SteamGroupTest extends PHPUnit_Framework_TestCase {
 
     public function testBypassCache() {
         SteamGroup::clearCache();
