@@ -11,5 +11,3 @@
 error_reporting(E_ALL & ~E_USER_NOTICE);
 
 require_once dirname(__FILE__) . "/../lib/steam-condenser.php";
-
-?>
