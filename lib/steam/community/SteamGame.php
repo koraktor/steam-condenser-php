@@ -57,6 +57,24 @@ class SteamGame {
     }
 
     /**
+     * Returns whether the given version of the game with the given application
+     * ID is up-to-date
+     *
+     * @param int $appId The application ID of the game to check
+     * @param int $version The version to check against the Web API
+     * @return boolean <var>true</var> if the given version is up-to-date
+     */
+    public static function checkUpToDate($appId, $version) {
+        $params = array('appid' => $appId, 'version' => $version);
+        $result = WebApi::getJSON('ISteamApps', 'UpToDateCheck', 1, $params);
+        $result = json_decode($result)->response;
+        if(!$result->success) {
+            throw new SteamCondenserException($result->error);
+        }
+        return $result->up_to_date;
+    }
+
+    /**
      * Creates a new instance of a game with the given data and caches it
      *
      * @param int $appId The application ID of the game
@@ -143,6 +161,16 @@ class SteamGame {
      */
     public function hasStats() {
         return $this->shortName != null;
+    }
+
+    /**
+     * Returns whether the given version of this game is up-to-date
+     *
+     * @param int $version The version to check against the Web API
+     * @return boolean <var>true</var> if the given version is up-to-date
+     */
+    public function isUpToDate($version) {
+        return self::checkUpToDate($this->appId, $version);
     }
 
 }
