@@ -150,7 +150,7 @@ class SteamGroup {
             foreach($memberData->members->steamID64 as $member) {
                 array_push($this->members, SteamId::create($member, false));
             }
-        } while($page <= $totalPages);
+        } while($page < $totalPages);
 
         $this->fetchTime = time();
     }
