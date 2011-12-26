@@ -41,8 +41,8 @@ class QueryTest extends PHPUnit_Framework_TestCase {
         $serverAddress = $serverArray[array_rand($serverArray)];
         $server = new GoldSrcServer($serverAddress[0], $serverAddress[1]);
         $server->initialize();
-        $server->updatePlayerInfo();
-        $server->updateRulesInfo();
+        $server->updatePlayers();
+        $server->updateRules();
 
         $this->assertNotNull($server->getPing());
         $this->assertNotNull($server->getPlayers());
@@ -58,8 +58,8 @@ class QueryTest extends PHPUnit_Framework_TestCase {
         $serverAddress = $serverArray[array_rand($serverArray)];
         $server = new SourceServer($serverAddress[0], $serverAddress[1]);
         $server->initialize();
-        $server->updatePlayerInfo();
-        $server->updateRulesInfo();
+        $server->updatePlayers();
+        $server->updateRules();
 
         $this->assertNotNull($server->getPing());
         $this->assertNotNull($server->getPlayers());
