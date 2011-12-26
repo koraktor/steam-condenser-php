@@ -8,51 +8,73 @@
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
 
-error_reporting(E_ALL & ~E_USER_NOTICE);
-
 require_once dirname(__FILE__) . '/../../../lib/steam-condenser.php';
 
 /**
  * @author     Sebastian Staudt
+ * @covers     SteamId
  * @package    steam-condenser
  * @subpackage tests
  */
 class SteamIdTest extends PHPUnit_Framework_TestCase {
 
-    public function testBypassCache() {
-        SteamId::clearCache();
-        $steamId = SteamId::create('koraktor');
-        $fetchTime = $steamId->getFetchTime();
-        sleep(1);
-        $steamId = SteamId::create('koraktor', true, true);
-        $this->assertGreaterThan($fetchTime, $steamId->getFetchTime());
-    }
-
-    public function testCache() {
-        SteamId::clearCache();
-        $steamId = SteamId::create('koraktor');
-        $fetchTime = $steamId->getFetchTime();
-        $this->assertTrue(SteamId::isCached('76561197961384956'));
-        $this->assertTrue(SteamId::isCached('koraktor'));
-        sleep(1);
-        $steamId = SteamId::create('koraktor');
-        $this->assertEquals($fetchTime, $steamId->getFetchTime());
-    }
-
-    public function testCaseInsensitivity() {
-        SteamId::clearCache();
-        $steamId = SteamId::create('koraktor', false);
-        $steamId2 = SteamId::create('Koraktor', false);
-        $steamId3 = SteamId::create('KORAKTOR', false, true);
-        $this->assertTrue(SteamId::isCached('koraktor'));
-        $this->assertEquals($steamId, $steamId2);
-        $this->assertEquals($steamId, $steamId3);
+    public function testConvertCommunityIdToSteamId() {
+        $steamId = SteamId::convertCommunityIdToSteamId('76561197960290418');
+        $this->assertEquals('STEAM_0:0:12345', $steamId);
     }
 
     public function testConvertSteamIdToCommunityId() {
         $steamId64 = SteamId::convertSteamIdToCommunityId('STEAM_0:0:12345');
-        $this->assertType(PHPUnit_Framework_Constraint_IsType::TYPE_STRING,
-            $steamId64);
         $this->assertEquals('76561197960290418', $steamId64);
     }
+
+    public function testCacheSteamId64() {
+        $this->assertFalse(SteamId::isCached('76561197983311154'));
+
+        $steamId = new SteamId('76561197983311154', false);
+        $steamId->cache();
+
+        $this->assertTrue(SteamId::isCached('76561197983311154'));
+    }
+
+    public function testCacheCustomUrl() {
+        $this->assertFalse(SteamId::isCached('Son_of_Thor'));
+
+        $steamId = new SteamId('Son_of_Thor', false);
+        $steamId->cache();
+
+        $this->assertTrue(SteamId::isCached('son_of_thor'));
+    }
+
+  public function testFetch() {
+      $data = new SimpleXMLElement(getFixture('sonofthor.xml'));
+      $mockBuilder = $this->getMockBuilder('SteamId');
+      $mockBuilder->setConstructorArgs(array('Son_of_Thor', false));
+      $mockBuilder->setMethods(array('getData'));
+      $steamId = $mockBuilder->getMock();
+      $steamId->expects($this->once())->method('getData')->with('http://steamcommunity.com/id/son_of_thor?xml=1')->will($this->returnValue($data));
+      $steamId->fetchData();
+
+      $this->assertEquals('76561197983311154', $steamId->getSteamId64());
+      $this->assertTrue($steamId->isFetched());
+  }
+
+    public function testBaseUrlSteamId64() {
+        $steamId = new SteamId('76561197983311154', false);
+
+        $this->assertEquals('76561197983311154', $steamId->getSteamId64());
+        $this->assertEquals('http://steamcommunity.com/profiles/76561197983311154', $steamId->getBaseUrl());
+    }
+
+    public function testBaseUrlCustomUrl() {
+        $steamId = new SteamId('Son_of_Thor', false);
+
+        $this->assertEquals('son_of_thor', $steamId->getCustomUrl());
+        $this->assertEquals('http://steamcommunity.com/id/son_of_thor', $steamId->getBaseUrl());
+    }
+
+    public function tearDown() {
+        SteamId::clearCache();
+    }
+
 }

@@ -9,6 +9,7 @@
  */
 
 require_once STEAM_CONDENSER_PATH . 'steam/community/SteamId.php';
+require_once STEAM_CONDENSER_PATH . 'steam/community/XMLData.php';
 
 /**
  * The SteamGroup class represents a group in the Steam Community
@@ -17,7 +18,7 @@ require_once STEAM_CONDENSER_PATH . 'steam/community/SteamId.php';
  * @package    steam-condenser
  * @subpackage community
  */
-class SteamGroup {
+class SteamGroup extends XMLData {
 
     /**
      * @var array
@@ -140,7 +141,7 @@ class SteamGroup {
         do {
             $page++;
             $url = "{$this->getBaseUrl()}/memberslistxml?p=$page";
-            $memberData = new SimpleXMLElement(file_get_contents($url));
+            $memberData = $this->getData($url);
 
             if($page == 1) {
                 $this->groupId64 = (string) $memberData->groupID64;
@@ -212,7 +213,7 @@ class SteamGroup {
     public function getMemberCount() {
         if(empty($this->members)) {
             $url = $this->getBaseUrl() . '/memberslistxml';
-            $memberData = new SimpleXMLElement(file_get_contents($url));
+            $memberData = $this->getData($url);
 
             return (int) $memberData->memberCount;
         } else {

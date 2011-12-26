@@ -8,44 +8,80 @@
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
 
-error_reporting(E_ALL & ~E_USER_NOTICE);
-
 require_once dirname(__FILE__) . '/../../../lib/steam-condenser.php';
 require_once STEAM_CONDENSER_PATH . 'steam/community/SteamGroup.php';
 
 /**
  * @author     Sebastian Staudt
+ * @covers     SteamGroup
  * @package    steam-condenser
  * @subpackage tests
  */
 class SteamGroupTest extends PHPUnit_Framework_TestCase {
 
-    public function testBypassCache() {
-        SteamGroup::clearCache();
-        $group = SteamGroup::create('valve');
-        $fetchTime = $group->getFetchTime();
-        sleep(1);
-        $group = SteamGroup::create('valve', true, true);
-        $this->assertGreaterThan($fetchTime, $group->getFetchTime());
-    }
+    public function testCacheSteamId64() {
+        $this->assertFalse(SteamGroup::isCached('103582791429521412'));
 
-    public function testCache() {
-        SteamGroup::clearCache();
-        $group = SteamGroup::create('valve');
-        $fetchTime = $group->getFetchTime();
+        $steamId = new SteamGroup('103582791429521412', false);
+        $steamId->cache();
+
         $this->assertTrue(SteamGroup::isCached('103582791429521412'));
-        $this->assertTrue(SteamGroup::isCached('valve'));
-        $group = SteamGroup::create('valve');
-        $this->assertEquals($fetchTime, $group->getFetchTime());
     }
 
-    public function testCaseInsensitivity() {
-        SteamGroup::clearCache();
-        $group = SteamGroup::create('valve', false);
-        $group2 = SteamGroup::create('Valve', false);
-        $group3 = SteamGroup::create('VALVE', false, true);
+    public function testCacheCustomUrl() {
+        $this->assertFalse(SteamGroup::isCached('valve'));
+
+        $steamId = new SteamGroup('valve', false);
+        $steamId->cache();
+
         $this->assertTrue(SteamGroup::isCached('valve'));
-        $this->assertEquals($group, $group2);
-        $this->assertEquals($group, $group3);
     }
+
+    public function testBaseUrlSteamId64() {
+        $group = new SteamGroup('103582791429521412', false);
+
+        $this->assertEquals('103582791429521412', $group->getGroupId64());
+        $this->assertEquals('http://steamcommunity.com/gid/103582791429521412', $group->getBaseUrl());
+    }
+
+    public function testBaseUrlCustomUrl() {
+        $group = new SteamGroup('valve', false);
+
+        $this->assertEquals('valve', $group->getCustomUrl());
+        $this->assertEquals('http://steamcommunity.com/groups/valve', $group->getBaseUrl());
+    }
+
+    public function testFetchMembers() {
+        $data = new SimpleXMLElement(getFixture('valve-members.xml'));
+        $mockBuilder = $this->getMockBuilder('SteamGroup');
+        $mockBuilder->setConstructorArgs(array('valve', false));
+        $mockBuilder->setMethods(array('getData'));
+        $group = $mockBuilder->getMock();
+        $group->expects($this->once())->method('getData')->with('http://steamcommunity.com/groups/valve/memberslistxml?p=1')->will($this->returnValue($data));
+        $group->fetchMembers();
+
+        $groupMembers = $group->getMembers();
+        $this->assertEquals('103582791429521412', $group->getGroupId64());
+        $this->assertEquals('76561197960265740', $groupMembers[0]->getSteamId64());
+        $this->assertFalse($groupMembers[0]->isFetched());
+        $this->assertEquals('76561197970323416', $groupMembers[sizeof($groupMembers) - 1]->getSteamId64());
+        $this->assertTrue($group->isFetched());
+    }
+
+    public function testMemberCount() {
+        $data = new SimpleXMLElement(getFixture('valve-members.xml'));
+        $mockBuilder = $this->getMockBuilder('SteamGroup');
+        $mockBuilder->setConstructorArgs(array('valve', false));
+        $mockBuilder->setMethods(array('getData'));
+        $group = $mockBuilder->getMock();
+        $group->expects($this->once())->method('getData')->with('http://steamcommunity.com/groups/valve/memberslistxml')->will($this->returnValue($data));
+
+        $this->assertEquals(221, $group->getMemberCount());
+        $this->assertFalse($group->isFetched());
+    }
+
+    public function tearDown() {
+        SteamId::clearCache();
+    }
+
 }

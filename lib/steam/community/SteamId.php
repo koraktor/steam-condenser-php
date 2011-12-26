@@ -12,6 +12,7 @@ require_once STEAM_CONDENSER_PATH . 'exceptions/SteamCondenserException.php';
 require_once STEAM_CONDENSER_PATH . 'steam/community/GameStats.php';
 require_once STEAM_CONDENSER_PATH . 'steam/community/SteamGame.php';
 require_once STEAM_CONDENSER_PATH . 'steam/community/SteamGroup.php';
+require_once STEAM_CONDENSER_PATH . 'steam/community/XMLData.php';
 
 /**
  * The SteamId class represents a Steam Community profile (also called Steam
@@ -21,7 +22,7 @@ require_once STEAM_CONDENSER_PATH . 'steam/community/SteamGroup.php';
  * @package    steam-condenser
  * @subpackage community
  */
-class SteamId {
+class SteamId extends XMLData {
 
     /**
      * @var array
@@ -227,8 +228,7 @@ class SteamId {
      *         e.g. when it is private, or when it cannot be parsed
      */
     public function fetchData() {
-        $url = $this->getBaseUrl() . '?xml=1';
-        $profile = new SimpleXMLElement(file_get_contents($url));
+        $profile = $this->getData($this->getBaseUrl() . '?xml=1');
 
         if(!empty($profile->error)) {
             throw new SteamCondenserException((string) $profile->error);
@@ -296,10 +296,8 @@ class SteamId {
      *         data
     */
     private function fetchFriends() {
-        $url = $this->getBaseUrl() . '/friends?xml=1';
-
         $this->friends = array();
-        $friendsData =  new SimpleXMLElement(file_get_contents($url));
+        $friendsData = $this->getData($this->getBaseUrl() . '/friends?xml=1');
         foreach($friendsData->friends->friend as $friend) {
             $this->friends[] = SteamId::create((string) $friend, false);
         }
@@ -316,8 +314,7 @@ class SteamId {
         $this->games = array();
         $this->playtimes = array();
 
-        $url = $this->getBaseUrl() . '/games?xml=1';
-        $gamesData = new SimpleXMLElement(file_get_contents($url));
+        $gamesData = $this->getData($this->getBaseUrl() . '/games?xml=1');
 
         foreach($gamesData->games->game as $gameData) {
             $game = SteamGame::create($gameData);
@@ -375,6 +372,21 @@ class SteamId {
         } else {
             return "http://steamcommunity.com/id/{$this->customUrl}";
         }
+    }
+
+    /**
+     * Returns the custom URL of this Steam ID
+     *
+     * The custom URL is a user specified unique string that can be used
+     * instead of the 64bit SteamID as an identifier for a Steam ID.
+     *
+     * <strong>Note:</strong> The custom URL is not necessarily the same as the
+     * user's nickname.
+     *
+     * @return string The custom URL of this Steam ID
+     */
+    public function getCustomUrl() {
+        return $this->customUrl;
     }
 
     /**

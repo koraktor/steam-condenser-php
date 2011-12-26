@@ -23,8 +23,10 @@ class GenericSteamSocket extends SteamSocket {
 }
 
 /**
- * @author Sebastian Staudt
- * @covers SteamSocket
+ * @author     Sebastian Staudt
+ * @covers     SteamSocket
+ * @package    steam-condenser
+ * @subpackage tests
  */
 class SteamSocketTest extends PHPUnit_Framework_TestCase {
 
