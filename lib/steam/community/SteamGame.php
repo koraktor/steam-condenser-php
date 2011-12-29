@@ -56,6 +56,28 @@ class SteamGame {
         }
     }
 
+    /*
+     * Checks if a game is up-to-date by reading information from a
+     * <var>steam.inf</var> file and comparing it using the Web API
+     *
+     * @param string $path The file system path of the `steam.inf` file
+     * @return bool <var>true</var> if the game is up-to-date
+     */
+    public static function checkSteamInf($path) {
+        $steamInf = file_get_contents($path);
+        preg_match('/^\s*appID=(\d+)\s*$/im', $steamInf, $appId);
+        preg_match('/^\s*PatchVersion=([\d\.]+)\s*$/im', $steamInf, $version);
+
+        if($appId == null || $version == null) {
+            throw new SteamCondenserException("The steam.inf file at \"$path\" is invalid.");
+        }
+
+        $appId = (int) $appId[1];
+        $version = (int) str_replace('.', '', $version[1]);
+
+        return self::checkUpToDate($appId, $version);
+    }
+
     /**
      * Returns whether the given version of the game with the given application
      * ID is up-to-date
