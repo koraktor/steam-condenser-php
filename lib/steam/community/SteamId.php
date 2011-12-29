@@ -49,6 +49,11 @@ class SteamId {
     private $games;
 
     /**
+     * @var bool
+     */
+    private $limited;
+
+    /**
      * @var string
      */
     private $nickname;
@@ -62,6 +67,11 @@ class SteamId {
      * @var string
      */
     private $steamId64;
+
+    /**
+     * @var string
+     */
+    private $tradeBanState;
 
     /**
      * Returns whether the requested Steam ID is already cached
@@ -224,9 +234,11 @@ class SteamId {
             throw new SteamCondenserException((string) $profile->error);
         }
 
-        $this->nickname  = htmlspecialchars_decode((string) $profile->steamID);
-        $this->steamId64 = (string) $profile->steamID64;
-        $this->vacBanned = (bool)(int) $profile->vacBanned;
+        $this->nickname      = htmlspecialchars_decode((string) $profile->steamID);
+        $this->steamId64     = (string) $profile->steamID64;
+        $this->limited       = (bool)(int) $profile->isLimitedAccount;
+        $this->tradeBanState = (string) $profile->tradeBanState;
+        $this->vacBanned     = (bool)(int) $profile->vacBanned;
 
         if(!empty($profile->privacyMessage)) {
             throw new SteamCondenserException((string) $profile->privacyMessage);
@@ -238,7 +250,7 @@ class SteamId {
         $this->stateMessage = (string) $profile->stateMessage;
         $this->visibilityState = (int) $profile->visibilityState;
 
-        if($this->privacyState == 'public') {
+        if($this->isPublic()) {
             $this->customUrl = strtolower((string) $profile->customURL);
             $this->favoriteGame = (string) $profile->favoriteGame->name;
             $this->favoriteGameHoursPlayed = (string) $profile->favoriteGame->hoursPlayed2wk;
@@ -505,6 +517,15 @@ class SteamId {
         return $playtimes[1];
     }
 
+    /*
+     * Returns this user's ban state in Steam's trading system
+     *
+     * @return string This user's trading ban state
+     */
+    public function getTradeBanState() {
+        return $this->tradeBanState;
+    }
+
     /**
      * Returns whether the owner of this Steam ID is VAC banned
      *
@@ -534,6 +555,15 @@ class SteamId {
     }
 
     /**
+     * Returns whether this Steam account is limited
+     *
+     * @return bool <var>true</var> if this account is limited
+     */
+    public function isLimited() {
+        return $this->limited;
+    }
+
+    /**
      * Returns whether the owner of this Steam ID is currently logged into
      * Steam
      *
@@ -542,4 +572,14 @@ class SteamId {
     public function isOnline() {
         return ($this->onlineState == 'online') || ($this->onlineState == 'in-game');
     }
+
+    /**
+     * Returns whether this Steam ID is publicly accessible
+     *
+     * @return bool <var>true</var> if this Steam ID is public
+     */
+    public function isPublic() {
+        return $this->privacyState == 'public';
+    }
+
 }
