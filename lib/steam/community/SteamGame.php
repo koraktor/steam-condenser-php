@@ -141,6 +141,15 @@ class SteamGame {
     }
 
     /**
+     * Returns a link to this game's page in the Steam Store
+     *
+     * @return string This game's store page
+     */
+    public function getStoreLink() {
+        return "http://store.steampowered.com/app/{$this->appId}";
+    }
+
+    /**
      * Creates a stats object for the given user and this game
      *
      * @param string $steamId The custom URL or the 64bit Steam ID of the user
