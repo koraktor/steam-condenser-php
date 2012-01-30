@@ -25,8 +25,8 @@ class PacketFormatException extends SteamCondenserException {
      *
      * @param string $message The message to attach to the exception
      */
-    public function __construct($message) {
-        parent::__construct("The packet data received doesn't match the packet format.");
+    public function __construct($message = "The packet data received doesn't match the packet format.") {
+        parent::__construct($message);
     }
 
 }
