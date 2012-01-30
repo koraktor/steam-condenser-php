@@ -61,7 +61,7 @@ abstract class WebApi {
      * @return string Data is returned as a JSON-encoded string.
      */
     public static function getJSON($interface, $method, $version = 1, $params = null) {
-        return self::load('json', $interface, $method, $version, $params);
+        return static::load('json', $interface, $method, $version, $params);
     }
 
     /**
@@ -76,7 +76,7 @@ abstract class WebApi {
      * @return stdClass Data is returned as a json_decoded object
      */
     public static function getJSONData($interface, $method, $version = 1, $params = null) {
-        $data = self::getJSON($interface, $method, $version, $params);
+        $data = static::getJSON($interface, $method, $version, $params);
         $result = json_decode($data)->result;
 
         if($result->status != 1) {
@@ -117,6 +117,10 @@ abstract class WebApi {
             $url .= join('&', $url_params);
         }
 
+        return static::request($url);
+    }
+
+    protected static function request($url) {
         $data = @file_get_contents($url);
 
         if(empty($data)) {
