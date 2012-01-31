@@ -4,6 +4,8 @@
  * the terms of the new BSD License.
  *
  * Copyright (c) 2012, Sebastian Staudt
+ *
+ * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
 
 require_once dirname(__FILE__) . '/../../../lib/steam-condenser.php';
