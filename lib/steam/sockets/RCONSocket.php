@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2011, Sebastian Staudt
+ * Copyright (c) 2008-2012, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -100,7 +100,7 @@ class RCONSocket extends SteamSocket {
         do {
             $receivedBytes = $this->receivePacket($remainingBytes);
             $remainingBytes -= $receivedBytes;
-            $packetData .= substr($this->buffer->_array(), 0, $this->buffer->limit());
+            $packetData .= $this->buffer->get();
         } while($remainingBytes > 0);
 
         return RCONPacketFactory::getPacketFromData($packetData);
