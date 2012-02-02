@@ -78,7 +78,7 @@ class GoldSrcServer extends GameServer {
      * server
      *
      * @param string $password The RCON password of the server
-     * @return GoldSrc's RCON does not preauthenticate connections so
+     * @return bool GoldSrc's RCON does not preauthenticate connections so
      *         this method always returns <var>true</var>
      * @see rconAuth()
      */
@@ -92,7 +92,7 @@ class GoldSrcServer extends GameServer {
      * Remotely executes a command on the server via RCON
      *
      * @param string $command The command to execute on the server via RCON
-     * @return The output of the executed command
+     * @return string The output of the executed command
      * @see rconExec()
      * @throws SteamCondenserException if a problem occurs while parsing the
      *         reply
