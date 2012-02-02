@@ -54,9 +54,9 @@ class SourceSocketTest extends PHPUnit_Framework_TestCase {
         $this->socket->expects($this->at(1))->method('receivePacket')->with()->will($this->returnValue(1400));
 
         $this->buffer->expects($this->exactly(6))->method('getLong')->will($this->onConsecutiveCalls(-2, 2147484882, 0, -2, 2147484882, 0));
-        $this->buffer->expects($this->exactly(2))->method('getUnsignedLong')->will($this->returnValue(3991565875));
+        $this->buffer->expects($this->exactly(2))->method('getUnsignedLong')->will($this->returnValue(1570726822));
         $this->buffer->expects($this->exactly(4))->method('getByte')->will($this->onConsecutiveCalls(0x2, 0x0, 0x2, 0x1));
-        $this->buffer->expects($this->exactly(2))->method('get')->will($this->onConsecutiveCalls("BZh91AY&SY\224Xi^\000\000\002\304\000\300\000 \000\000\000", "\240\000!&A\230\223\027\027rE8P\220\224Xi^"));
+        $this->buffer->expects($this->exactly(2))->method('get')->will($this->onConsecutiveCalls("BZh91AY&SY\265\217T\317\000\000\001\304\000\300\000 ", "\000\000\000\240\000!&A\230\220..\344\212p\241!k\036\251\236"));
 
         $reply = $this->socket->getReply();
         $this->assertInstanceOf('S2C_CHALLENGE_Packet', $reply);
