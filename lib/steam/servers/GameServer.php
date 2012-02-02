@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2011, Sebastian Staudt
+ * Copyright (c) 2008-2012, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -75,7 +75,7 @@ abstract class GameServer extends Server {
      * @return array Split player attribute names
      * @see splitPlayerStatus()
      */
-    private static function getPlayerStatusAttributes($statusHeader) {
+    protected static function getPlayerStatusAttributes($statusHeader) {
         $statusAttributes = array();
         foreach(preg_split("/\s+/", $statusHeader) as $attribute) {
             if($attribute == 'connected') {
@@ -99,7 +99,7 @@ abstract class GameServer extends Server {
      *         player
      * @see getPlayerStatusAttributes()
      */
-    private static function splitPlayerStatus($attributes, $playerStatus) {
+    protected static function splitPlayerStatus($attributes, $playerStatus) {
         if($attributes[0] != 'userid') {
             $playerStatus = preg_replace('/^\d+ +/', '', $playerStatus);
         }
@@ -256,7 +256,7 @@ abstract class GameServer extends Server {
      *
      * @return SteamPacket The response packet replied by the server
      */
-    private function getReply() {
+    protected function getReply() {
         return $this->socket->getReply();
     }
 
@@ -275,7 +275,7 @@ abstract class GameServer extends Server {
      * @throws SteamCondenserException if either the request type or the
      *        response packet is not known
      */
-    private function handleResponseForRequest($requestType, $repeatOnFailure = true) {
+    protected function handleResponseForRequest($requestType, $repeatOnFailure = true) {
         switch($requestType) {
             case self::REQUEST_CHALLENGE:
                 $expectedResponse = 'S2C_CHALLENGE_Packet';
@@ -301,22 +301,16 @@ abstract class GameServer extends Server {
 
         $responsePacket = $this->getReply();
 
-        switch(get_class($responsePacket)) {
-            case 'S2A_INFO_DETAILED_Packet':
-            case 'S2A_INFO2_Packet':
-                $this->infoHash = $responsePacket->getInfoHash();
-                break;
-            case 'S2A_PLAYER_Packet':
-                $this->playerHash = $responsePacket->getPlayerHash();
-                break;
-            case 'S2A_RULES_Packet':
-                $this->rulesHash = $responsePacket->getRulesArray();
-                break;
-            case 'S2C_CHALLENGE_Packet':
-                $this->challengeNumber = $responsePacket->getChallengeNumber();
-                break;
-            default:
-                throw new SteamCondenserException('Response of type ' . get_class($responsePacket) . ' cannot be handled by this method.');
+        if($responsePacket instanceof S2A_INFO_BasePacket) {
+            $this->infoHash = $responsePacket->getInfoHash();
+        } elseif($responsePacket instanceof S2A_PLAYER_Packet) {
+            $this->playerHash = $responsePacket->getPlayerHash();
+        } elseif($responsePacket instanceof S2A_RULES_Packet) {
+            $this->rulesHash = $responsePacket->getRulesArray();
+        } elseif($responsePacket instanceof S2C_CHALLENGE_Packet) {
+            $this->challengeNumber = $responsePacket->getChallengeNumber();
+        } else {
+            throw new SteamCondenserException('Response of type ' . get_class($responsePacket) . ' cannot be handled by this method.');
         }
 
         if(!is_a($responsePacket, $expectedResponse)) {
@@ -368,7 +362,7 @@ abstract class GameServer extends Server {
      *
      * @param SteamPacket $requestData The request packet to send to the server
      */
-    private function sendRequest(SteamPacket $requestData) {
+    protected function sendRequest(SteamPacket $requestData) {
         $this->socket->send($requestData);
     }
 
@@ -438,10 +432,10 @@ abstract class GameServer extends Server {
                 $players[] = trim(substr($line, 1));
             }
         }
-        $attributes = self::getPlayerStatusAttributes(array_shift($players));
+        $attributes = static::getPlayerStatusAttributes(array_shift($players));
 
         foreach($players as $player) {
-            $playerData = self::splitPlayerStatus($attributes, $player);
+            $playerData = static::splitPlayerStatus($attributes, $player);
             if(array_key_exists($playerData['name'], $this->playerHash)) {
                 $this->playerHash[$playerData['name']]->addInformation($playerData);
             }
