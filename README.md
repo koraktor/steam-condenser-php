@@ -8,7 +8,7 @@ Currently it is implemented in Java, PHP and Ruby.
 ## Requirements
 
 * Linux, MacOS X or Windows
-* PHP 5.3 or newer
+* PHP 5 or newer
 
 The following extensions are required:
 

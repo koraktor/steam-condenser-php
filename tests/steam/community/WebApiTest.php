@@ -11,8 +11,13 @@ require_once STEAM_CONDENSER_PATH . 'steam/community/WebApi.php';
 
 class WebApiTest extends PHPUnit_Framework_TestCase {
 
+    private $instance;
+
     public function setUp() {
         WebApi::setApiKey('0123456789ABCDEF0123456789ABCDEF');
+
+        $this->instance = new ReflectionProperty('WebApi', 'instance');
+        $this->instance->setAccessible(true);
     }
 
     public function testGetApiKey() {
@@ -31,38 +36,42 @@ class WebApiTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testGetJSON() {
-        $webApi = $this->getMockClass('WebApi', array('load'));
-        $webApi::staticExpects($this->once())->method('load')->with('json', 'interface', 'method', 2, array('test' => 'param'));
+        $webApi = $this->getMockBuilder('WebApi')->setMethods(array('_load'))->disableOriginalConstructor()->getMock();
+        $webApi->expects($this->once())->method('_load')->with('json', 'interface', 'method', 2, array('test' => 'param'));
+        $this->instance->setValue($webApi);
 
-        $webApi::getJSON('interface', 'method', 2, array('test' => 'param'));
+        WebApi::getJSON('interface', 'method', 2, array('test' => 'param'));
     }
 
     public function testGetJSONData() {
         $data = '{ "result": { "status": 1 } }';
-        $webApi = $this->getMockClass('WebApi', array('getJSON'));
-        $webApi::staticExpects($this->once())->method('getJSON')->with('interface', 'method', 2, array('test' => 'param'))->will($this->returnValue($data));
+        $webApi = $this->getMockBuilder('WebApi')->setMethods(array('_getJSON'))->disableOriginalConstructor()->getMock();
+        $webApi->expects($this->once())->method('_getJSON')->with('interface', 'method', 2, array('test' => 'param'))->will($this->returnValue($data));
+        $this->instance->setValue($webApi);
 
-        $result = $webApi::getJSONData('interface', 'method', 2, array('test' => 'param'));
+        $result = WebApi::getJSONData('interface', 'method', 2, array('test' => 'param'));
         $this->assertEquals(1, $result->status);
     }
 
     public function testGetJSONDataError() {
         $data = '{ "result": { "status": 2, "statusDetail": "error" } }';
-        $webApi = $this->getMockClass('WebApi', array('getJSON'));
-        $webApi::staticExpects($this->once())->method('getJSON')->with('interface', 'method', 2, array('test' => 'param'))->will($this->returnValue($data));
+        $webApi = $this->getMockBuilder('WebApi')->setMethods(array('_getJSON'))->disableOriginalConstructor()->getMock();
+        $webApi->expects($this->once())->method('_getJSON')->with('interface', 'method', 2, array('test' => 'param'))->will($this->returnValue($data));
+        $this->instance->setValue($webApi);
 
         $this->setExpectedException('WebApiException', 'The Web API request failed with the following error: error (status code: 2).');
 
-        $webApi::getJSONData('interface', 'method', 2, array('test' => 'param'));
+        WebApi::getJSONData('interface', 'method', 2, array('test' => 'param'));
     }
 
 
     public function testLoad() {
         $data = 'data';
-        $webApi = $this->getMockClass('WebApi', array('request'));
-        $webApi::staticExpects($this->once())->method('request')->with('http://api.steampowered.com/interface/method/v0002/?test=param&format=json&key=0123456789ABCDEF0123456789ABCDEF')->will($this->returnValue($data));
+        $webApi = $this->getMockBuilder('WebApi')->setMethods(array('request'))->disableOriginalConstructor()->getMock();
+        $webApi->expects($this->once())->method('request')->with('http://api.steampowered.com/interface/method/v0002/?test=param&format=json&key=0123456789ABCDEF0123456789ABCDEF')->will($this->returnValue($data));
+        $this->instance->setValue($webApi);
 
-        $this->assertEquals('data', $webApi::load('json', 'interface', 'method', 2, array('test' => 'param')));
+        $this->assertEquals('data', WebApi::load('json', 'interface', 'method', 2, array('test' => 'param')));
     }
 
 }

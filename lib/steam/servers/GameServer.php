@@ -75,7 +75,7 @@ abstract class GameServer extends Server {
      * @return array Split player attribute names
      * @see splitPlayerStatus()
      */
-    protected static function getPlayerStatusAttributes($statusHeader) {
+    protected function getPlayerStatusAttributes($statusHeader) {
         $statusAttributes = array();
         foreach(preg_split("/\s+/", $statusHeader) as $attribute) {
             if($attribute == 'connected') {
@@ -99,7 +99,7 @@ abstract class GameServer extends Server {
      *         player
      * @see getPlayerStatusAttributes()
      */
-    protected static function splitPlayerStatus($attributes, $playerStatus) {
+    protected function splitPlayerStatus($attributes, $playerStatus) {
         if($attributes[0] != 'userid') {
             $playerStatus = preg_replace('/^\d+ +/', '', $playerStatus);
         }
@@ -432,10 +432,10 @@ abstract class GameServer extends Server {
                 $players[] = trim(substr($line, 1));
             }
         }
-        $attributes = static::getPlayerStatusAttributes(array_shift($players));
+        $attributes = $this->getPlayerStatusAttributes(array_shift($players));
 
         foreach($players as $player) {
-            $playerData = static::splitPlayerStatus($attributes, $player);
+            $playerData = $this->splitPlayerStatus($attributes, $player);
             if(array_key_exists($playerData['name'], $this->playerHash)) {
                 $this->playerHash[$playerData['name']]->addInformation($playerData);
             }
