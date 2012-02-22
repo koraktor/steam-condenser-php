@@ -279,7 +279,7 @@ abstract class GameServer extends Server {
         switch($requestType) {
             case self::REQUEST_CHALLENGE:
                 $expectedResponse = 'S2C_CHALLENGE_Packet';
-                $requestPacket    = new A2S_SERVERQUERY_GETCHALLENGE_Packet();
+                $requestPacket    = new A2S_PLAYER_Packet();
                 break;
             case self::REQUEST_INFO:
                 $expectedResponse = 'S2A_INFO_BasePacket';
