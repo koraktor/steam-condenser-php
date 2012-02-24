@@ -3,11 +3,12 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2011, Sebastian Staudt
+ * Copyright (c) 2011-2012, Sebastian Staudt
  */
 
 require_once STEAM_CONDENSER_PATH . 'steam/community/GameLeaderboard.php';
 require_once STEAM_CONDENSER_PATH . 'steam/community/GameStats.php';
+require_once STEAM_CONDENSER_PATH . 'steam/community/WebApi.php';
 
 /**
  * This class represents a game available on Steam
