@@ -52,7 +52,17 @@ class GameAchievement {
      * @var bool
      */
     private $unlocked;
-
+	
+	/**
+	 * @var string
+	 */
+	private $iconUnlocked;
+	
+	/**
+	 * @var string
+	 */
+	private $iconLocked;
+	 
     /**
      * Loads the global unlock percentages of all achievements for the given
      * game
@@ -97,6 +107,8 @@ class GameAchievement {
         $this->name        = (string) $achievementData->name;
         $this->steamId64   = $steamId64;
         $this->unlocked    = (bool)(int) $achievementData->attributes()->closed;
+		$this->iconLocked    = (string) $achievementData->iconOpen;
+		$this->iconUnlocked  = (string) $achievementData->iconClosed;
 
         if($this->unlocked && $achievementData->unlockTimestamp != null) {
             $this->timestamp = (int) $achievementData->unlockTimestamp;
@@ -167,4 +179,24 @@ class GameAchievement {
     public function isUnlocked() {
         return $this->unlocked;
     }
+	
+	/**
+	 *
+	 * Returns the url of the achievement's unlocked icon
+	 *
+	 * @return string The url of the achievement's unlocked icon
+	 */
+	 public function getUnlockedIcon() {
+		return $this->iconClosed;
+	}
+	
+	/**
+	 *
+	 * Returns the url of the achievement's locked icon
+	 *
+	 * @return string The url of the achievement's locked icon
+	 */
+	 public function getLockedIcon() {
+		return $this->iconLocked;
+	}
 }
