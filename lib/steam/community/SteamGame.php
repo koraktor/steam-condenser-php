@@ -32,6 +32,11 @@ class SteamGame {
     /**
      * @var string
      */
+    private $logoUrl;
+
+    /**
+     * @var string
+     */
     private $name;
 
     /**
@@ -104,8 +109,9 @@ class SteamGame {
      * @param SimpleXMLElement $gameData The XML data of the game
      */
     private function __construct($appId, $gameData) {
-        $this->appId = $appId;
-        $this->name  = (string) $gameData->name;
+        $this->appId   = $appId;
+        $this->logoUrl = (string) $gameData->logo;
+        $this->name    = (string) $gameData->name;
         if($gameData->globalStatsLink != null && !empty($gameData->globalStatsLink)) {
             preg_match('#http://steamcommunity.com/stats/([^?/]+)/achievements/#', (string) $gameData->globalStatsLink, $shortName);
             $this->shortName = strtolower($shortName[1]);
@@ -144,6 +150,15 @@ class SteamGame {
     public function getLeaderboards() {
         return GameLeaderboard::getLeaderboards($this->shortName);
     }
+
+    /**
+     * Returns the URL for the logo image of this game
+     *
+     * @return string The URL for the game logo
+     */
+     public function getLogoUrl() {
+        return $this->logoUrl;
+     }
 
     /**
      * Returns the full name of this game
