@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2011, Sebastian Staudt
+ * Copyright (c) 2008-2012, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -27,6 +27,11 @@ class TF2Spy extends TF2Class {
     /**
      * @var int
      */
+    private $maxHeadShots;
+
+    /**
+     * @var int
+     */
     private $maxHealthLeeched;
 
     /**
@@ -38,6 +43,7 @@ class TF2Spy extends TF2Class {
         parent::__construct($classData);
 
         $this->maxBackstabs     = (int) $classData->ibackstabs;
+        $this->maxHeadShots     = (int) $classData->iheadshots;
         $this->maxHealthLeeched = (int) $classData->ihealthpointsleached;
     }
 
@@ -52,6 +58,16 @@ class TF2Spy extends TF2Class {
     }
 
     /**
+     * Returns the head shots by the player in a single life as a Spy
+     *
+     * @return int Maximum number of head shots
+     */
+    public function getMaxHeadShots()
+    {
+        return $this->maxHeadShots;
+    }
+
+    /**
      * Returns the maximum health leeched from enemies by the player in a single
      * life as a Spy
      *
@@ -60,4 +76,5 @@ class TF2Spy extends TF2Class {
     public function getMaxHealthLeeched() {
         return $this->maxHealthLeeched;
     }
+
 }
