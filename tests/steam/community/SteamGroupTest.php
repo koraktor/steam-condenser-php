@@ -74,10 +74,10 @@ class SteamGroupTest extends PHPUnit_Framework_TestCase {
         $mockBuilder->setConstructorArgs(array('valve', false));
         $mockBuilder->setMethods(array('getData'));
         $group = $mockBuilder->getMock();
-        $group->expects($this->once())->method('getData')->with('http://steamcommunity.com/groups/valve/memberslistxml')->will($this->returnValue($data));
+        $group->expects($this->once())->method('getData')->with('http://steamcommunity.com/groups/valve/memberslistxml?p=1')->will($this->returnValue($data));
 
         $this->assertEquals(221, $group->getMemberCount());
-        $this->assertFalse($group->isFetched());
+        $this->assertTrue($group->isFetched());
     }
 
     public function tearDown() {
