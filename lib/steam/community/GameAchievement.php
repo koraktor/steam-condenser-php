@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2011, Sebastian Staudt
+ * Copyright (c) 2008-2012, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -32,6 +32,11 @@ class GameAchievement {
      * @var int
      */
     private $appId;
+
+    /**
+     * @var string
+     */
+    private $iconUrl;
 
     /**
      * @var string
@@ -94,6 +99,7 @@ class GameAchievement {
         $this->apiName     = (string) $achievementData->name;
         $this->appId       = $appId;
         $this->description = (string) $achievementData->description;
+        $this->iconUrl     = substr((string) $achievementData->iconClosed, 0, -4);
         $this->name        = (string) $achievementData->name;
         $this->steamId64   = $steamId64;
         $this->unlocked    = (bool)(int) $achievementData->attributes()->closed;
@@ -129,6 +135,24 @@ class GameAchievement {
      */
     public function getDescription() {
         return $this->description;
+    }
+
+    /**
+     * Returns the url for the closed icon of this achievement
+     *
+     * @return string The url of the closed achievement icon
+     */
+    public function icon_closed_url() {
+        return "{$this->iconUrl}.jpg";
+    }
+
+    /**
+     * Returns the url for the open icon of this achievement
+     *
+     * @return string The url of the open achievement icon
+     */
+    public function getIconOpenUrl() {
+        "{$this->iconUrl}_bw.jpg";
     }
 
     /**
