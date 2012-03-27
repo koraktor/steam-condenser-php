@@ -145,6 +145,8 @@ class SteamGroup extends XMLData {
         do {
             $totalPages = $this->fetchPage(++$page);
         } while($page < $totalPages);
+
+        $this->fetchTime = time();
     }
 
     /**
@@ -258,8 +260,6 @@ class SteamGroup extends XMLData {
         foreach($memberData->members->steamID64 as $member) {
             array_push($this->members, SteamId::create($member, false));
         }
-
-        $this->fetchTime = time();
 
         return $totalPages;
     }
