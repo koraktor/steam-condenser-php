@@ -164,11 +164,11 @@ class SteamGame {
     }
 
     /**
-     * Returns a link to this game's page in the Steam Store
+     * Returns the URL of this game's page in the Steam Store
      *
      * @return string This game's store page
      */
-    public function getStoreLink() {
+    public function getStoreUrl() {
         return "http://store.steampowered.com/app/{$this->appId}";
     }
 
