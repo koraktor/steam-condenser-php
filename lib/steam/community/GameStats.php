@@ -35,6 +35,16 @@ class GameStats {
     protected $achievementsDone;
 
     /**
+     * @var string
+     */
+    private $gameIconUrl;
+
+    /**
+     * @var string
+     */
+    private $gameLogoUrl;
+
+    /**
      * Used to cache the XML data of the statistics for this game and this
      * user
      *
@@ -111,6 +121,8 @@ class GameStats {
             $this->appId = (int) $appId[1];
             $this->customUrl = (string) $this->xmlData->player->customURL;
             $this->gameFriendlyName = (string) $this->xmlData->game->gameFriendlyName;
+            $this->gameIconUrl = (string) $this->xmlData->game->icon;
+            $this->gameLogoUrl = substr((string) $this->xmlData->game->logo, 0, -4);
             $this->gameName = (string) $this->xmlData->game->gameName;
             $this->hoursPlayed = (string) $this->xmlData->stats->hoursPlayed;
             $this->steamId64 = trim((string) $this->xmlData->player->steamID64);
@@ -211,6 +223,33 @@ class GameStats {
      */
     public function getGameFriendlyName() {
         return $this->gameFriendlyName;
+    }
+
+    /**
+     * Returns the URL for the icon of this game
+     *
+     * @return string URL for game icon
+     */
+    public function getGameIconUrl() {
+        return $this->gameIconUrl;
+    }
+
+    /**
+     * Returns the URL for the logo image of this game
+     *
+     * @return string The URL for the game logo
+     */
+    public function getGameLogoUrl() {
+        return "{$this->gameLogoUrl}.jpg";
+    }
+
+    /**
+     * Returns the URL for the logo thumbnail image of this game
+     *
+     * @return string The URL for the game logo thumbnail
+     */
+    public function getGameLogoThumbnailUrl() {
+        return "{$this->gameLogoUrl}_thumb.jpg";
     }
 
     /**
