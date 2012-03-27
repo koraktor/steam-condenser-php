@@ -105,6 +105,7 @@ class SteamGroup extends XMLData {
         }
 
         $this->fetched = false;
+        $this->members = array();
 
         if($fetch) {
             $this->fetchMembers();
@@ -135,25 +136,15 @@ class SteamGroup extends XMLData {
      * data over several XML documents if the group has lots of members.
      */
     public function fetchMembers() {
-        $this->members = array();
-        $page = 0;
+        if(empty($this->memberCount) || sizeof($this->members) == $this->memberCount) {
+            $page = 0;
+        } else {
+            $page = 1;
+        }
 
         do {
-            $page++;
-            $url = "{$this->getBaseUrl()}/memberslistxml?p=$page";
-            $memberData = $this->getData($url);
-
-            if($page == 1) {
-                $this->groupId64 = (string) $memberData->groupID64;
-            }
-            $totalPages = (int) $memberData->totalPages;
-
-            foreach($memberData->members->steamID64 as $member) {
-                array_push($this->members, SteamId::create($member, false));
-            }
+            $totalPages = $this->fetchPage(++$page);
         } while($page < $totalPages);
-
-        $this->fetchTime = time();
     }
 
     /**
@@ -209,16 +200,17 @@ class SteamGroup extends XMLData {
      * multiple requests for big groups.
      *
      * @return int The number of this group's members
+     * @see #fetchPage()
      */
     public function getMemberCount() {
-        if(empty($this->members)) {
-            $url = $this->getBaseUrl() . '/memberslistxml';
-            $memberData = $this->getData($url);
-
-            return (int) $memberData->memberCount;
-        } else {
-            return sizeof($this->members);
+        if(empty($this->memberCount)) {
+            $totalPages = $this->fetchPage(1);
+            if($totalPages == 1) {
+                $this->fetchTime = time();
+            }
         }
+
+        return $this->memberCount;
     }
 
     /**
@@ -230,7 +222,7 @@ class SteamGroup extends XMLData {
      * @see #fetchMembers()
      */
     public function getMembers() {
-        if(empty($this->members) || empty($this->members[0])) {
+        if(sizeof($this->members) != $this->memberCount) {
             $this->fetchMembers();
         }
 
@@ -245,4 +237,31 @@ class SteamGroup extends XMLData {
     public function isFetched() {
         return !empty($this->fetchTime);
     }
+
+    /**
+     * Fetches a specific page of the member listing of this group
+     *
+     * @param int $page The member page to fetch
+     * @return int The total number of pages of this group's member listing
+     * @see #fetchMembers()
+     */
+    private function fetchPage($page) {
+        $url = "{$this->getBaseUrl()}/memberslistxml?p=$page";
+        $memberData = $this->getData($url);
+
+        if($page == 1) {
+            $this->groupId64 = (string) $memberData->groupID64;
+        }
+        $this->memberCount = (int) $memberData->memberCount;
+        $totalPages = (int) $memberData->totalPages;
+
+        foreach($memberData->members->steamID64 as $member) {
+            array_push($this->members, SteamId::create($member, false));
+        }
+
+        $this->fetchTime = time();
+
+        return $totalPages;
+    }
+
 }
