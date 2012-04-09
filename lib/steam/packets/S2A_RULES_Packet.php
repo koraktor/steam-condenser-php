@@ -42,7 +42,7 @@ class S2A_RULES_Packet extends SteamPacket {
         $rulesCount = $this->contentData->getShort();
         $this->rulesArray = array();
 
-        for($x = 0; $x < $rulesCount; $i++) {
+        for($x = 0; $x < $rulesCount; $x++) {
             $rule  = $this->contentData->getString();
             $value = $this->contentData->getString();
 
