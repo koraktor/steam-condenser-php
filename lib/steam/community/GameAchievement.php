@@ -101,7 +101,7 @@ class GameAchievement {
      *        from XML
      */
     public function __construct($steamId64, $appId, $achievementData) {
-        $this->apiName       = (string) $achievementData->name;
+        $this->apiName       = (string) $achievementData->apiname;
         $this->appId         = $appId;
         $this->description   = (string) $achievementData->description;
         $this->iconClosedUrl = (string) $achievementData->iconClosed;
