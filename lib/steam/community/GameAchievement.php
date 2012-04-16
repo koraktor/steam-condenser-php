@@ -36,7 +36,12 @@ class GameAchievement {
     /**
      * @var string
      */
-    private $iconUrl;
+    private $iconClosedUrl;
+
+    /**
+     * @var string
+     */
+    private $iconOpenUrl;
 
     /**
      * @var string
@@ -96,13 +101,14 @@ class GameAchievement {
      *        from XML
      */
     public function __construct($steamId64, $appId, $achievementData) {
-        $this->apiName     = (string) $achievementData->name;
-        $this->appId       = $appId;
-        $this->description = (string) $achievementData->description;
-        $this->iconUrl     = substr((string) $achievementData->iconClosed, 0, -4);
-        $this->name        = (string) $achievementData->name;
-        $this->steamId64   = $steamId64;
-        $this->unlocked    = (bool)(int) $achievementData->attributes()->closed;
+        $this->apiName       = (string) $achievementData->name;
+        $this->appId         = $appId;
+        $this->description   = (string) $achievementData->description;
+        $this->iconClosedUrl = (string) $achievementData->iconClosed;
+        $this->iconOpenUrl   = (string) $achievementData->iconOpen;
+        $this->name          = (string) $achievementData->name;
+        $this->steamId64     = $steamId64;
+        $this->unlocked      = (bool)(int) $achievementData->attributes()->closed;
 
         if($this->unlocked && $achievementData->unlockTimestamp != null) {
             $this->timestamp = (int) $achievementData->unlockTimestamp;
@@ -142,8 +148,8 @@ class GameAchievement {
      *
      * @return string The url of the closed achievement icon
      */
-    public function icon_closed_url() {
-        return "{$this->iconUrl}.jpg";
+    public function getIconClosedUrl() {
+        return $this->iconClosedUrl;
     }
 
     /**
@@ -152,7 +158,7 @@ class GameAchievement {
      * @return string The url of the open achievement icon
      */
     public function getIconOpenUrl() {
-        "{$this->iconUrl}_bw.jpg";
+        return $this->iconOpenUrl;
     }
 
     /**
