@@ -170,10 +170,11 @@ class MasterServer extends Server {
      *         master server
      */
     public function getServers($regionCode = MasterServer::REGION_ALL , $filter = '', $force = false) {
-        $failCount  = 0;
-        $finished   = false;
-        $portNumber = 0;
-        $hostName   = '0.0.0.0';
+        $failCount   = 0;
+        $finished    = false;
+        $portNumber  = 0;
+        $hostName    = '0.0.0.0';
+        $serverArray = array();
 
         while(true) {
             try {
