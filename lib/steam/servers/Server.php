@@ -21,11 +21,6 @@
 abstract class Server {
 
     /**
-     * @var array The host names of this server
-     */
-    protected $hostNames;
-
-    /**
      * @var array The currently selected IP address of this server
      */
     protected $ipAddress;
@@ -63,7 +58,6 @@ abstract class Server {
             $port    = $address[1];
             $address = $address[0];
         }
-        $this->hostNames   = array();
         $this->ipAddresses = array();
         $this->ipIndex     = 0;
         $this->port        = intval($port);
@@ -74,7 +68,6 @@ abstract class Server {
         }
 
         foreach($addresses as $address) {
-            $this->hostNames[]   = gethostbyaddr($address);
             $this->ipAddresses[] = $address;
         }
 
