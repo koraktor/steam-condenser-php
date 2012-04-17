@@ -91,24 +91,21 @@ class GameAchievement {
      * Creates the achievement with the given name for the given user and game
      * and achievement data
      *
-     * @param string $steamId64 The 64bit SteamID of the player this
-     *        achievement belongs to
-     * @param int $appId The unique Steam Application ID of the game (e.g.
-     *        <var>440</var> for Team Fortress 2). See
-     *        http://developer.valvesoftware.com/wiki/Steam_Application_IDs for
-     *        all application IDs
+     * @param SteamId $user The Steam ID of the player this achievement belongs
+     *        to
+     * @param SteamGame $game The game this achievement belongs to
      * @param SimpleXMLElement $achievementData The achievement data extracted
      *        from XML
      */
-    public function __construct($steamId64, $appId, $achievementData) {
+    public function __construct(SteamId $user, SteamGame $game, $achievementData) {
         $this->apiName       = (string) $achievementData->apiname;
-        $this->appId         = $appId;
         $this->description   = (string) $achievementData->description;
+        $this->game          = $game;
         $this->iconClosedUrl = (string) $achievementData->iconClosed;
         $this->iconOpenUrl   = (string) $achievementData->iconOpen;
         $this->name          = (string) $achievementData->name;
-        $this->steamId64     = $steamId64;
         $this->unlocked      = (bool)(int) $achievementData->attributes()->closed;
+        $this->user          = $user;
 
         if($this->unlocked && $achievementData->unlockTimestamp != null) {
             $this->timestamp = (int) $achievementData->unlockTimestamp;
@@ -125,22 +122,21 @@ class GameAchievement {
     }
 
     /**
-     * Return the unique Steam Application ID of the  game this achievement
-     * belongs to
-     *
-     * @return int The Steam Application ID of this achievement's game
-     */
-    public function getAppId() {
-        return $this->appId;
-    }
-
-    /**
      * Returns the description of this achievement
      *
-     * @return string The description of this achievement
+     * @return string The description of this achievement
      */
     public function getDescription() {
         return $this->description;
+    }
+
+    /**
+     * Returns the game this achievement belongs to
+     *
+     * @return SteamGame The game this achievement belongs to
+     */
+    public function getGame() {
+        return $this->game;
     }
 
     /**
@@ -171,21 +167,21 @@ class GameAchievement {
     }
 
     /**
-     * Returns the 64bit SteamID of the user who owns this achievement
-     *
-     * @return string The 64bit SteamID of this achievement's owner
-     */
-    public function getSteamId64() {
-        return $this->steamId64;
-    }
-
-    /**
      * Returns the time this achievement has been unlocked by its owner
      *
      * @return int The time this achievement has been unlocked
      */
     public function getTimestamp() {
         return $this->timestamp;
+    }
+
+    /**
+     * Returns the SteamID of the user who owns this achievement
+     *
+     * @return SteamId The SteamID of this achievement's owner
+     */
+    public function getUser() {
+        return $this->user;
     }
 
     /**

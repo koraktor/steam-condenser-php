@@ -317,12 +317,13 @@ class SteamId extends XMLData {
         $gamesData = $this->getData($this->getBaseUrl() . '/games?xml=1');
 
         foreach($gamesData->games->game as $gameData) {
-            $game = SteamGame::create($gameData);
-            $this->games[$game->getAppId()] = $game;
+            $appId = (int) $gameData->appId;
+            $game = SteamGame::create($appId, $gameData);
+            $this->games[$appId] = $game;
             $recent = (float) $gameData->hoursLast2Weeks;
             $total = (float) $gameData->hoursOnRecord;
             $playtimes = array((int) ($recent * 60), (int) ($total * 60));
-            $this->playtimes[$game->getAppId()] = $playtimes;
+            $this->playtimes[$appId] = $playtimes;
         }
     }
 
@@ -472,6 +473,21 @@ class SteamId extends XMLData {
      */
     public function getIconAvatarUrl() {
         return $this->imageUrl . '.jpg';
+    }
+
+    /**
+     * Returns a unique identifier for this Steam ID
+     *
+     * This is either the 64bit numeric SteamID or custom URL
+     *
+     * @return string The 64bit numeric SteamID or the custom URL
+     */
+    public function getId() {
+        if($this->customUrl == null) {
+            return $this->steamId64;
+        } else {
+            return $this->customUrl;
+        }
     }
 
     /**

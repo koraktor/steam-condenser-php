@@ -35,14 +35,14 @@ class GameStats {
     protected $achievementsDone;
 
     /**
-     * @var string
+     * @var SteamGame
      */
-    private $gameIconUrl;
+    protected $game;
 
     /**
-     * @var string
+     * @var SteamId
      */
-    private $gameLogoUrl;
+    protected $user;
 
     /**
      * Used to cache the XML data of the statistics for this game and this
@@ -92,22 +92,37 @@ class GameStats {
     }
 
     /**
+     * Returns the base Steam Communtiy URL for the given player and game IDs
+     *
+     * @param string $userId The 64bit SteamID or custom URL of the user
+     * @param mixed $gameId The application ID or short name of the game
+     * @return string The base URL used for the given stats IDs
+     */
+    protected static function _getBaseUrl($userId, $gameId) {
+        $gameUrl = $gameId;
+        if(is_numeric($gameId)) {
+            $gameUrl = 'appid/' . $gameUrl;
+        }
+
+        if(is_numeric($userId)) {
+            return "http://steamcommunity.com/profiles/$userId/stats/$gameUrl";
+        } else {
+            return "http://steamcommunity.com/id/$userId/stats/$gameUrl";
+        }
+    }
+
+    /**
      * Creates a <var>GameStats</var> object and fetches data from the Steam
      * Community for the given user and game
      *
      * @param string $steamId The custom URL or the 64bit Steam ID of the user
-     * @param string $gameName The friendly name of the game
+     * @param string $gameId The app ID or friendly name of the game
      * @throws SteamCondenserException if the stats cannot be fetched
      */
-    protected function __construct($steamId, $gameName) {
-        if(is_numeric($steamId)) {
-            $this->steamId64 = $steamId;
-        } else {
-            $this->customUrl = strtolower($steamId);
-        }
-        $this->gameFriendlyName = $gameName;
+    protected function __construct($steamId, $gameId) {
+        $this->user = SteamId::create($steamId, false);
 
-        $url = $this->getBaseUrl() . '?xml=all';
+        $url = self::_getBaseUrl($steamId, $gameId) . '?xml=all';
 
         $this->xmlData = new SimpleXMLElement(file_get_contents($url));
 
@@ -118,14 +133,8 @@ class GameStats {
         $this->privacyState = (string) $this->xmlData->privacyState;
         if($this->isPublic()) {
             preg_match('#http://store.steampowered.com/app/([1-9][0-9]*)#', (string) $this->xmlData->game->gameLink, $appId);
-            $this->appId = (int) $appId[1];
-            $this->customUrl = (string) $this->xmlData->player->customURL;
-            $this->gameFriendlyName = (string) $this->xmlData->game->gameFriendlyName;
-            $this->gameIconUrl = (string) $this->xmlData->game->icon;
-            $this->gameLogoUrl = substr((string) $this->xmlData->game->logo, 0, -4);
-            $this->gameName = (string) $this->xmlData->game->gameName;
+            $this->game = SteamGame::create((int) $appId[1], $this->xmlData->game);
             $this->hoursPlayed = (string) $this->xmlData->stats->hoursPlayed;
-            $this->steamId64 = trim((string) $this->xmlData->player->steamID64);
         }
     }
 
@@ -144,7 +153,7 @@ class GameStats {
         if(empty($this->achievements)) {
             $this->achievementsDone = 0;
             foreach($this->xmlData->achievements->children() as $achievementData) {
-                $this->achievements[] = new GameAchievement($this->steamId64, $this->appId, $achievementData);
+                $this->achievements[] = new GameAchievement($this->user, $this->game, $achievementData);
                 if((int) $achievementData->attributes()->closed) {
                     $this->achievementsDone += 1;
                 }
@@ -185,80 +194,13 @@ class GameStats {
     }
 
     /**
-     * Returns the Steam application ID of the game these stats belong to
-     *
-     * @return int The Steam application ID of the game
-     */
-    public function getAppId() {
-        return $this->appId;
-    }
-
-    /**
      * Returns the base Steam Communtiy URL for the stats contained in this
      * object
      *
      * @return string The base URL used for queries on these stats
      */
     public function getBaseUrl() {
-        if(empty($this->customUrl)) {
-            return "http://steamcommunity.com/profiles/{$this->steamId64}/stats/{$this->gameFriendlyName}";
-        } else {
-            return "http://steamcommunity.com/id/{$this->customUrl}/stats/{$this->gameFriendlyName}";
-        }
-    }
-
-    /**
-     * Returns the custom URL of the player these stats belong to
-     *
-     * @return string The custom URL of the player
-     */
-    public function getCustomUrl() {
-        return $this->customUrl;
-    }
-
-    /**
-     * Returns the friendly name of the game these stats belong to
-     *
-     * @return string The frienldy name of the game
-     */
-    public function getGameFriendlyName() {
-        return $this->gameFriendlyName;
-    }
-
-    /**
-     * Returns the URL for the icon of this game
-     *
-     * @return string URL for game icon
-     */
-    public function getGameIconUrl() {
-        return $this->gameIconUrl;
-    }
-
-    /**
-     * Returns the URL for the logo image of this game
-     *
-     * @return string The URL for the game logo
-     */
-    public function getGameLogoUrl() {
-        return "{$this->gameLogoUrl}.jpg";
-    }
-
-    /**
-     * Returns the URL for the logo thumbnail image of this game
-     *
-     * @return string The URL for the game logo thumbnail
-     */
-    public function getGameLogoThumbnailUrl() {
-        return "{$this->gameLogoUrl}_thumb.jpg";
-    }
-
-    /**
-     * Returns the full name of the game these stats belong to
-     *
-     * @return string The name of the game
-     */
-    public function getGameName() {
-        return $this->gameName;
+        return self::_getBaseUrl($this->user->getId(), $this->game->getId());
     }
 
     /**
@@ -271,6 +213,15 @@ class GameStats {
     }
 
     /**
+     * Returns the game these stats belong to
+     *
+     * @return SteamGame The game object
+     */
+    public function getGame() {
+        return $this->game;
+    }
+
+    /**
      * Returns the number of hours this game has been played by the player
      *
      * @return string The number of hours this game has been played
@@ -280,39 +231,9 @@ class GameStats {
     }
 
     /**
-     * Returns the leaderboard for this game and the given leaderboard ID or
-     * name
-     *
-     * @param mixed $id The ID or name of the leaderboard to return
-     * @return GameLeaderboard The matching leaderboard if available
-     */
-    public function getLeaderboard($id) {
-        return GameLeaderboard::getLeaderboard($this->gameFriendlyName, $id);
-    }
-
-    /**
-     * Returns an array containing all of this game's leaderboards
-     *
-     * @return array The leaderboards for this game
-     */
-    public function getLeaderboards() {
-        return GameLeaderboard::getLeaderboards($this->gameFriendlyName);
-    }
-
-    /**
-     * Returns the 64bit numeric SteamID of the player these stats belong to
-     *
-     * @return string The 64bit numeric SteamID of the player
-     */
-    public function getSteamId64() {
-        return $this->steamId64;
-    }
-
-
-    /**
      * Returns whether this Steam ID is publicly accessible
      *
-     * @return <var>true</var> if this Steam ID is publicly accessible
+     * @return bool <var>true</var> if this Steam ID is publicly accessible
      */
     public function isPublic() {
         return $this->privacyState == 'public';
