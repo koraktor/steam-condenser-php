@@ -111,9 +111,8 @@ class MasterServer extends Server {
      * Please note that this is <b>not</b> needed for finding servers using
      * {@link getServers()}.
      *
-     * @return The challenge number returned from the master server
+     * @return int The challenge number returned from the master server
      * @see sendHeartbeat()
-     * @throws IOException if the request fails
      * @throws SteamCondenserException if a problem occurs while parsing the
      *         reply
      * @throws TimeoutException if the request times out
@@ -228,10 +227,10 @@ class MasterServer extends Server {
      * This can be used to check server versions externally.
      *
      * @param array $data The heartbeat data to send to the master server
-     * @return The reply from the master server – usually zero or more packets.
-     *         Zero means either the heartbeat was accepted by the master or
-     *         there was a timeout. So usually it's best to repeat a heartbeat
-     *         a few times when not receiving any packets.
+     * @return array The reply from the master server – usually zero or more
+     *         packets. Zero means either the heartbeat was accepted by the
+     *         master or there was a timeout. So usually it's best to repeat a
+     *         heartbeat a few times when not receiving any packets.
      * @throws SteamCondenserException if heartbeat data is missing the
      *         challenge number or the reply cannot be parsed
      */

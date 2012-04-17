@@ -338,7 +338,6 @@ abstract class GameServer extends Server {
      * @param string $password The RCON password of the server
      * @return bool whether authentication was successful
      * @see rconAuth()
-     * @throws IOException if the request fails
      * @throws SteamCondenserException if a problem occurs while parsing the
      *         reply
      * @throws TimeoutException if the request times out

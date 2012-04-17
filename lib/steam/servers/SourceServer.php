@@ -39,7 +39,7 @@ class SourceServer extends GameServer {
     protected $rconAuthenticated;
 
     /**
-     * @var long The request ID used for RCON request
+     * @var int The request ID used for RCON request
      */
     protected $rconRequestId;
 
@@ -52,7 +52,7 @@ class SourceServer extends GameServer {
      * Returns a master server instance for the default master server for
      * Source games
      *
-     * @return The Source master server
+     * @return MasterServer The Source master server
      */
     public function getMaster() {
         return new MasterServer(MasterServer::SOURCE_MASTER_SERVER);
@@ -83,7 +83,7 @@ class SourceServer extends GameServer {
      * Authenticates the connection for RCON communication with the server
      *
      * @param string $password The RCON password of the server
-     * @return whether authentication was successful
+     * @return bool whether authentication was successful
      * @see rconExec()
      * @throws SteamCondenserException if a problem occurs while parsing the
      *         reply

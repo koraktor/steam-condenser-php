@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2011, Sebastian Staudt
+ * Copyright (c) 2008-2012, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -43,7 +43,7 @@ class ByteBuffer {
      * Allocates a string with the specified amount of bytes wrapped into a
      * byte buffer object
      *
-     * @param  $length The size of the byte buffer
+     * @param int $length The size of the byte buffer
      * @return ByteBuffer The new byte buffer object
      */
     public static function allocate($length) {
@@ -53,8 +53,7 @@ class ByteBuffer {
     /**
      * Wraps an existing string into a byte buffer object
      *
-     * @param  $byteArray The string to encapsulate into the
-     *         byte buffer
+     * @param string $byteArray The string to encapsulate into the byte buffer
      * @return ByteBuffer The new ByteBuffer object
      */
     public static function wrap($byteArray) {
@@ -115,6 +114,8 @@ class ByteBuffer {
      *        <var>null</var> if everything up to <var>limit</var> should be
      *        read
      * @return string The data read from the buffer
+     * @throws BufferUnderflowException if the buffer does not contain $length
+     *         or more bytes after the current position
      */
     public function get($length = null) {
         if($length === null) {
@@ -153,8 +154,8 @@ class ByteBuffer {
     /**
      * Reads a long integer from the buffer
      *
-     * @return long The long integer, i.e. four bytes converted to a
-     *         <var>long</var> read at the current position
+     * @return int The long integer, i.e. four bytes converted to an
+     *         <var>int</var> read at the current position
      */
     public function getLong() {
         $data = unpack('l', $this->get(4));
@@ -165,8 +166,8 @@ class ByteBuffer {
     /**
      * Reads a short integer from the buffer
      *
-     * @return short The short integer, i.e. two bytes converted to a
-     *         <var>short</var> read at the current position
+     * @return int The short integer, i.e. two bytes converted to an
+     *         <var>int</var> read at the current position
      */
     public function getShort() {
         $data = unpack('v', $this->get(2));
@@ -198,8 +199,8 @@ class ByteBuffer {
     /**
      * Reads an unsigned long integer from the buffer
      *
-     * @return long The long integer, i.e. four bytes converted to an
-     *         unsigned <var>float</var> read at the current position
+     * @return int The long integer, i.e. four bytes converted to an unsigned
+     *         <var>float</var> read at the current position
      */
     public function getUnsignedLong() {
         $data = unpack('V', $this->get(4));
@@ -218,6 +219,7 @@ class ByteBuffer {
             return $this->limit;
         } else {
             $this->limit = $newLimit;
+            return null;
         }
     }
 

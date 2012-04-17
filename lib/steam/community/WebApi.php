@@ -107,6 +107,8 @@ class WebApi {
      *
      * @param string $apiKey The 128bit API key that has to be requested from
      *                      http://steamcommunity.com/dev
+     * @throws WebApiException if the given API key is not a valid 128bit
+     *         hexadecimal string
      */
     public static function setApiKey($apiKey) {
         if($apiKey != null && !preg_match('/^[0-9A-F]{32}$/', $apiKey)) {
@@ -147,6 +149,7 @@ class WebApi {
      * @param int $version The API method version to use
      * @param array $params Additional parameters to supply via HTTP GET
      * @return stdClass Data is returned as a json_decoded object
+     * @throws WebApiException In case of any request failure
      */
     protected function _getJSONData($interface, $method, $version = 1, $params = null) {
         $data = $this->getJSON($interface, $method, $version, $params);

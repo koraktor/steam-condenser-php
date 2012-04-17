@@ -45,7 +45,7 @@ abstract class RCONPacket extends SteamPacket {
     const SERVERDATA_RESPONSE_VALUE = 0;
 
     /**
-     * @var long The request ID used to identify the RCON communication
+     * @var int The request ID used to identify the RCON communication
      */
     private $requestId;
 
@@ -53,7 +53,7 @@ abstract class RCONPacket extends SteamPacket {
      * Creates a new RCON packet object with the given request ID, type and
      * content data
      *
-     * @param long $requestId The request ID for the current RCON communication
+     * @param int $requestId The request ID for the current RCON communication
      * @param int $rconHeader The header for the packet type
      * @param string $rconData The raw packet data
      */
@@ -66,7 +66,7 @@ abstract class RCONPacket extends SteamPacket {
     /**
      * Returns the request ID used to identify the RCON communication
      *
-     * @return long The request ID used to identify the RCON communication
+     * @return int The request ID used to identify the RCON communication
      */
     public function getRequestId() {
         return $this->requestId;

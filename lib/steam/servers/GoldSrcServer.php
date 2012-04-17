@@ -41,7 +41,7 @@ class GoldSrcServer extends GameServer {
      * Returns a master server instance for the default master server for
      * GoldSrc games
      *
-     * @return The GoldSrc master server
+     * @return MasterServer The GoldSrc master server
      */
     public function getMaster() {
         return new MasterServer(MasterServer::GOLDSRC_MASTER_SERVER);

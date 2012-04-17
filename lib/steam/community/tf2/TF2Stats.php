@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2011, Sebastian Staudt
+ * Copyright (c) 2008-2012, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -43,6 +43,8 @@ class TF2Stats extends GameStats {
      * constructor with the game name <var>"tf2"</var>
      *
      * @param string $steamId The custom URL or 64bit Steam ID of the user
+     * @param bool $beta if <var>true</var>, creates stats for the public TF2
+     *        beta
      */
     public function __construct($steamId, $beta = false) {
         parent::__construct($steamId, ($beta ? '520' : 'tf2'));
@@ -71,7 +73,7 @@ class TF2Stats extends GameStats {
      */
     public function getClassStats() {
         if(!$this->isPublic()) {
-            return;
+            return null;
         }
 
         if(empty($this->classStats)) {
@@ -91,7 +93,7 @@ class TF2Stats extends GameStats {
      */
     public function getInventory() {
         if(!$this->isPublic()) {
-            return;
+            return null;
         }
 
         if(empty($this->inventory)) {

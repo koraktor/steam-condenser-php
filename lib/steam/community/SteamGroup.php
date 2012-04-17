@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2011, Sebastian Staudt
+ * Copyright (c) 2008-2012, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -50,7 +50,7 @@ class SteamGroup extends XMLData {
      *
      * @param string $id The custom URL of the group specified by the group
      *        admin or the 64bit group ID
-     * @return <var>true</var> if this group is already cached
+     * @return bool <var>true</var> if this group is already cached
      */
     public static function isCached($id) {
         return array_key_exists(strtolower($id), self::$steamGroups);
@@ -73,7 +73,8 @@ class SteamGroup extends XMLData {
      *        the object
      * @param bool $bypassCache If <var>true</var> an already cached instance
      *        for this group will be ignored and a new one will be created
-     * @return The <var>SteamGroup</var> instance of the requested group
+     * @return SteamGroup The <var>SteamGroup</var> instance of the requested
+     *         group
      */
     public static function create($id, $fetch = true, $bypassCache = false) {
         $id = strtolower($id);

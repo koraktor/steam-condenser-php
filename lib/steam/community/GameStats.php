@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2011, Sebastian Staudt
+ * Copyright (c) 2008-2012, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -138,7 +138,7 @@ class GameStats {
     */
     public function getAchievements() {
         if(!$this->isPublic()) {
-            return;
+            return null;
         }
 
         if(empty($this->achievements)) {

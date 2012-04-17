@@ -93,22 +93,6 @@ class SteamPlayer {
      *        server
      */
     public function __construct($id, $name, $score, $connectTime) {
-        if(!is_int($id) || $id < 0) {
-            throw new Exception('Player ID has to be a number greater than or equal 0.');
-        }
-
-        if(!is_string($name)) {
-            throw new Exception('Player name has to be a string.');
-        }
-
-        if(!is_int($score)) {
-            throw new Exception('Player points have to be a number.');
-        }
-
-        if(!is_float($connectTime)) {
-            throw new Exception('Player connection time has to be a floating-point integer.');
-        }
-
         $this->connectTime = $connectTime;
         $this->id = $id;
         $this->name = $name;

@@ -118,7 +118,7 @@ class GameAchievement {
     /**
      * Returns the symbolic API name of this achievement
      *
-     * @return string The API name of this achievement
+     * @return string The API name of this achievement
      */
     public function getApiName() {
         return $this->apiName;
@@ -164,7 +164,7 @@ class GameAchievement {
     /**
      * Returns the name of this achievement
      *
-     * @return string The name of this achievement
+     * @return string The name of this achievement
      */
     public function getName() {
         return $this->name;
@@ -191,7 +191,7 @@ class GameAchievement {
     /**
      * Returns whether this achievement has been unlocked by its owner
      *
-     * @return bool <var>true</var> if the achievement has been unlocked by the
+     * @return bool <var>true</var> if the achievement has been unlocked by the
      *         user
      */
     public function isUnlocked() {

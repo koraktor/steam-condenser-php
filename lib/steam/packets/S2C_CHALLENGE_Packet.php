@@ -37,7 +37,7 @@ class S2C_CHALLENGE_Packet extends SteamPacket {
     /**
      * Returns the challenge number received from the game server
      *
-     * @return long The challenge number provided by the game server
+     * @return int The challenge number provided by the game server
      */
     public function getChallengeNumber() {
         return $this->contentData->rewind()->getLong();

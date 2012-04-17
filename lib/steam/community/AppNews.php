@@ -125,7 +125,7 @@ class AppNews {
     /**
      * Returns the Steam Application ID of the game this news belongs to
      *
-     * @return The application ID of the game this news belongs to
+     * @return int The application ID of the game this news belongs to
      */
     public function getAppId() {
         return $this->appId;

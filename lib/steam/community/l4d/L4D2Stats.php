@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2009-2011, Sebastian Staudt
+ * Copyright (c) 2009-2012, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -70,7 +70,7 @@ class L4D2Stats extends AbstractL4DStats {
      */
     public function getLifetimeStats() {
         if(!$this->isPublic()) {
-            return;
+            return null;
         }
 
         if(empty($this->lifetimeStats)) {
@@ -125,7 +125,7 @@ class L4D2Stats extends AbstractL4DStats {
      */
     public function getScavengeStats() {
         if(!$this->isPublic()) {
-            return;
+            return null;
         }
 
         if(empty($this->scavengeStats)) {
@@ -188,7 +188,7 @@ class L4D2Stats extends AbstractL4DStats {
      */
     public function getSurvivalStats() {
         if(!$this->isPublic()) {
-            return;
+            return null;
         }
 
         if(empty($this->survivalStats)) {
@@ -213,7 +213,7 @@ class L4D2Stats extends AbstractL4DStats {
      */
     public function getWeaponStats() {
         if(!$this->isPublic()) {
-            return;
+            return null;
         }
 
         if(empty($this->weaponStats)) {

@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2009-2011, Sebastian Staudt
+ * Copyright (c) 2009-2012, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -188,7 +188,7 @@ class DefenseGridStats extends GameStats {
      */
     public function getAlienStats() {
         if(!$this->isPublic()) {
-            return;
+            return null;
         }
 
         if(empty($this->alienStats)) {
@@ -425,7 +425,7 @@ class DefenseGridStats extends GameStats {
      */
     public function getTowerStats() {
         if(!$this->isPublic()) {
-            return;
+            return null;
         }
 
         if(empty($this->towerStats)) {

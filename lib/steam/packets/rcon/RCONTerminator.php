@@ -28,7 +28,7 @@ class RCONTerminator extends RCONPacket {
     /**
      * Creates a new RCON terminator packet instance for the given request ID
      *
-     * @param long $requestId The request ID for the current RCON communication
+     * @param int $requestId The request ID for the current RCON communication
      */
     public function __construct($requestId) {
         parent::__construct($requestId, RCONPacket::SERVERDATA_RESPONSE_VALUE);

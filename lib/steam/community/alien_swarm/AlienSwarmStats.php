@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2010-2011, Sebastian Staudt
+ * Copyright (c) 2010-2012, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -21,12 +21,12 @@ require_once STEAM_CONDENSER_PATH . 'steam/community/alien_swarm/AlienSwarmWeapo
 class AlienSwarmStats extends GameStats {
 
     /**
-     * @var The base URL for all images referenced in the stats
+     * @var string The base URL for all images referenced in the stats
      */
     const BASE_URL = 'http://steamcommunity.com/public/images/gamestats/swarm/';
 
     /**
-     * @var The names of all weapons in Alien Swarm
+     * @var string The names of all weapons in Alien Swarm
      */
     private static $WEAPONS = array('Autogun', 'Cannon_Sentry', 'Chainsaw',
         'Flamer', 'Grenade_Launcher', 'Hand_Grenades', 'Hornet_Barrage',
@@ -110,7 +110,7 @@ class AlienSwarmStats extends GameStats {
      */
     public function getFavorites() {
         if(!$this->isPublic()) {
-            return;
+            return null;
         }
 
         if(empty($this->favorites)) {
@@ -152,7 +152,7 @@ class AlienSwarmStats extends GameStats {
      */
     public function getItemStats() {
         if(!$this->isPublic()) {
-            return;
+            return null;
         }
 
         if(empty($this->itemStats)) {
@@ -204,7 +204,7 @@ class AlienSwarmStats extends GameStats {
      */
     public function getMissionStats() {
         if(!$this->isPublic()) {
-            return;
+            return null;
         }
 
         if(empty($this->missionStats)) {
@@ -227,7 +227,7 @@ class AlienSwarmStats extends GameStats {
      */
     public function getWeaponStats() {
         if(!$this->isPublic()) {
-            return;
+            return null;
         }
 
         if(empty($this->weaponStats)) {

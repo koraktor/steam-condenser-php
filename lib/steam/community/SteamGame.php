@@ -91,6 +91,7 @@ class SteamGame {
      * @param int $appId The application ID of the game to check
      * @param int $version The version to check against the Web API
      * @return boolean <var>true</var> if the given version is up-to-date
+     * @throws SteamCondenserException if the Web API request fails
      */
     public static function checkUpToDate($appId, $version) {
         $params = array('appid' => $appId, 'version' => $version);
