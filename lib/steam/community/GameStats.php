@@ -10,6 +10,7 @@
 
 require_once STEAM_CONDENSER_PATH . 'steam/community/GameAchievement.php';
 require_once STEAM_CONDENSER_PATH . 'steam/community/GameLeaderboard.php';
+require_once STEAM_CONDENSER_PATH . 'steam/community/XMLData.php';
 
 /**
  * This class represents the game statistics for a single user and a specific
@@ -22,7 +23,7 @@ require_once STEAM_CONDENSER_PATH . 'steam/community/GameLeaderboard.php';
  * @package    steam-condenser
  * @subpackage community
  */
-class GameStats {
+class GameStats extends XMLData {
 
     /**
      * @var array
@@ -124,7 +125,7 @@ class GameStats {
 
         $url = self::_getBaseUrl($steamId, $gameId) . '?xml=all';
 
-        $this->xmlData = new SimpleXMLElement(file_get_contents($url));
+        $this->xmlData = $this->getData($url);
 
         if($this->xmlData->error != null && !empty($this->xmlData->error)) {
             throw new SteamCondenserException((string) $this->xmlData->error);
