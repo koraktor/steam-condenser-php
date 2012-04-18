@@ -24,7 +24,7 @@ abstract class XMLData {
      * @param string $url The URL to load the data from
      * @return SimpleXMLElement The parsed XML data
      */
-    public function getData($url) {
+    protected function getData($url) {
         return new SimpleXMLElement(file_get_contents($url));
     }
 
