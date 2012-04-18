@@ -29,9 +29,9 @@ class GameAchievement {
     private $apiName;
 
     /**
-     * @var int
+     * @var SteamGame
      */
-    private $appId;
+    private $game;
 
     /**
      * @var string
@@ -49,14 +49,14 @@ class GameAchievement {
     private $name;
 
     /**
-     * @var string
-     */
-    private $steamId64;
-
-    /**
      * @var int
      */
     private $timestamp;
+
+    /**
+     * @var SteamId
+     */
+    private $user;
 
     /**
      * @var bool
