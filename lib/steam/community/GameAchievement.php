@@ -97,7 +97,7 @@ class GameAchievement {
      * @param SimpleXMLElement $achievementData The achievement data extracted
      *        from XML
      */
-    public function __construct(SteamId $user, SteamGame $game, $achievementData) {
+    public function __construct(SteamId $user, SteamGame $game, SimpleXMLElement $achievementData) {
         $this->apiName       = (string) $achievementData->apiname;
         $this->description   = (string) $achievementData->description;
         $this->game          = $game;

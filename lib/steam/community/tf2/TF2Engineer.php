@@ -40,7 +40,7 @@ class TF2Engineer extends TF2Class {
      *
      * @param SimpleXMLElement $classData The XML data for this Engineer
      */
-    public function __construct($classData) {
+    public function __construct(SimpleXMLElement $classData) {
         parent::__construct($classData);
 
         $this->maxBuildingsBuilt = (int) $classData->ibuildingsbuilt;

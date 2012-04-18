@@ -29,7 +29,7 @@ abstract class GameWeapon {
      *
      * @param SimpleXMLElement $weaponData The data representing this weapon
      */
-    public function __construct($weaponData) {
+    public function __construct(SimpleXMLElement $weaponData) {
         $this->kills = (int) $weaponData->kills;
     }
 

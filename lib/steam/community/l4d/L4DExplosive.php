@@ -25,7 +25,7 @@ class L4DExplosive extends GameWeapon {
      *
      * @param SimpleXMLElement $weaponData The XML data of this explosive
      */
-    public function __construct($weaponData) {
+    public function __construct(SimpleXMLElement $weaponData) {
         parent::__construct($weaponData);
 
         $this->id    = $weaponData->getName();

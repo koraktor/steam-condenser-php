@@ -79,7 +79,7 @@ class TF2Class extends GameClass {
      *
      * @param SimpleXMLElement $classData The XML data for this class
      */
-    public function __construct($classData) {
+    public function __construct(SimpleXMLElement $classData) {
         $this->name                  = (string) $classData->className;
         $this->maxBuildingsDestroyed = (int)    $classData->ibuildingsdestroyed;
         $this->maxCaptures           = (int)    $classData->ipointcaptures;

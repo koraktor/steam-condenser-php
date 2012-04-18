@@ -51,7 +51,7 @@ abstract class AbstractL4DWeapon extends GameWeapon {
      *
      * @param SimpleXMLElement $weaponData The XML data for this weapon
      */
-    public function __construct($weaponData) {
+    public function __construct(SimpleXMLElement $weaponData) {
         parent::__construct($weaponData);
 
         $this->accuracy            = ((float) $weaponData->accuracy) * 0.01;

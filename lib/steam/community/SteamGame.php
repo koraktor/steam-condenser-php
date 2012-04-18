@@ -53,7 +53,7 @@ class SteamGame {
      * @return SteamGame The game instance for the given data
      * @see __construct()
      */
-    public static function create($appId, $gameData) {
+    public static function create($appId, SimpleXMLElement $gameData) {
         if(array_key_exists($appId, self::$games)) {
             return self::$games[$appId];
         } else {
@@ -108,7 +108,7 @@ class SteamGame {
      * @param int $appId The application ID of the game
      * @param SimpleXMLElement $gameData The XML data of the game
      */
-    private function __construct($appId, $gameData) {
+    private function __construct($appId, SimpleXMLElement $gameData) {
         $this->appId   = $appId;
 
         if(!empty($gameData->name)) {

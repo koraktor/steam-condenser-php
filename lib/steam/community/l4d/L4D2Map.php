@@ -63,7 +63,7 @@ class L4D2Map extends L4DMap {
      *
      * @param SimpleXMLElement $mapData The XML data for this map
      */
-    public function __construct($mapData) {
+    public function __construct(SimpleXMLElement $mapData) {
         $this->bestTime    = (float)  $mapData->besttimeseconds;
         preg_match('#http://steamcommunity.com/public/images/gamestats/550/(.*)\.jpg#', (string) $mapData->img, $id);
         $this->id          = $id[1];

@@ -80,7 +80,7 @@ class DoDSClass extends GameClass {
      *
      * @param SimpleXMLElement $classData The XML data of the class
      */
-    public function __construct($classData) {
+    public function __construct(SimpleXMLElement $classData) {
         $this->blocks       = (int)    $classData->blocks;
         $this->bombsDefused = (int)    $classData->bombsdefused;
         $this->bombsPlanted = (int)    $classData->bombsplanted;

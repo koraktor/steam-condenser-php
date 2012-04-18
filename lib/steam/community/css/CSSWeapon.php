@@ -49,7 +49,7 @@ class CSSWeapon {
      * @param string $weaponName The name of the weapon
      * @param SimpleXMLElement $weaponsData The XML data of all weapons
      */
-    public function __construct($weaponName, $weaponsData) {
+    public function __construct($weaponName, SimpleXMLElement $weaponsData) {
         $this->name = $weaponName;
 
         $this->favorite = ((string) $weaponsData->favorite) == $this->name;

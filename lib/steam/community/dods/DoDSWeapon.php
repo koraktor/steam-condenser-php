@@ -40,7 +40,7 @@ class DoDSWeapon extends GameWeapon {
      *
      * @param SimpleXMLElement $weaponData The XML data of the class
      */
-    public function __construct($weaponData) {
+    public function __construct(SimpleXMLElement $weaponData) {
         parent::__construct($weaponData);
 
         $this->headshots = (int)    $weaponData->headshots;

@@ -39,7 +39,7 @@ class TF2Spy extends TF2Class {
      *
      * @param SimpleXMLElement $classData The XML data for this Spy
      */
-    public function __construct($classData) {
+    public function __construct(SimpleXMLElement $classData) {
         parent::__construct($classData);
 
         $this->maxBackstabs     = (int) $classData->ibackstabs;

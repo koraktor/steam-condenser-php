@@ -33,7 +33,7 @@ class AlienSwarmWeapon extends GameWeapon {
      *
      * @param SimpleXMLElement $weaponData The data representing this weapon
      */
-    public function __construct($weaponData) {
+    public function __construct(SimpleXMLElement $weaponData) {
         parent::__construct($weaponData);
 
         $this->accuracy     = (float) $weaponData->accuracy;

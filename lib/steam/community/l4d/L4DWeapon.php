@@ -25,7 +25,7 @@ class L4DWeapon extends AbstractL4DWeapon {
      *
      * @param SimpleXMLElement $weaponData The XML data for this weapon
      */
-    public function __construct($weaponData) {
+    public function __construct(SimpleXMLElement $weaponData) {
         parent::__construct($weaponData);
 
         $this->killPercentage = ((float) $weaponData->killpct) * 0.01;

@@ -93,7 +93,7 @@ class AlienSwarmMission {
      *
      * @param SimpleXMLElement $missionData The data representing this mission
      */
-    public function __construct($missionData) {
+    public function __construct(SimpleXMLElement $missionData) {
         $this->avgDamageTaken       = (float) $missionData->damagetakenavg;
         $this->avgFriendlyFire      = (float) $missionData->friendlyfireavg;
         $this->avgKills             = (float) $missionData->killsavg;

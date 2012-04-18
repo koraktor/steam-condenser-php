@@ -42,7 +42,7 @@ class L4DMap {
      *
      * @param SimpleXMLElement $mapData The XML data for this map
      */
-    public function __construct($mapData) {
+    public function __construct(SimpleXMLElement $mapData) {
         $this->bestTime    = (float)  $mapData->besttimeseconds;
         $this->id          = $mapData->getName();
         $this->name        = (string) $mapData->name;

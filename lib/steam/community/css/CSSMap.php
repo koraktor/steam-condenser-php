@@ -49,7 +49,7 @@ class CSSMap {
      * @param string $mapName The name of the map
      * @param SimpleXMLElement $mapsData The XML data of all maps
      */
-    public function __construct($mapName, $mapsData) {
+    public function __construct($mapName, SimpleXMLElement $mapsData) {
         $this->name = $mapName;
 
         $this->favorite     = ((string) $mapsData->favorite) == $this->name;

@@ -34,7 +34,7 @@ class TF2Medic extends TF2Class {
      *
      * @param SimpleXMLElement $classData The XML data for this Medic
      */
-    public function __construct($classData) {
+    public function __construct(SimpleXMLElement $classData) {
         parent::__construct($classData);
 
         $this->maxUberCharges    = (int) $classData->inuminvulnerable;

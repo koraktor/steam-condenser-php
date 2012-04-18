@@ -35,7 +35,7 @@ class L4D2Weapon extends AbstractL4DWeapon {
      *
      * @param SimpleXMLElement $weaponData The XML data of this weapon
      */
-    public function __construct($weaponData) {
+    public function __construct(SimpleXMLElement $weaponData) {
         parent::__construct($weaponData);
 
         $this->damage         = (int)    $weaponData->damage;
