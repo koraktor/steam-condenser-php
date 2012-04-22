@@ -317,7 +317,7 @@ class SteamId extends XMLData {
         $gamesData = $this->getData($this->getBaseUrl() . '/games?xml=1');
 
         foreach($gamesData->games->game as $gameData) {
-            $appId = (int) $gameData->appId;
+            $appId = (int) $gameData->appID;
             $game = SteamGame::create($appId, $gameData);
             $this->games[$appId] = $game;
             $recent = (float) $gameData->hoursLast2Weeks;
