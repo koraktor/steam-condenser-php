@@ -39,6 +39,11 @@ class TF2Stats extends GameStats {
     private $inventory;
 
     /**
+     * @var int
+     */
+    private $totalPlaytime;
+
+    /**
      * Creates a new <var>TF2Stats</var> instance by calling the super
      * constructor with the game name <var>"tf2"</var>
      *
@@ -49,8 +54,14 @@ class TF2Stats extends GameStats {
     public function __construct($steamId, $beta = false) {
         parent::__construct($steamId, ($beta ? '520' : 'tf2'));
 
-        if($this->isPublic() && !empty($this->xmlData->stats->accumulatedPoints)) {
-            $this->accumulatedPoints = intval($this->xmlData->stats->accumulatedPoints);
+        if($this->isPublic()) {
+            if(!empty($this->xmlData->stats->accumulatedPoints)) {
+                $this->accumulatedPoints = (int) $this->xmlData->stats->accumulatedPoints;
+            }
+
+            if(!empty($this->xmlData->stats->secondsPlayedAllClassesLifetime)) {
+                $this->totalPlaytime = (int) $this->xmlData->stats->secondsPlayedAllClassesLifetime;
+            }
         }
     }
 
@@ -101,5 +112,15 @@ class TF2Stats extends GameStats {
         }
 
         return $this->inventory;
+    }
+
+    /**
+     * Returns the accumulated number of seconds this player has spent playing
+     * as a TF2 class
+     *
+     * @return int Total seconds played as a TF2 class
+     */
+    public function getTotalPlaytime() {
+        return $this->totalPlaytime;
     }
 }
