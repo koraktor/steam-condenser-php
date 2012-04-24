@@ -109,7 +109,7 @@ class SteamGame {
      * @param SimpleXMLElement $gameData The XML data of the game
      */
     private function __construct($appId, SimpleXMLElement $gameData) {
-        $this->appId   = $appId;
+        $this->appId = $appId;
 
         if(!empty($gameData->name)) {
             $logoUrl = (string) $gameData->logo;
