@@ -54,7 +54,7 @@ class SourceServer extends GameServer {
      *
      * @return MasterServer The Source master server
      */
-    public function getMaster() {
+    public static function getMaster() {
         return new MasterServer(MasterServer::SOURCE_MASTER_SERVER);
     }
 

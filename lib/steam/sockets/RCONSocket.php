@@ -66,9 +66,9 @@ class RCONSocket extends SteamSocket {
     /**
      * Sends the given RCON packet to the server
      *
-     * @param RCONPacket $dataPacket The RCON packet to send to the server
+     * @param SteamPacket $dataPacket The RCON packet to send to the server
      */
-    public function send(RCONPacket $dataPacket) {
+    public function send(SteamPacket $dataPacket) {
         if(empty($this->socket)) {
             $this->socket = new TCPSocket();
             $this->socket->connect($this->ipAddress, $this->portNumber);

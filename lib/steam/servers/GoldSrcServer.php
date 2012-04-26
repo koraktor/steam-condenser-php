@@ -43,7 +43,7 @@ class GoldSrcServer extends GameServer {
      *
      * @return MasterServer The GoldSrc master server
      */
-    public function getMaster() {
+    public static function getMaster() {
         return new MasterServer(MasterServer::GOLDSRC_MASTER_SERVER);
     }
 
