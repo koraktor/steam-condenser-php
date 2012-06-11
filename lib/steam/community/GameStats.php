@@ -133,7 +133,7 @@ class GameStats extends XMLData {
 
         $this->privacyState = (string) $this->xmlData->privacyState;
         if($this->isPublic()) {
-            preg_match('#http://store.steampowered.com/app/([1-9][0-9]*)#', (string) $this->xmlData->game->gameLink, $appId);
+            preg_match('#http://+store.steampowered.com/+app/+([1-9][0-9]*)#', (string) $this->xmlData->game->gameLink, $appId);
             $this->game = SteamGame::create((int) $appId[1], $this->xmlData->game);
             $this->hoursPlayed = (string) $this->xmlData->stats->hoursPlayed;
         }
