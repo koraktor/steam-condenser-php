@@ -313,7 +313,7 @@ abstract class GameServer extends Server {
             throw new SteamCondenserException('Response of type ' . get_class($responsePacket) . ' cannot be handled by this method.');
         }
 
-        if(!is_a($responsePacket, $expectedResponse)) {
+        if(!($responsePacket instanceof $expectedResponse)) {
             trigger_error("Expected {$expectedResponse}, got " . get_class($responsePacket) . '.');
             if($repeatOnFailure) {
                 $this->handleResponseForRequest($requestType, false);
