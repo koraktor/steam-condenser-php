@@ -50,12 +50,19 @@ abstract class Socket {
     protected $socketsEnabled;
 
     /**
+     * Stores the timeout
+     * @var int
+     */
+    protected $timeout;
+
+    /**
      * Constructs the Socket object
      *
      * This will check if PHP's sockets extension is loaded which might be used
      * for socket communication.
      */
-    public function __construct() {
+    public function __construct($timeout) {
+        $this->timeout;
         $this->socketsEnabled = extension_loaded('sockets');
     }
 
