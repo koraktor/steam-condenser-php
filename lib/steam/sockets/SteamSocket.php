@@ -26,7 +26,7 @@ abstract class SteamSocket {
     /**
      * @var int The default socket timeout
      */
-    private static $timeout = 1000;
+    protected static $timeout = 1000;
 
     /**
      * @var ByteBuffer

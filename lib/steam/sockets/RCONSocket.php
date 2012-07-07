@@ -70,7 +70,7 @@ class RCONSocket extends SteamSocket {
      */
     public function send(SteamPacket $dataPacket) {
         if(empty($this->socket)) {
-            $this->socket = new TCPSocket();
+            $this->socket = new TCPSocket(self::$timeout);
             $this->socket->connect($this->ipAddress, $this->portNumber);
         }
 
