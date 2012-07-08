@@ -41,6 +41,10 @@ class UDPSocket extends Socket {
                 $errorCode = socket_last_error($this->socket);
                 throw new Exception('Could not create socket: ' . socket_strerror($errorCode));
             }
+
+            socket_set_option($this->socket, SOL_SOCKET, SO_RCVTIMEO, array('sec' => ($this->timeout / 1000), 'usec' => $this->timeout));
+            socket_set_option($this->socket, SOL_SOCKET, SO_SNDTIMEO, array('sec' => ($this->timeout / 1000), 'usec' => $this->timeout));
+
             if(@!socket_connect($this->socket, $ipAddress, $portNumber)) {
                 $errorCode = socket_last_error($this->socket);
                 throw new Exception('Could not connect socket: ' . socket_strerror($errorCode));

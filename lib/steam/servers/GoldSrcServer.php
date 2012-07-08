@@ -101,4 +101,22 @@ class GoldSrcServer extends GameServer {
     public function rconExec($command) {
         return trim($this->socket->rconExec($this->rconPassword, $command));
     }
+
+
+    /**
+     * Return the value of a specific rule
+     *
+     * @param string $key Rules key
+     *
+     * @return null|mixed
+     */
+    public function getRulesValue($key) {
+        $matches = array();
+        if (!preg_match('/"'.$key.'" = "([^"]+)"/', $this->rconExec($key), $matches)) {
+            return null;
+        }
+
+        return $matches[1];
+    }
+    
 }
