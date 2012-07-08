@@ -133,4 +133,20 @@ class SourceServer extends GameServer {
 
         return trim(join('', $response));
     }
+
+    /**
+     * Return the value of a specific rule
+     *
+     * @param string $key Rules key
+     *
+     * @return null|mixed
+     */
+    public function getRulesValue($key) {
+        $matches = array();
+        if (!preg_match('/"'.$key.'" = "([^"]+)"/', $this->rconExec($key), $matches)) {
+            return null;
+        }
+
+        return $matches[1];
+    }
 }

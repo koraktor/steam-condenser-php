@@ -239,6 +239,24 @@ abstract class GameServer extends Server {
     }
 
     /**
+     * Return the value of a specific rule
+     *
+     * @param string $key Rules key
+     *
+     * @return null|mixed
+     */
+    abstract public function getRulesValue($key);
+
+    /**
+     * Return the current password
+     *
+     * @return string
+     */
+    public function getPassword() {
+        return $this->getRulesValue('sv_password');
+    }
+
+    /**
      * Initializes this server object with basic information
      *
      * @see updateChallengeNumber()
