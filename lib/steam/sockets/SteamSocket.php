@@ -26,7 +26,7 @@ abstract class SteamSocket {
     /**
      * @var int The default socket timeout
      */
-    private static $timeout = 1000;
+    protected static $timeout = 1000;
 
     /**
      * @var ByteBuffer
@@ -60,7 +60,7 @@ abstract class SteamSocket {
      * @param int $portNumber The port the server is listening on
      */
     public function __construct($ipAddress, $portNumber = 27015) {
-        $this->socket = new UDPSocket();
+        $this->socket = new UDPSocket(self::$timeout);
         $this->socket->connect($ipAddress, $portNumber);
     }
 
