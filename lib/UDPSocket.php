@@ -30,9 +30,10 @@ class UDPSocket extends Socket {
      *
      * @param string $ipAddress The IP address to connect to
      * @param int $portNumber The UDP port to connect to
+     * @param int $timeout The timeout in milliseconds
      * @throws Exception if an error occurs during connecting the socket
      */
-    public function connect($ipAddress, $portNumber) {
+    public function connect($ipAddress, $portNumber, $timeout) {
         $this->ipAddress = $ipAddress;
         $this->portNumber = $portNumber;
 
@@ -46,7 +47,7 @@ class UDPSocket extends Socket {
                 throw new Exception('Could not connect socket: ' . socket_strerror($errorCode));
             }
         } else {
-            if(!$this->socket = fsockopen("udp://$ipAddress", $portNumber, $socketErrno, $socketErrstr, 2)) {
+            if(!$this->socket = fsockopen("udp://$ipAddress", $portNumber, $socketErrno, $socketErrstr)) {
                 throw new Exception('Could not create socket: $socketErrstr');
             }
             stream_set_blocking($this->socket, true);

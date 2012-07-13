@@ -30,9 +30,10 @@ class TCPSocket extends Socket {
      *
      * @param string $ipAddress The IP address to connect to
      * @param int $portNumber The TCP port to connect to
+     * @param int $timeout The timeout in milliseconds
      * @throws Exception if an error occurs during connecting the socket
      */
-    public function connect($ipAddress, $portNumber) {
+    public function connect($ipAddress, $portNumber, $timeout) {
         $this->ipAddress = $ipAddress;
         $this->portNumber = $portNumber;
 
@@ -41,13 +42,27 @@ class TCPSocket extends Socket {
                 $errorCode = socket_last_error($this->socket);
                 throw new Exception('Could not create socket: ' . socket_strerror($errorCode));
             }
-            if(@!socket_connect($this->socket, $ipAddress, $portNumber)) {
+
+            socket_set_nonblock($this->socket);
+            @socket_connect($this->socket, $ipAddress, $portNumber);
+            $write = array($this->socket);
+            $read = $except = array();
+            $sec = floor($timeout / 1000);
+            $usec = $timeout % 1000;
+            if(!socket_select($read, $write, $except, $sec, $usec)) {
                 $errorCode = socket_last_error($this->socket);
+            } else {
+                $errorCode = socket_get_option($this->socket, SOL_SOCKET, SO_ERROR);
+            }
+
+            if($errorCode) {
                 throw new Exception('Could not connect socket: ' . socket_strerror($errorCode));
             }
+
+            socket_set_block($this->socket);
         } else {
-            if(!$this->socket = fsockopen("tcp://$ipAddress", $portNumber, $socketErrno, $socketErrstr, 2)) {
-                throw new Exception('Could not create socket: $socketErrstr');
+            if(!$this->socket = @fsockopen("tcp://$ipAddress", $portNumber, $socketErrno, $socketErrstr, $timeout / 1000)) {
+                throw new Exception("Could not create socket: $socketErrstr");
             }
             stream_set_blocking($this->socket, true);
         }

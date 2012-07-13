@@ -74,8 +74,9 @@ abstract class Socket {
      *
      * @param string $ipAddress The IP address to connect to
      * @param int $portNumber The TCP port to connect to
+     * @param int $timeout The timeout in milliseconds
      */
-    abstract public function connect($ipAddress, $portNumber);
+    abstract public function connect($ipAddress, $portNumber, $timeout);
 
     /**
      * Closes the socket
