@@ -135,10 +135,12 @@ abstract class Socket {
         $write = null;
         $except = null;
 
+        $sec = floor($timeout / 1000);
+        $usec = $timeout % 1000;
         if($this->socketsEnabled) {
-            $select = socket_select($read, $write, $except, 0, $timeout * 1000);
+            $select = socket_select($read, $write, $except, $sec, $usec);
         } else {
-            $select = stream_select($read, $write, $except, 0, $timeout * 1000);
+            $select = stream_select($read, $write, $except, $sec, $usec);
         }
 
         return $select > 0;
