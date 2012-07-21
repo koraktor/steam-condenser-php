@@ -28,6 +28,7 @@ included LICENSE file.
 * Sebastian Staudt -- koraktor(at)gmail.com
 * Nicholas Hastings -- nshastings(at)gmail.com
 * Klaus Silveira -- contact(at)klaussilveira.com
+* Adam Lavin – adam(at)lavoaster.co.uk
 
 ## See Also
 
