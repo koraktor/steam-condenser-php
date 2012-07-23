@@ -29,6 +29,7 @@ included LICENSE file.
 * Nicholas Hastings -- nshastings(at)gmail.com
 * Klaus Silveira -- contact(at)klaussilveira.com
 * Adam Lavin – adam(at)lavoaster.co.uk
+* Al Ganiev – helios.ag(at)gmail.com
 
 ## See Also
 
