@@ -1,20 +1,24 @@
 {
-    "name": "koraktor/steam-condenser-php",
+    "name": "koraktor/steam-condenser",
+    "version": "1.2.1",
     "description": "The Steam Condenser is a multi-language library for querying the Steam Community, Source and GoldSrc game servers",
-    "keywords": ["steam", "valve", "source"],
-    "homepage": "https://github.com/koraktor/steam-condenser-php",
-    "license": "MIT",
+    "keywords": [ "steam", "query", "source", "goldsrc", "community", "webapi" ],
+    "homepage": "http://koraktor.de/steam-condenser",
+    "license": "BSD-3-Clause",
     "authors": [
-        {"name": "Sebastian Staudt", "email": "koraktor@gmail.com"},
-        {"name": "Nicholas Hastings", "email": "nshastings@gmail.com"},
-        {"name": "Klaus Silveira", "email": "contact@klaussilveira.com"},
-        {"name": "Adam Lavin", "email": "adam@lavoaster.co.uk"}
+        {
+            "name": "Sebastian Staudt",
+            "email": "koraktor@gmail.com"
+        }
     ],
+    "support": {
+        "email": "steam-condenser@googlegroups.com",
+        "issues": "https://github.com/koraktor/steam-condenser/issues",
+        "source": "https://github.com/koraktor/steam-condenser-php",
+        "wiki": "https://github.com/koraktor/steam-condenser/wiki"
+    },
     "require": {
-        "php": ">=5.2.0"
+        "php": ">=5.0.0"
     },
-    "autoload": {
-        "psr-0": { "steam-condenser-php": "src/" }
-    },
-    "target-dir": "koraktor/steam-condenser-php"
+    "include-path": [ "lib/" ]
 }
