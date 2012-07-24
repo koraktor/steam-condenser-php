@@ -205,6 +205,19 @@ class SteamGame {
     }
 
     /**
+     * Returns the overall number of players currently playing this game
+     *
+     * @return int The number of players playing this game
+     */
+    public function getPlayerCount() {
+        $params = array('appid' => $this->appId);
+        $result = WebApi::getJSON('ISteamUserStats', 'GetNumberOfCurrentPlayers', 1, $params);
+        $result = json_decode($result);
+
+        return $result->response->player_count;
+    }
+
+    /**
      * Returns the short name of this game (also known as "friendly name")
      *
      * @return string The short name of this game
