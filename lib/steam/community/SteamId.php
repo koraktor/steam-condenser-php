@@ -234,15 +234,15 @@ class SteamId extends XMLData {
             throw new SteamCondenserException((string) $profile->error);
         }
 
+        if(!empty($profile->privacyMessage)) {
+            throw new SteamCondenserException((string) $profile->privacyMessage);
+        }
+
         $this->nickname      = htmlspecialchars_decode((string) $profile->steamID);
         $this->steamId64     = (string) $profile->steamID64;
         $this->limited       = (bool)(int) $profile->isLimitedAccount;
         $this->tradeBanState = (string) $profile->tradeBanState;
         $this->vacBanned     = (bool)(int) $profile->vacBanned;
-
-        if(!empty($profile->privacyMessage)) {
-            throw new SteamCondenserException((string) $profile->privacyMessage);
-        }
 
         $this->imageUrl = substr((string) $profile->avatarIcon, 0, -4);
         $this->onlineState = (string) $profile->onlineState;
