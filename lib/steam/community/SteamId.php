@@ -252,8 +252,6 @@ class SteamId extends XMLData {
 
         if($this->isPublic()) {
             $this->customUrl = strtolower((string) $profile->customURL);
-            $this->favoriteGame = (string) $profile->favoriteGame->name;
-            $this->favoriteGameHoursPlayed = (string) $profile->favoriteGame->hoursPlayed2wk;
             $this->headLine = htmlspecialchars_decode((string) $profile->headline);
             $this->hoursPlayed = (float) $profile->hoursPlayed2Wk;
             $this->location = (string) $profile->location;
