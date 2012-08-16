@@ -128,14 +128,17 @@ class SteamId extends XMLData {
         if($steamId == 'STEAM_ID_LAN' || $steamId == 'BOT') {
             throw new SteamCondenserException("Cannot convert SteamID \"$steamId\" to a community ID.");
         }
-        if(preg_match('/^STEAM_[0-1]:[0-1]:[0-9]+$/', $steamId) == 0) {
+        if (preg_match('/^STEAM_[0-1]:[0-1]:[0-9]+$/', $steamId)) {
+            $steamId = explode(':', substr($steamId, 8));
+            $steamId = $steamId[0] + $steamId[1] * 2 + 1197960265728;
+            return '7656' . $steamId;
+        } elseif (preg_match('/^\[U:[0-1]:[0-9]+\]$/', $steamId)) {
+            $steamId = explode(':', substr($steamId, 3, strlen($steamId) - 1));
+            $steamId = $steamId[0] + $steamId[1] + 1197960265727;
+            return '7656' . $steamId;
+        } else {
             throw new SteamCondenserException("SteamID \"$steamId\" doesn't have the correct format.");
         }
-
-        $steamId = explode(':', substr($steamId, 6));
-        $steamId = $steamId[1] + $steamId[2] * 2 + 1197960265728;
-
-        return '7656' . $steamId;
     }
 
     /**

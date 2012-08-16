@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2009-2011, Sebastian Staudt
+ * Copyright (c) 2009-2012, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -26,6 +26,11 @@ class SteamIdTest extends PHPUnit_Framework_TestCase {
     public function testConvertSteamIdToCommunityId() {
         $steamId64 = SteamId::convertSteamIdToCommunityId('STEAM_0:0:12345');
         $this->assertEquals('76561197960290418', $steamId64);
+    }
+
+    public function testConvertUIdToCommunityId() {
+        $steamId64 = SteamId::convertSteamIdToCommunityId('[U:1:12345]');
+        $this->assertEquals('76561197960278073', $steamId64);
     }
 
     public function testCacheSteamId64() {
