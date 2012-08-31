@@ -25,7 +25,15 @@ abstract class XMLData {
      * @return SimpleXMLElement The parsed XML data
      */
     protected function getData($url) {
-        return new SimpleXMLElement(file_get_contents($url));
-    }
+        $data = @file_get_contents($url);
 
+        if(!empty($data)) {
+            return @new SimpleXMLElement($data);
+        } else {
+            preg_match('/^.* (\d{3}) (.*)$/', $http_response_header[0], $http_status);
+            throw new WebApiException(WebApiException::HTTP_ERROR, $http_status[1], $http_status[2]);
+        }
+
+        return $data;
+    }
 }
