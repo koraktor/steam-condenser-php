@@ -169,7 +169,7 @@ abstract class Socket {
      *
      * @return resource The underlying socket descriptor
      */
-    public function socket() {
+    public function resource() {
         return $this->socket;
     }
 }
