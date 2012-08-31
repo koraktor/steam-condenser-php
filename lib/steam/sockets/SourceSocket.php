@@ -52,7 +52,7 @@ class SourceSocket extends SteamSocket {
 
                 $splitPackets[$packetNumber] = $this->buffer->get();
 
-                trigger_error("Received packet $packetNumber of $packetCount for request #$requestId");
+                $this->log("Received packet $packetNumber of $packetCount for request #$requestId");
 
                 if(sizeof($splitPackets) < $packetCount) {
                     try {
@@ -75,9 +75,9 @@ class SourceSocket extends SteamSocket {
         }
 
         if($isCompressed) {
-            trigger_error("Received compressed reply of type \"" . get_class($packet) . "\"");
+            $this->log("Received compressed reply of type \"" . get_class($packet) . "\"");
         } else {
-            trigger_error("Received reply of type \"" . get_class($packet) . "\"");
+            $this->log("Received reply of type \"" . get_class($packet) . "\"");
         }
 
         return $packet;

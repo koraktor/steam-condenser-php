@@ -314,7 +314,6 @@ abstract class GameServer extends Server {
         }
 
         if(!($responsePacket instanceof $expectedResponse)) {
-            trigger_error("Expected {$expectedResponse}, got " . get_class($responsePacket) . '.');
             if($repeatOnFailure) {
                 $this->handleResponseForRequest($requestType, false);
             }
