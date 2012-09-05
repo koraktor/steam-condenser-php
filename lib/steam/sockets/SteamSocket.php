@@ -39,6 +39,11 @@ abstract class SteamSocket {
     protected $socket;
 
     /**
+     * @var Debug Mode
+     */
+    protected $debug = false;
+
+    /**
      * Sets the timeout for socket operations
      *
      * Any request that takes longer than this time will cause a {@link
@@ -131,8 +136,28 @@ abstract class SteamSocket {
      * @see SteamPacket::__toString()
      */
     public function send(SteamPacket $dataPacket) {
-        trigger_error("Sending packet of type \"" . get_class($dataPacket) . "\"...");
+        $this->log("Sending packet of type \"" . get_class($dataPacket) . "\"...");
 
         $this->socket->send($dataPacket->__toString());
+    }
+
+    /**
+     * Enable or disable debug message output.
+     *
+     * @param bool $debug
+     */
+    public function debug($debug) {
+        $this->debug = $debug;
+    }
+
+    /**
+     * Logs a debug message
+     *
+     * @param string $message
+     */
+    protected function log($message) {
+        if ($this->debug) {
+            trigger_error($message);
+        }
     }
 }

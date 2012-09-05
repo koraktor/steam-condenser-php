@@ -71,7 +71,7 @@ class GoldSrcSocket extends SteamSocket {
 
                 $splitPackets[$packetNumber - 1] = $this->buffer->get();
 
-                trigger_error("Received packet $packetNumber of $packetCount for request #$requestId");
+                $this->log("Received packet $packetNumber of $packetCount for request #$requestId");
 
                 if(sizeof($splitPackets) < $packetCount) {
                     try {
@@ -89,7 +89,7 @@ class GoldSrcSocket extends SteamSocket {
             $packet = SteamPacketFactory::getPacketFromData($this->buffer->get());
         }
 
-        trigger_error("Received packet of type \"" . get_class($packet) . "\"");
+        $this->log("Received packet of type \"" . get_class($packet) . "\"");
 
         return $packet;
     }

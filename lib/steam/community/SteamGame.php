@@ -220,7 +220,9 @@ class SteamGame {
     /**
      * Returns the short name of this game (also known as "friendly name")
      *
-     * @return string The short name of this game
+     * @return string|null
+     *   The short name of this game, or null if this game does not have a
+     *   short name.
      */
     public function getShortName() {
         return $this->shortName;
