@@ -128,7 +128,9 @@ class SteamGame {
         }
 
         preg_match("#/$appId/([0-9a-f]+).jpg#", $logoUrl, $logoHash);
-        $this->logoHash = strtolower($logoHash[1]);
+        if (!empty($logoHash)) {
+            $this->logoHash = strtolower($logoHash[1]);
+        }
 
         self::$games[$appId] = $this;
     }
@@ -183,7 +185,11 @@ class SteamGame {
      * @return string The URL for the game logo
      */
     public function getLogoUrl() {
-        return "http://media.steampowered.com/steamcommunity/public/images/apps/{$this->appId}/{$this->logoHash}.jpg";
+        if ($this->logoHash == null) {
+            return null;
+        } else {
+            return "http://media.steampowered.com/steamcommunity/public/images/apps/{$this->appId}/{$this->logoHash}.jpg";
+        }
     }
 
     /**
@@ -192,7 +198,11 @@ class SteamGame {
      * @return string The URL for the game logo thumbnail
      */
     public function getLogoThumbnailUrl() {
-        return "http://media.steampowered.com/steamcommunity/public/images/apps/{$this->appId}/{$this->logoHash}_thumb.jpg";
+        if ($this->logoHash == null) {
+            return null;
+        } else {
+            return "http://media.steampowered.com/steamcommunity/public/images/apps/{$this->appId}/{$this->logoHash}_thumb.jpg";
+        }
     }
 
     /**
