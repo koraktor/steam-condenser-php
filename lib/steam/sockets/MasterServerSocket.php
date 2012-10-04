@@ -33,7 +33,11 @@ class MasterServerSocket extends SteamSocket {
             throw new PacketFormatException("Master query response has wrong packet header.");
         }
 
-        return SteamPacketFactory::getPacketFromData($this->buffer->get());
+        $packet = SteamPacketFactory::getPacketFromData($this->buffer->get());
+
+        trigger_error("Received reply of type \"" . get_class($packet) . "\"");
+
+        return $packet;
     }
 
 }

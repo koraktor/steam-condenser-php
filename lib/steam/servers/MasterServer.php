@@ -178,6 +178,7 @@ class MasterServer extends Server {
         $serverArray = array();
 
         while(true) {
+            $failCount = 0;
             try {
                 do {
                     $this->socket->send(new A2M_GET_SERVERS_BATCH2_Packet($regionCode, "$hostName:$portNumber", $filter));
@@ -201,14 +202,16 @@ class MasterServer extends Server {
                         if($failCount == self::$retries) {
                             throw $e;
                         }
+                        trigger_error("Request to master server {$this->ipAddress} timed out, retrying...");
                     }
                 } while(!$finished);
-                break;
             } catch(Exception $e) {
                 if($this->rotateIp() && !$force) {
                     throw $e;
                 }
+                trigger_error("Request to master server failed, retrying {$this->ipAddress}...");
             }
+            break;
         }
 
         return $serverArray;
