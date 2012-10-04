@@ -18,6 +18,7 @@ require_once STEAM_CONDENSER_PATH . 'steam/packets/SteamPacket.php';
  * @author     Sebastian Staudt
  * @package    steam-condenser
  * @subpackage packets
+ * @deprecated
  * @see        MasterServer::getChallenge()
  */
 class C2M_CHECKMD5_Packet extends SteamPacket {

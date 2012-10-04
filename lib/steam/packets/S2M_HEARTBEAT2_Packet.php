@@ -17,6 +17,7 @@ require_once STEAM_CONDENSER_PATH . 'steam/packets/SteamPacket.php';
  * @author     Sebastian Staudt
  * @package    steam-condenser
  * @subpackage packets
+ * @deprecated
  * @see        MasterServer::sendHeartbeat()
  */
 class S2M_HEARTBEAT2_Packet extends SteamPacket {
