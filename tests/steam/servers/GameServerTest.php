@@ -31,11 +31,11 @@ abstract class TestableGameServer extends GameServer {
         return parent::getReply();
     }
 
-    public function handleResponseForRequest($request) {
-        parent::handleResponseForRequest($request);
+    public function handleResponseForRequest($request, $repeatOnFailure = true) {
+        parent::handleResponseForRequest($request, $repeatOnFailure);
     }
 
-    public function sendRequest($packet) {
+    public function sendRequest(SteamPacket $packet) {
         parent::sendRequest($packet);
     }
 
