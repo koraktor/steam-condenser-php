@@ -82,8 +82,8 @@ abstract class SteamPacket {
      * @return string A string containing the raw data of this request packet
      */
     public function __toString() {
-        $packetData = pack('cccc', 0xFF, 0xFF, 0xFF, 0xFF);
-        $packetData .= pack('ca*', $this->headerData, $this->contentData->_array());
+        $packetData = pack('c5', 0xFF, 0xFF, 0xFF, 0xFF, $this->headerData);
+        $packetData .= $this->contentData->_array();
 
         return $packetData;
     }
