@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2011, Sebastian Staudt
+ * Copyright (c) 2011-2012, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -78,6 +78,15 @@ abstract class Server {
     }
 
     /**
+     * Disconnect the connections to this server
+     *
+     * <i>Note:
+     * In the base implementation this does nothing, only connection-based
+     * communication channels have to be disconnected.</i>
+     */
+    public function disconnect() {}
+
+    /**
      * Rotate this server's IP address to the next one in the IP list
      *
      * If this method returns <var>true</var>, it indicates that all IP
@@ -106,11 +115,22 @@ abstract class Server {
     }
 
     /**
+     * Disconnects the connections to this server
+     *
+     * @see disconnect()
+     */
+    public function __destruct() {
+        $this->disconnect();
+    }
+
+    /**
      * Initializes the socket(s) to communicate with the server
      *
      * Must be implemented in subclasses to prepare sockets for server
      * communication
      */
     protected abstract function initSocket();
+
+
 
 }

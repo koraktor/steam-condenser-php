@@ -70,9 +70,7 @@ abstract class SteamSocket {
      * @see #close()
      */
     public function __destruct() {
-        if(!empty($this->socket) && $this->socket->isOpen()) {
-            $this->close();
-        }
+        $this->close();
     }
 
     /**
@@ -81,7 +79,9 @@ abstract class SteamSocket {
      * @see UDPSocket::close()
      */
     public function close() {
-        $this->socket->close();
+        if(!empty($this->socket) && $this->socket->isOpen()) {
+            $this->socket->close();
+        }
     }
 
     /**

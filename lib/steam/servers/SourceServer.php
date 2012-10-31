@@ -49,6 +49,15 @@ class SourceServer extends GameServer {
     protected $rconSocket;
 
     /**
+     * Disconnects the TCP-based channel used for RCON commands
+     *
+     * @see RCONSocket::close()
+     */
+    public function disconnect() {
+        $this->rconSocket->close();
+    }
+
+    /**
      * Returns a master server instance for the default master server for
      * Source games
      *

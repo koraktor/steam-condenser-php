@@ -28,7 +28,16 @@ class TestableSourceServer extends SourceServer {
 class SourceServerTest extends PHPUnit_Framework_TestCase {
 
     public function setUp() {
-        $this->rconSocket = $this->getMockBuilder('RCONSocket')->disableOriginalConstructor()->setMethods(array('getReply', 'send'))->getMock();
+        $this->rconSocket = $this->getMockBuilder('RCONSocket')->disableOriginalConstructor()->setMethods(array('close', 'getReply', 'send'))->getMock();
+    }
+
+    public function testDisconnect() {
+        $this->rconSocket->expects($this->exactly(2))->method('close');
+
+        $server = new TestableSourceServer('127.0.0.1');
+        $server->rconSocket = $this->rconSocket;
+
+        $server->disconnect();
     }
 
     public function testGenerateRconRequestId() {
