@@ -39,6 +39,8 @@ class RCONSocketTest extends PHPUnit_Framework_TestCase {
         $tcpSocket = $this->getMock('TCPSocket');
         $socket->socket = $tcpSocket;
 
+        $tcpSocket->expects($this->at(1))->method('isOpen')->will($this->returnValue(true));
+        $tcpSocket->expects($this->at(2))->method('isOpen')->will($this->returnValue(false));
         $tcpSocket->expects($this->once())->method('close');
 
         $socket->close();

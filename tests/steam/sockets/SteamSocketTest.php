@@ -38,6 +38,8 @@ class SteamSocketTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testCloseUdpSocket() {
+        $this->udpSocket->expects($this->at(0))->method('isOpen')->will($this->returnValue(true));
+        $this->udpSocket->expects($this->at(1))->method('isOpen')->will($this->returnValue(false));
         $this->udpSocket->expects($this->once())->method('close');
 
         $this->socket->close();
