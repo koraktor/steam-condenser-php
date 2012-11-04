@@ -115,7 +115,7 @@ abstract class Socket {
             $data = fread($this->socket, $length);
         }
 
-        if(!$data) {
+        if ($data === false) {
             throw new Exception('Could not read from socket.');
         }
 

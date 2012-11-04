@@ -69,7 +69,7 @@ class RCONSocket extends SteamSocket {
      * @param SteamPacket $dataPacket The RCON packet to send to the server
      */
     public function send(SteamPacket $dataPacket) {
-        if(empty($this->socket)) {
+        if(empty($this->socket) || !$this->socket->isOpen()) {
             $this->socket = new TCPSocket();
             $this->socket->connect($this->ipAddress, $this->portNumber, SteamSocket::$timeout);
         }
@@ -90,7 +90,9 @@ class RCONSocket extends SteamSocket {
      */
     public function getReply() {
         if($this->receivePacket(4) == 0) {
-            throw new RCONBanException();
+            $this->socket->close();
+
+            return null;
         }
 
         $packetSize     = $this->buffer->getLong();
