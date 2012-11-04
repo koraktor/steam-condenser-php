@@ -52,6 +52,7 @@ class RCONSocketTest extends PHPUnit_Framework_TestCase {
         $socket->socket = $tcpSocket;
         $packet = $this->getMockBuilder('RCONPacket')->disableOriginalConstructor()->getMock();
         $packet->expects($this->once())->method('__toString')->will($this->returnValue('test'));
+        $tcpSocket->expects($this->exactly(2))->method('isOpen')->will($this->returnValue(true));
         $tcpSocket->expects($this->once())->method('send')->with('test');
 
         $socket->send($packet);
@@ -78,10 +79,12 @@ class RCONSocketTest extends PHPUnit_Framework_TestCase {
     public function testBanned() {
         $this->socketBuilder->setMethods(array('receivePacket'));
         $socket = $this->socketBuilder->getMock();
+        $tcpSocket = $this->getMock('TCPSocket');
+        $tcpSocket->expects($this->once())->method('close');
+        $socket->socket = $tcpSocket;
         $socket->expects($this->once())->method('receivePacket')->with(4)->will($this->returnValue(0));
-        $this->setExpectedException('RCONBanException');
 
-        $socket->getReply();
+        $this->assertEquals(null, $socket->getReply());
     }
 
 }
