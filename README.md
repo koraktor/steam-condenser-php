@@ -25,9 +25,9 @@ included LICENSE file.
 
 ## Credits
 
-* Sebastian Staudt -- koraktor(at)gmail.com
-* Nicholas Hastings -- nshastings(at)gmail.com
-* Klaus Silveira -- contact(at)klaussilveira.com
+* Sebastian Staudt – koraktor(at)gmail.com
+* Nicholas Hastings – nshastings(at)gmail.com
+* Klaus Silveira – contact(at)klaussilveira.com
 * Adam Lavin – adam(at)lavoaster.co.uk
 * Al Ganiev – helios.ag(at)gmail.com
 * Daniel Phin – pro(at)danielph.in
