@@ -239,6 +239,56 @@ abstract class GameServer extends Server {
     }
 
     /**
+     * Return the value of a specific rule
+     *
+     * @param string $key Rules key
+     *
+     * @return null|mixed
+     */
+    abstract public function getRulesValue($key);
+
+    /**
+     * Return the current password
+     *
+     * @return string
+     */
+    public function getPassword() {
+        return $this->getRulesValue('sv_password');
+    }
+
+    /**
+     * Kick a player by specific player id
+     *
+     * @param integer $id     Player Id on the server
+     * @param string  $reason (Optional) Kick reason
+     *
+     * @return void
+     */
+    abstract public function kickPlayerById($id, $reason = null);
+
+     /**
+     * Kick a player by specific player name
+     *
+     * @param string $name   Player Nickname on the server
+     * @param string $reason (Optional) Kick reason
+     *
+     * @return void
+     */
+    abstract public function kickPlayerByName($name, $reason = null);
+
+    /**
+     * Send a say message via rcon
+     *
+     * @param string $message Message string
+     *
+     * @return void
+     */
+    public function say($message)
+    {
+        $this->rconExec(sprintf('say "%s"', $message));
+    }
+
+    /**
      * Initializes this server object with basic information
      *
      * @see updateChallengeNumber()

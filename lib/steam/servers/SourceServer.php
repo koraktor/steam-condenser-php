@@ -148,4 +148,52 @@ class SourceServer extends GameServer {
 
         return trim(join('', $response));
     }
+
+    /**
+     * Return the value of a specific rule
+     *
+     * @param string $key Rules key
+     *
+     * @return null|mixed
+     */
+    public function getRulesValue($key) {
+        $matches = array();
+        if (!preg_match('/"'.$key.'" = "([^"]+)"/', $this->rconExec($key), $matches)) {
+            return null;
+        }
+
+        return $matches[1];
+    }
+
+        /**
+     * Kick a player by specific player id
+     *
+     * @param integer $id     Player Id on the server
+     * @param string  $reason (Optional) Kick reason
+     *
+     * @return void
+     */
+    public function kickPlayerById($id, $reason = null) {
+        if ($reason) {
+            $this->rconExec(sprintf('kickid %d "%s"', $id, $reason));
+        } else {
+            $this->rconExec(sprintf('kickid %d', $id));
+        }
+    }
+
+    /**
+     * Kick a player by specific player name
+     *
+     * @param string $name   Player Nickname on the server
+     * @param string $reason (Optional) Kick reason
+     *
+     * @return void
+     */
+    public function kickPlayerByName($name, $reason = null) {
+        if ($reason) {
+            $this->rconExec(sprintf('kick "%s" "%s"', $name, $reason));
+        } else {
+            $this->rconExec(sprintf('kick "%s"', $name));
+        }
+    }
 }
