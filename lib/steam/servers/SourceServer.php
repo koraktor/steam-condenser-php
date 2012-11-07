@@ -102,7 +102,9 @@ class SourceServer extends GameServer {
         $this->rconRequestId = $this->generateRconRequestId();
 
         $this->rconSocket->send(new RCONAuthRequest($this->rconRequestId, $password));
-        $this->rconSocket->getReply();
+        if ($this->rconSocket->getReply() == null) {
+            return $this->rconAuth($password);
+        }
         $reply = $this->rconSocket->getReply();
         $this->rconAuthenticated = $reply->getRequestId() == $this->rconRequestId;
 
