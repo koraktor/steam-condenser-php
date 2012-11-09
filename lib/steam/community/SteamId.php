@@ -322,7 +322,7 @@ class SteamId extends XMLData {
             $game = SteamGame::create($appId, $gameData);
             $this->games[$appId] = $game;
             $recent = (float) $gameData->hoursLast2Weeks;
-            $total = (float) $gameData->hoursOnRecord;
+            $total = (float) str_replace(',', '', $gameData->hoursOnRecord);
             $playtimes = array((int) ($recent * 60), (int) ($total * 60));
             $this->playtimes[$appId] = $playtimes;
         }
