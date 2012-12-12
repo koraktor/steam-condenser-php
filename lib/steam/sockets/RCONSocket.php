@@ -105,6 +105,10 @@ class RCONSocket extends SteamSocket {
             $packetData .= $this->buffer->get();
         } while($remainingBytes > 0);
 
-        return RCONPacketFactory::getPacketFromData($packetData);
+        $packet = RCONPacketFactory::getPacketFromData($packetData);
+
+        trigger_error('Received packet of type ' . get_class($packet));
+
+        return $packet;
     }
 }
