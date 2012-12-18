@@ -112,7 +112,15 @@ abstract class SteamSocket {
             $this->buffer = ByteBuffer::allocate($bufferLength);
         }
 
-        $data = $this->socket->recv($this->buffer->remaining());
+        try {
+            $data = $this->socket->recv($this->buffer->remaining());
+        } catch (Exception $e) {
+            if (strlen($this->socket->recv($this->buffer->remaining())) == 0) {
+                return 0;
+            } else {
+                throw $e;
+            }
+        }
         $this->buffer->put($data);
         $bytesRead = $this->buffer->position();
         $this->buffer->rewind();
