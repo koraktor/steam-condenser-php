@@ -134,8 +134,10 @@ class SourceServer extends GameServer {
         do {
             $responsePacket = $this->rconSocket->getReply();
 
-            if ($responsePacket == null ||
-                $responsePacket instanceof RCONAuthResponse) {
+            if ($responsePacket == null) {
+                $this->rconAuthenticated = false;
+                break;
+            } else if ($responsePacket instanceof RCONAuthResponse) {
                 $this->rconAuthenticated = false;
                 throw new RCONNoAuthException();
             }
