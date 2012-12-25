@@ -187,6 +187,28 @@ class SteamId extends XMLData {
     }
 
     /**
+     * Resolves a vanity URL of a Steam Community profile to a 64bit numeric
+     * SteamID
+     *
+     * @param string $vanityUrl The vanity URL of a Steam Community profile
+     * @return string The 64bit SteamID for the given vanity URL
+     * @throws WebApiException if the request to Steam's Web API fails
+     */
+    public static function resolveVanityUrl($vanityUrl) {
+        $params = array('vanityurl' => $vanityUrl);
+
+        $json = WebApi::getJSON('ISteamUser', 'ResolveVanityURL', 1, $params);
+        $result = json_decode($json);
+        $result = $result->response;
+
+        if ($result->success != 1) {
+            return null;
+        }
+
+        return $result->steamid;
+    }
+
+    /**
      * Creates a new <var>SteamId</var> instance for the given ID
      *
      * @param string $id The custom URL of the group specified by the player

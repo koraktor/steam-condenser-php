@@ -18,6 +18,11 @@ require_once dirname(__FILE__) . '/../../../lib/steam-condenser.php';
  */
 class SteamIdTest extends PHPUnit_Framework_TestCase {
 
+    public function setUp() {
+        $this->webApiInstance = new ReflectionProperty('WebApi', 'instance');
+        $this->webApiInstance->setAccessible(true);
+    }
+
     public function testConvertCommunityIdToSteamId() {
         $steamId = SteamId::convertCommunityIdToSteamId('76561197960290418');
         $this->assertEquals('STEAM_0:0:12345', $steamId);
@@ -51,18 +56,18 @@ class SteamIdTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue(SteamId::isCached('son_of_thor'));
     }
 
-  public function testFetch() {
-      $data = new SimpleXMLElement(getFixture('sonofthor.xml'));
-      $mockBuilder = $this->getMockBuilder('SteamId');
-      $mockBuilder->setConstructorArgs(array('Son_of_Thor', false));
-      $mockBuilder->setMethods(array('getData'));
-      $steamId = $mockBuilder->getMock();
-      $steamId->expects($this->once())->method('getData')->with('http://steamcommunity.com/id/son_of_thor?xml=1')->will($this->returnValue($data));
-      $steamId->fetchData();
+    public function testFetch() {
+        $data = new SimpleXMLElement(getFixture('sonofthor.xml'));
+        $mockBuilder = $this->getMockBuilder('SteamId');
+        $mockBuilder->setConstructorArgs(array('Son_of_Thor', false));
+        $mockBuilder->setMethods(array('getData'));
+        $steamId = $mockBuilder->getMock();
+        $steamId->expects($this->once())->method('getData')->with('http://steamcommunity.com/id/son_of_thor?xml=1')->will($this->returnValue($data));
+        $steamId->fetchData();
 
-      $this->assertEquals('76561197983311154', $steamId->getSteamId64());
-      $this->assertTrue($steamId->isFetched());
-  }
+        $this->assertEquals('76561197983311154', $steamId->getSteamId64());
+        $this->assertTrue($steamId->isFetched());
+    }
 
     public function testBaseUrlSteamId64() {
         $steamId = new SteamId('76561197983311154', false);
@@ -76,6 +81,23 @@ class SteamIdTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals('son_of_thor', $steamId->getCustomUrl());
         $this->assertEquals('http://steamcommunity.com/id/son_of_thor', $steamId->getBaseUrl());
+    }
+
+    public function testResolveVanityUrl() {
+        $webApi = $this->getMockBuilder('WebApi')->setMethods(array('_getJSON'))->disableOriginalConstructor()->getMock();
+        $webApi->expects($this->once())->method('_getJSON')->with('ISteamUser', 'ResolveVanityURL', 1, array('vanityurl' => 'koraktor'))->will($this->returnValue('{ "response": { "success": 1, "steamid": "76561197961384956" } }'));
+        $this->webApiInstance->setValue($webApi);
+
+        $steamId64 = SteamId::resolveVanityUrl('koraktor');
+        $this->assertEquals('76561197961384956', $steamId64);
+    }
+
+    public function testResolveUnknownVanityUrl() {
+        $webApi = $this->getMockBuilder('WebApi')->setMethods(array('_getJSON'))->disableOriginalConstructor()->getMock();
+        $webApi->expects($this->once())->method('_getJSON')->with('ISteamUser', 'ResolveVanityURL', 1, array('vanityurl' => 'unknown'))->will($this->returnValue('{ "response": { "success": 42 } }'));
+        $this->webApiInstance->setValue($webApi);
+
+        $this->assertNull(SteamId::resolveVanityUrl('unknown'));
     }
 
     public function tearDown() {
