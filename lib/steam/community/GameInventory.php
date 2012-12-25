@@ -3,13 +3,20 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2011, Sebastian Staudt
+ * Copyright (c) 2011-2012, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
 
 require_once STEAM_CONDENSER_PATH . 'steam/community/GameItem.php';
+require_once STEAM_CONDENSER_PATH . 'steam/community/GameItemSchema.php';
+require_once STEAM_CONDENSER_PATH . 'steam/community/SteamId.php';
 require_once STEAM_CONDENSER_PATH . 'steam/community/WebApi.php';
+require_once STEAM_CONDENSER_PATH . 'steam/community/dota2/DotA2BetaInventory.php';
+require_once STEAM_CONDENSER_PATH . 'steam/community/dota2/DotA2Inventory.php';
+require_once STEAM_CONDENSER_PATH . 'steam/community/portal2/Portal2Inventory.php';
+require_once STEAM_CONDENSER_PATH . 'steam/community/tf2/TF2BetaInventory.php';
+require_once STEAM_CONDENSER_PATH . 'steam/community/tf2/TF2Inventory.php';
 
 /**
  * Provides basic functionality to represent an inventory of player in a game
@@ -18,12 +25,9 @@ require_once STEAM_CONDENSER_PATH . 'steam/community/WebApi.php';
  * @package    steam-condenser
  * @subpackage community
  */
-abstract class GameInventory {
+class GameInventory {
 
-    /**
-     * @var array
-     */
-    private static $attributeSchemas = array();
+    const ITEM_CLASS = 'GameItem';
 
     /**
      * @var array
@@ -31,29 +35,29 @@ abstract class GameInventory {
     public static $cache = array();
 
     /**
-     * @var array
-     */
-    private static $itemSchemas = array();
-
-    /**
-     * @var array
-     */
-    private static $qualitySchemas = array();
-
-    /**
      * @var string
      */
-    private static $schemaLanguage = 'en';
+    public static $schemaLanguage = 'en';
 
     /**
      * @var int
      */
-    private $fetchDate;
+    protected $appId;
+
+    /**
+     * @var int
+     */
+    protected $fetchDate;
+
+    /**
+     * @var GameItemSchema
+     */
+    protected $itemSchema;
 
     /**
      * @var array
      */
-    private $items;
+    protected $items;
 
     /**
      * @var string
@@ -61,45 +65,133 @@ abstract class GameInventory {
     protected $steamId64;
 
     /**
-     * Creates a new inventory object for the given SteamID64. This calls
-     * fetch() to update the data and create the TF2Item instances contained in
-     * this players backpack
+     * @var SteamId
+     */
+    protected $user;
+
+    /**
+     * Clears the inventory cache
+     */
+    public static function clearCache() {
+        self::$cache = array();
+    }
+
+    /**
+     * This checks the cache for an existing inventory. If it exists it is
+     * returned. Otherwise a new inventory is created.
      *
+     * @param int $appId The application ID of the game
+     * @param string $steamId The 64bit Steam ID or the vanity URL of the user
+     * @param bool $fetchNow Whether the data should be fetched now
+     * @param bool $bypassCache Whether the cache should be bypassed
+     * @return GameInventory
+     */
+    public static function create($appId, $steamId, $fetchNow = true, $bypassCache = false) {
+        if (is_numeric($steamId)) {
+            $steamId64 = $steamId;
+        } else {
+            $steamId64 = SteamId::resolveVanityUrl($steamId);
+        }
+
+        if (self::isCached($appId, $steamId64) && !$bypassCache) {
+            $inventory = self::$cache[$appId][$steamId64];
+            if ($fetchNow && !$inventory->isFetched()) {
+                $inventory->fetch();
+            }
+            return $inventory;
+        } else {
+            switch ($appId) {
+                case 440:
+                    $inventoryClass = 'TF2Inventory';
+                    break;
+                case 520:
+                    $inventoryClass = 'TF2BetaInventory';
+                    break;
+                case 570:
+                    $inventoryClass = 'Dota2Inventory';
+                    break;
+                case 620:
+                    $inventoryClass = 'Portal2Inventory';
+                    break;
+                case 205790:
+                    $inventoryClass = 'Dota2BetaInventory';
+                    break;
+                default:
+                    $inventoryClass = 'GameInventory';
+            }
+
+            return new $inventoryClass($appId, $steamId64, $fetchNow);
+        }
+    }
+
+    /**
+     * Returns whether the requested inventory is already cached
+     *
+     * @param int $appId The application ID of the game
+     * @param string $steamId64 The 64bit Steam ID of the user
+     * @return bool <var>true</var> if the inventory of the given user for the
+     *         given game is already cached
+     */
+    public static function isCached($appId, $steamId64) {
+        return array_key_exists($appId, self::$cache) &&
+               array_key_exists($steamId64, self::$cache[$appId]);
+    }
+
+    /**
+     * Sets the language the schema should be fetched in (default is:
+     * <var>'en'</var>)
+     *
+     * @param string $language The language code for the language item
+     *        descriptions should be fetched in
+     */
+    public static function setSchemaLanguage($language) {
+        self::$schemaLanguage = $language;
+    }
+
+    /**
+     * Creates a new inventory object for the given user. This calls
+     * <var>fetch()</var> to update the data and create the GameItem instances
+     * contained in this player's inventory
+     *
+     * @param int $appId The application ID of the game
      * @param string $steamId64 The 64bit Steam ID of the user
      * @param bool $fetchNow Whether the data should be fetched now
+     * @throws WebApiException on Web API errors
      */
-    public function __construct($steamId64, $fetchNow = true) {
+    protected function __construct($appId, $steamId64, $fetchNow = true) {
+        $this->appId = $appId;
         $this->steamId64 = $steamId64;
+        $this->user = SteamId::create($steamId64, false);
 
-        if($fetchNow) {
+        if ($fetchNow) {
             $this->fetch();
         }
 
         $this->cache();
+
+        array_keys(self::$cache);
+        array_keys(self::$cache[$appId]);
     }
 
     /**
      * Saves this inventory in the cache
      */
     public function cache() {
-        $inventoryClass = get_class($this);
-        if(!array_key_exists($this->steamId64, self::$cache[$inventoryClass])) {
-            self::$cache[$inventoryClass][$this->steamId64] = $this;
-        }
+        self::$cache[$this->appId][$this->steamId64] = $this;
     }
 
     /**
      * Updates the contents of the backpack using Steam Web API
      */
     public function fetch() {
-        $appId = $this->getAppId();
-        $inventoryClass = new ReflectionClass(get_class($this));
-        $itemClass = $inventoryClass->getConstant('ITEM_CLASS');
-        $result = WebApi::getJSONData('IEconItems_' . $appId, 'GetPlayerItems', 1, array('SteamID' => $this->steamId64));
+        $params = array('SteamID' => $this->steamId64);
+        $result = WebApi::getJSONData("IEconItems_{$this->getAppId()}", 'GetPlayerItems', 1, $params);
 
         $this->items = array();
-        foreach($result->items as $itemData) {
-            if($itemData != null) {
+        foreach ($result->items as $itemData) {
+            if ($itemData != null) {
+                $inventoryClass = new ReflectionClass(get_class($this));
+                $itemClass = $inventoryClass->getConstant('ITEM_CLASS');
                 $item = new $itemClass($this, $itemData);
                 $this->items[$item->getBackpackPosition() - 1] = $item;
             }
@@ -114,26 +206,7 @@ abstract class GameInventory {
      * @return int The application ID of the game this inventory belongs to
      */
     private function getAppId() {
-        $inventoryClass = new ReflectionClass(get_class($this));
-        return $inventoryClass->getConstant('APP_ID');
-    }
-
-    /**
-     * Returns the attribute schema
-     *
-     * The attribute schema is fetched first if not done already
-     *
-     * @return stdClass The attribute schema for the game this inventory
-     *         belongs to
-     * @see updateSchema()
-     * @throws WebApiException on Web API errors
-     */
-    public function getAttributeSchema() {
-        if(!array_key_exists($this->getAppId(), self::$attributeSchemas)) {
-            $this->updateSchema();
-        }
-
-        return self::$attributeSchemas[$this->getAppId()];
+        return $this->appId;
     }
 
     /**
@@ -152,16 +225,15 @@ abstract class GameInventory {
      *
      * The item schema is fetched first if not done already
      *
-     * @return stdClass The item schema for the game this inventory belongs to
-     * @see updateSchema()
+     * @return GameItemSchema The item schema for the game this inventory belongs to
      * @throws WebApiException on Web API errors
      */
     public function getItemSchema() {
-        if(!array_key_exists($this->getAppId(), self::$itemSchemas)) {
-            $this->updateSchema();
+        if ($this->itemSchema == null) {
+            $this->itemSchema = GameItemSchema::create($this->appId, self::$schemaLanguage);
         }
 
-        return self::$itemSchemas[$this->getAppId()];
+        return $this->itemSchema;
     }
 
     /**
@@ -174,21 +246,12 @@ abstract class GameInventory {
     }
 
     /**
-     * Returns the item quality schema
+     * Returns the Steam ID of the player owning this inventory
      *
-     * The item schema is fetched first if not done already
-     *
-     * @return stdClass The item quality schema for the game this inventory
-     *         belongs to
-     * @see updateSchema()
-     * @throws WebApiException on Web API errors
+     * @return SteamId The Steam ID of the owner of this inventory
      */
-    public function getQualitySchema() {
-        if(!array_key_exists($this->getAppId(), self::$qualitySchemas)) {
-            $this->updateSchema();
-        }
-
-        return self::$qualitySchemas[$this->getAppId()];
+    public function getUser() {
+        return $this->user;
     }
 
     /**
@@ -217,35 +280,6 @@ abstract class GameInventory {
      */
     public function size() {
         return sizeof($this->items);
-    }
-
-    /**
-     * Updates the item schema (this includes attributes and qualities) using
-     * the "GetSchema" method of interface "IEconItems_{AppId}"
-     *
-     * @throws WebApiException on Web API errors
-     */
-    protected function updateSchema() {
-        $params = array();
-        if(self::$schemaLanguage != null) {
-            $params['language'] = self::$schemaLanguage;
-        }
-        $result = WebApi::getJSONData('IEconItems_' . $this->getAppId(), 'GetSchema', 1, $params);
-
-        self::$attributeSchemas[$this->getAppId()] = array();
-        foreach($result->attributes as $attributeData) {
-          self::$attributeSchemas[$this->getAppId()][$attributeData->name] = $attributeData;
-        }
-
-        self::$itemSchemas[$this->getAppId()] = array();
-        foreach($result->items as $itemData) {
-          self::$itemSchemas[$this->getAppId()][$itemData->defindex] = $itemData;
-        }
-
-        self::$qualitySchemas[$this->getAppId()] = array();
-        foreach($result->qualities as $quality => $id) {
-          self::$qualitySchemas[$this->getAppId()][$id] = $quality;
-        }
     }
 
 }

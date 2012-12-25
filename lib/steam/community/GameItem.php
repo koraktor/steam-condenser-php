@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2011, Sebastian Staudt
+ * Copyright (c) 2011-2012, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -17,7 +17,7 @@ require_once STEAM_CONDENSER_PATH . 'steam/community/GameItem.php';
  * @package    steam-condenser
  * @subpackage community
  */
-abstract class GameItem {
+class GameItem {
 
     /**
      * @var array
@@ -30,14 +30,14 @@ abstract class GameItem {
     private $backpackPosition;
 
     /**
-     * @var string
-     */
-    private $className;
-
-    /**
      * @var int
      */
     private $count;
+
+    /**
+     * @var bool
+     */
+    private $craftable;
 
     /**
      * @var int
@@ -48,6 +48,11 @@ abstract class GameItem {
      * @var int
      */
     private $id;
+
+    /**
+     * @var string
+     */
+    private $itemClass;
 
     /**
      * @var int
@@ -62,12 +67,17 @@ abstract class GameItem {
     /**
      * @var string
      */
-    private $quality;
+    private $origin;
+
+    /**
+     * @var int
+     */
+    private $originalId;
 
     /**
      * @var string
      */
-    private $slot;
+    private $quality;
 
     /**
      * @var bool
@@ -87,23 +97,51 @@ abstract class GameItem {
      * @throws WebApiException on Web API errors
      */
     public function __construct(GameInventory $inventory, $itemData) {
-        $itemSchema    = $inventory->getItemSchema();
-        $qualitySchema = $inventory->getQualitySchema();
+        $this->inventory = $inventory;
 
         $this->defindex         = $itemData->defindex;
         $this->backpackPosition = $itemData->inventory & 0xffff;
-        $this->className        = $itemSchema[$this->defindex]->item_class;
         $this->count            = $itemData->quantity;
         $this->id               = $itemData->id;
+        $this->itemClass        = $this->getSchemaData()->item_class;
         $this->level            = $itemData->level;
-        $this->name             = $itemSchema[$this->defindex]->item_name;
-        $this->quality          = $qualitySchema[$itemData->quality];
-        $this->slot             = $itemSchema[$this->defindex]->item_slot;
-        $this->tradeable        = !($itemData->flag_cannot_trade == true);
-        $this->type             = $itemSchema[$this->defindex]->item_type_name;
+        $this->name             = $this->getSchemaData()->item_name;
+        $origins = $this->inventory->getItemSchema()->getOrigins();
+        $this->origin           = $origins[$itemData->origin];
+        $this->originalId       = $itemData->original_id;
+        $qualities = $this->inventory->getItemSchema()->getQualities();
+        $this->quality          = $qualities[$itemData->quality];
+        $this->type             = $this->getSchemaData()->item_type_name;
 
-        if(@$itemSchema[$this->defindex]->attributes != null) {
-            $this->attributes = $itemSchema[$this->defindex]->attributes;
+        if (property_exists($itemData, 'flag_cannot_craft')) {
+            $this->craftable = !!$itemData->flag_cannot_craft;
+        }
+        if (!empty($this->getSchemaData()->item_set)) {
+            $itemSets = $this->inventory->getItemSchema()->getItemSets();
+            $this->itemSet = $itemSets[$this->getSchemaData()->item_set];
+        }
+        if (property_exists($itemData, 'flag_cannot_trade')) {
+            $this->tradeable = !!$itemData->flag_cannot_trade;
+        }
+
+        $attributesData = array();
+        if (property_exists($this->getSchemaData(), 'attributes')) {
+            $attributesData = (array) $this->getSchemaData()->attributes;
+        }
+        if (!empty($itemData->attributes)) {
+            $attributesData = array_merge_recursive($attributesData, (array) $itemData->attributes);
+        }
+
+        $this->attributes = array();
+        foreach ($attributesData as $attributeData) {
+            $attributeKey = property_exists($attributeData, 'defindex') ?
+                $attributeData->defindex : $attributeData->name;
+
+            if ($attributeKey != null) {
+                $schemaAttributesData = $inventory->getItemSchema()->getAttributes();
+                $schemaAttributeData = $schemaAttributesData[$attributeKey];
+                $this->attributes[] = (object) array_merge_recursive((array) $attributeData, (array) $schemaAttributeData);
+            }
         }
     }
 
@@ -123,15 +161,6 @@ abstract class GameItem {
      */
     public function getBackpackPosition() {
         return $this->backpackPosition;
-    }
-
-    /**
-     * Returns the class of this item
-     *
-     * @return string The class of this item
-     */
-    public function getClassName() {
-        return $this->className;
     }
 
     /**
@@ -162,6 +191,15 @@ abstract class GameItem {
     }
 
     /**
+     * Returns the class of this item
+     *
+     * @return string The class of this item
+     */
+    public function getItemClass() {
+        return $this->itemClass;
+    }
+
+    /**
      * Returns the level of this item
      *
      * @return int The level of this item
@@ -180,6 +218,15 @@ abstract class GameItem {
     }
 
     /**
+     * Returns the original ID of this item
+     *
+     * @return int The original ID of this item
+     */
+    public function  getOriginalId() {
+        return $this->originalId;
+    }
+
+    /**
      * Returns the quality of this item
      *
      * @return string The quality of this item
@@ -189,13 +236,14 @@ abstract class GameItem {
     }
 
     /**
-     * Returns the slot where this item can be equipped in or <var>null</var>
-     * if this item cannot be equipped
+     * Returns the data for this item that's defined in the item schema
      *
-     * @return string The slot where this item can be equipped in
+     * @return array The schema data for this item
+     * @throws SteamCondenserException if the item schema cannot be loaded
      */
-    public function getSlot() {
-        return $this->slot;
+    public function  getSchemaData() {
+        $schemaItems = $this->inventory->getItemSchema()->getItems();
+        return $schemaItems[$this->defindex];
     }
 
     /**
@@ -208,9 +256,18 @@ abstract class GameItem {
     }
 
     /**
+     * Returns whether this item is craftable
+     *
+     * @return bool <var>true</var> if this item is craftable
+     */
+    public function isCraftable() {
+        return $this->craftable;
+    }
+
+    /**
      * Returns whether this item is tradeable
      *
-     * @return bool Whether this item is tradeable
+     * @return bool <var>true</var> if this item is tradeable
      */
     public function isTradeable() {
         return $this->tradeable;
