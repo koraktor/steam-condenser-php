@@ -568,7 +568,7 @@ class SteamId extends XMLData {
         return $playtimes[1];
     }
 
-    /*
+    /**
      * Returns this user's ban state in Steam's trading system
      *
      * @return string This user's trading ban state
