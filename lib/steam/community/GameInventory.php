@@ -101,20 +101,20 @@ class GameInventory {
             return $inventory;
         } else {
             switch ($appId) {
-                case 440:
-                    $inventoryClass = 'TF2Inventory';
+                case Dota2BetaInventory::APP_ID:
+                    $inventoryClass = 'Dota2BetaInventory';
                     break;
-                case 520:
-                    $inventoryClass = 'TF2BetaInventory';
-                    break;
-                case 570:
+                case Dota2Inventory::APP_ID:
                     $inventoryClass = 'Dota2Inventory';
                     break;
-                case 620:
+                case Portal2Inventory::APP_ID:
                     $inventoryClass = 'Portal2Inventory';
                     break;
-                case 205790:
-                    $inventoryClass = 'Dota2BetaInventory';
+                case TF2BetaInventory::APP_ID:
+                    $inventoryClass = 'TF2BetaInventory';
+                    break;
+                case TF2Inventory::APP_ID:
+                    $inventoryClass = 'TF2Inventory';
                     break;
                 default:
                     $inventoryClass = 'GameInventory';

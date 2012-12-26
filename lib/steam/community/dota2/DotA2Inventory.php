@@ -33,7 +33,7 @@ class DotA2Inventory extends GameInventory {
      * @param bool $bypassCache Whether the cache should be bypassed
      * @return DotA2Inventory The inventory created from the given options
      */
-    public static function create($steamId, $fetchNow = true, $bypassCache = false) {
+    public static function createInventory($steamId, $fetchNow = true, $bypassCache = false) {
         return parent::create(self::APP_ID, $steamId, $fetchNow, $bypassCache);
     }
 

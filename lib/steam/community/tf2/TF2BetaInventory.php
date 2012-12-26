@@ -32,7 +32,7 @@ class TF2BetaInventory extends TF2Inventory {
      * @param bool $bypassCache Whether the cache should be bypassed
      * @return TF2BetaInventory The inventory created from the given options
      */
-    public static function create($steamId, $fetchNow = true, $bypassCache = false) {
+    public static function createInventory($steamId, $fetchNow = true, $bypassCache = false) {
         return parent::create(self::APP_ID, $steamId, $fetchNow, $bypassCache);
     }
 
