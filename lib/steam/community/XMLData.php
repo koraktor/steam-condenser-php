@@ -8,6 +8,8 @@
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
 
+require_once STEAM_CONDENSER_PATH . 'exceptions/SteamCondenserException.php';
+
 /**
  * This class is used to streamline access to XML-based data resources
  *
@@ -23,9 +25,14 @@ abstract class XMLData {
      *
      * @param string $url The URL to load the data from
      * @return SimpleXMLElement The parsed XML data
+     * @throws SteamCondenserException if the data cannot be parsed
      */
     protected function getData($url) {
-        return new SimpleXMLElement(file_get_contents($url));
+        try {
+            return @new SimpleXMLElement($url, 0, true);
+        } catch (Exception $e) {
+            throw new SteamCondenserException("XML could not be parsed", 0, $e);
+        }
     }
 
 }
