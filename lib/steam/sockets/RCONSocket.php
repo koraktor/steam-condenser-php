@@ -74,7 +74,7 @@ class RCONSocket extends SteamSocket {
             $this->socket->connect($this->ipAddress, $this->portNumber, SteamSocket::$timeout);
         }
 
-        $this->socket->send($dataPacket->__toString());
+        parent::send($dataPacket);
     }
 
     /**
