@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2011-2012, Sebastian Staudt
+ * Copyright (c) 2011-2013, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -58,6 +58,11 @@ class GameInventory {
      * @var array
      */
     protected $items;
+
+    /**
+     * @var array
+     */
+    protected $preliminaryItems;
 
     /**
      * @var string
@@ -188,12 +193,17 @@ class GameInventory {
         $result = WebApi::getJSONData("IEconItems_{$this->getAppId()}", 'GetPlayerItems', 1, $params);
 
         $this->items = array();
+        $this->preliminaryItems = array();
         foreach ($result->items as $itemData) {
             if ($itemData != null) {
                 $inventoryClass = new ReflectionClass(get_class($this));
                 $itemClass = $inventoryClass->getConstant('ITEM_CLASS');
                 $item = new $itemClass($this, $itemData);
-                $this->items[$item->getBackpackPosition() - 1] = $item;
+                if ($item->isPreliminary()) {
+                    $this->preliminaryItems[] = $item;
+                } else {
+                    $this->items[$item->getBackpackPosition() - 1] = $item;
+                }
             }
         }
 
@@ -243,6 +253,15 @@ class GameInventory {
      */
     public function getItems() {
         return $this->items;
+    }
+
+    /**
+     * Returns an array of all items that this player just found or traded
+     *
+     * @return array All preliminary items of the inventory
+     */
+    public function  getPreliminaryItems() {
+        return $this->preliminaryItems;
     }
 
     /**

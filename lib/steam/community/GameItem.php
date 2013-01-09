@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2011-2012, Sebastian Staudt
+ * Copyright (c) 2011-2013, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -75,6 +75,11 @@ class GameItem {
     private $originalId;
 
     /**
+     * @var bool
+     */
+    private $preliminary;
+
+    /**
      * @var string
      */
     private $quality;
@@ -109,6 +114,7 @@ class GameItem {
         $origins = $this->inventory->getItemSchema()->getOrigins();
         $this->origin           = $origins[$itemData->origin];
         $this->originalId       = $itemData->original_id;
+        $this->preliminary      = ($itemData->inventory & 0x40000000) != 0;
         $qualities = $this->inventory->getItemSchema()->getQualities();
         $this->quality          = $qualities[$itemData->quality];
         $this->type             = $this->getSchemaData()->item_type_name;
@@ -262,6 +268,18 @@ class GameItem {
      */
     public function isCraftable() {
         return $this->craftable;
+    }
+
+    /**
+     * Returns whether this item is preliminary
+     *
+     * Preliminary means that this item was just found or traded and has not
+     * yet been added to the inventory
+     *
+     * @return bool <var>true</var> if this item is preliminary
+     */
+    public function isPreliminary() {
+        return $this->preliminary;
     }
 
     /**
