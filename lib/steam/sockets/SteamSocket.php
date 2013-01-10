@@ -115,7 +115,10 @@ abstract class SteamSocket {
         try {
             $data = $this->socket->recv($this->buffer->remaining());
         } catch (Exception $e) {
-            if (strlen($this->socket->recv($this->buffer->remaining())) == 0) {
+            if ($e->getCode() == 111) {
+                // The connection has been closed
+                throw $e;
+            } else if (strlen($this->socket->recv($this->buffer->remaining())) == 0) {
                 return 0;
             } else {
                 throw $e;

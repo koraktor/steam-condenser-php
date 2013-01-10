@@ -116,6 +116,15 @@ abstract class Socket {
         }
 
         if ($data === false) {
+            if ($this->socketsEnabled) {
+                $errorcode = socket_last_error($this->socket);
+                if ($errorcode == 111) {
+                    // The connection has been closed.
+                    // Throw an exception that can be handled differently.
+                    throw new Exception(socket_strerror($errorcode),$errorcode);
+                }
+            }
+
             throw new Exception('Could not read from socket.');
         }
 

@@ -394,9 +394,15 @@ abstract class GameServer extends Server {
     public function updatePing() {
         $this->sendRequest(new A2S_INFO_Packet());
         $startTime = microtime(true);
-        $this->getReply();
-        $endTime = microtime(true);
-        $this->ping = intval(round(($endTime - $startTime) * 1000));
+        try {
+            $this->getReply();
+            $endTime = microtime(true);
+            $this->ping = intval(round(($endTime - $startTime) * 1000));
+        } catch (TimeoutException $e) {
+            throw $e;
+        } catch (Exception $e) {
+            $this->updatePing();
+        }
 
         return $this->ping;
     }
