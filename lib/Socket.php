@@ -21,7 +21,7 @@ abstract class Socket {
     /**
      * The IP address the socket is connected to
      *
-     * @var InetAddress
+     * @var string
      */
     protected $ipAddress;
 
