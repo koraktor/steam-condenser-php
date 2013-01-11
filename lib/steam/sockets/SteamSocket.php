@@ -3,13 +3,14 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2012, Sebastian Staudt
+ * Copyright (c) 2008-2013, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
 
 require_once STEAM_CONDENSER_PATH . 'ByteBuffer.php';
 require_once STEAM_CONDENSER_PATH . 'UDPSocket.php';
+require_once STEAM_CONDENSER_PATH . 'exceptions/SocketException.php';
 require_once STEAM_CONDENSER_PATH . 'exceptions/TimeoutException.php';
 require_once STEAM_CONDENSER_PATH . 'steam/packets/SteamPacketFactory.php';
 
@@ -97,6 +98,7 @@ abstract class SteamSocket {
      * buffer
      *
      * @param int $bufferLength The data length to read from the socket
+     * @throws SocketException if an error occurs while reading data
      * @throws TimeoutException if no packet is received on time
      * @return int The number of bytes that have been read from the socket
      * @see ByteBuffer
@@ -114,8 +116,9 @@ abstract class SteamSocket {
 
         try {
             $data = $this->socket->recv($this->buffer->remaining());
-        } catch (Exception $e) {
-            if (strlen($this->socket->recv($this->buffer->remaining())) == 0) {
+        } catch (SocketException $e) {
+            if (defined('SOCKET_ECONNRESET') &&
+                $e->getCode() == SOCKET_ECONNRESET) {
                 return 0;
             } else {
                 throw $e;
