@@ -3,12 +3,13 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2011, Sebastian Staudt
+ * Copyright (c) 2008-2013, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
 
 require_once STEAM_CONDENSER_PATH . 'Socket.php';
+require_once STEAM_CONDENSER_PATH . 'exceptions/SteamCondenserException.php';
 
 /**
  * This class represents a TCP socket
@@ -31,16 +32,15 @@ class TCPSocket extends Socket {
      * @param string $ipAddress The IP address to connect to
      * @param int $portNumber The TCP port to connect to
      * @param int $timeout The timeout in milliseconds
-     * @throws Exception if an error occurs during connecting the socket
+     * @throws SocketException if an error occurs during connecting the socket
      */
     public function connect($ipAddress, $portNumber, $timeout) {
         $this->ipAddress = $ipAddress;
         $this->portNumber = $portNumber;
 
         if($this->socketsEnabled) {
-            if(!$this->socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP)) {
-                $errorCode = socket_last_error($this->socket);
-                throw new Exception('Could not create socket: ' . socket_strerror($errorCode));
+            if (!$this->socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP)) {
+                throw new SocketException(socket_last_error($this->socket));
             }
 
             socket_set_nonblock($this->socket);
@@ -55,14 +55,14 @@ class TCPSocket extends Socket {
                 $errorCode = socket_get_option($this->socket, SOL_SOCKET, SO_ERROR);
             }
 
-            if($errorCode) {
-                throw new Exception('Could not connect socket: ' . socket_strerror($errorCode));
+            if ($errorCode) {
+                throw new SocketException($errorCode);
             }
 
             socket_set_block($this->socket);
         } else {
-            if(!$this->socket = @fsockopen("tcp://$ipAddress", $portNumber, $socketErrno, $socketErrstr, $timeout / 1000)) {
-                throw new Exception("Could not create socket: $socketErrstr");
+            if (!$this->socket = @fsockopen("tcp://$ipAddress", $portNumber, $socketErrno, $socketErrstr, $timeout / 1000)) {
+                throw new SocketException($socketErrstr);
             }
             stream_set_blocking($this->socket, true);
         }
