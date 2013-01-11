@@ -3,10 +3,12 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2012, Sebastian Staudt
+ * Copyright (c) 2008-2013, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
+
+require_once STEAM_CONDENSER_PATH . 'exceptions/SocketException.php';
 
 /**
  * This class represents an IP socket
@@ -21,7 +23,7 @@ abstract class Socket {
     /**
      * The IP address the socket is connected to
      *
-     * @var InetAddress
+     * @var string
      */
     protected $ipAddress;
 
@@ -106,26 +108,21 @@ abstract class Socket {
      *
      * @param int $length The number of bytes to read from the socket
      * @return string The data read from the socket
-     * @throws Exception if reading from the socket fails
+     * @throws SocketException if reading from the socket fails
      */
     public function recv($length = 128) {
         if($this->socketsEnabled) {
             $data = @socket_read($this->socket, $length, PHP_BINARY_READ);
+
+            if ($data === false) {
+                throw new SocketException(socket_last_error($this->socket));
+            }
         } else {
             $data = fread($this->socket, $length);
-        }
 
-        if ($data === false) {
-            if ($this->socketsEnabled) {
-                $errorcode = socket_last_error($this->socket);
-                if ($errorcode == 111) {
-                    // The connection has been closed.
-                    // Throw an exception that can be handled differently.
-                    throw new Exception(socket_strerror($errorcode),$errorcode);
-                }
+            if ($data === false) {
+                throw new SocketException('Could not read from socket.');
             }
-
-            throw new Exception('Could not read from socket.');
         }
 
         return $data;
@@ -159,17 +156,19 @@ abstract class Socket {
      * Sends the specified data to the peer this socket is connected to
      *
      * @param string $data The data to send to the connected peer
-     * @throws Exception if sending fails
+     * @throws SocketException if sending fails
      */
     public function send($data) {
         if($this->socketsEnabled) {
             $sendResult = socket_send($this->socket, $data, strlen($data), 0);
+            if ($sendResult === false) {
+                throw new SocketException(socket_last_error($this->socket));
+            }
         } else {
             $sendResult = fwrite($this->socket, $data, strlen($data));
-        }
-
-        if(!$sendResult) {
-            throw new Exception('Could not send data.');
+            if ($sendResult === false) {
+                throw new SocketException('Could not send data.');
+            }
         }
     }
 
