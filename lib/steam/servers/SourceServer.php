@@ -92,18 +92,24 @@ class SourceServer extends GameServer {
      * Authenticates the connection for RCON communication with the server
      *
      * @param string $password The RCON password of the server
+     * @param int    $retry    Count of auto retry (Default: 3) - disable it with 0
      * @return bool whether authentication was successful
      * @see rconExec()
      * @throws SteamCondenserException if a problem occurs while parsing the
      *         reply
      * @throws TimeoutException if the request times out
      */
-    public function rconAuth($password) {
+    public function rconAuth($password, $retry = 3) {
         $this->rconRequestId = $this->generateRconRequestId();
 
         $this->rconSocket->send(new RCONAuthRequest($this->rconRequestId, $password));
         if ($this->rconSocket->getReply() == null) {
-            return $this->rconAuth($password);
+            for($i = $retry; $i > 0; --$i) {
+                if ($this->rconAuth($password, 0)) {
+                    return true;
+                }
+            }
+            return false;
         }
         $reply = $this->rconSocket->getReply();
         $this->rconAuthenticated = $reply->getRequestId() == $this->rconRequestId;
