@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2012, Sebastian Staudt
+ * Copyright (c) 2008-2013, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -102,9 +102,7 @@ class SourceServer extends GameServer {
         $this->rconRequestId = $this->generateRconRequestId();
 
         $this->rconSocket->send(new RCONAuthRequest($this->rconRequestId, $password));
-        if ($this->rconSocket->getReply() == null) {
-            return $this->rconAuth($password);
-        }
+        $this->rconSocket->getReply();
         $reply = $this->rconSocket->getReply();
         $this->rconAuthenticated = $reply->getRequestId() == $this->rconRequestId;
 
@@ -117,6 +115,7 @@ class SourceServer extends GameServer {
      * @param string $command The command to execute on the server via RCON
      * @return string The output of the executed command
      * @see rconAuth()
+     * @throws RCONBanException if banned by the server
      * @throws RCONNoAuthException if not authenticated with the server
      * @throws SteamCondenserException if a problem occurs while parsing the
      *         reply
@@ -132,14 +131,20 @@ class SourceServer extends GameServer {
 
         $response = array();
         do {
-            $responsePacket = $this->rconSocket->getReply();
+            try {
+                $responsePacket = $this->rconSocket->getReply();
 
-            if ($responsePacket == null) {
-                $this->rconAuthenticated = false;
-                break;
-            } else if ($responsePacket instanceof RCONAuthResponse) {
-                $this->rconAuthenticated = false;
-                throw new RCONNoAuthException();
+                if ($responsePacket instanceof RCONAuthResponse) {
+                    $this->rconAuthenticated = false;
+                    throw new RCONNoAuthException();
+                }
+            } catch (RCONBanException $e) {
+                if ($this->rconAuthenticated) {
+                    $this->rconAuthenticated = false;
+                    throw new RCONNoAuthException();
+                } else {
+                    throw $e;
+                }
             }
 
             $response[] = $responsePacket->getResponse();

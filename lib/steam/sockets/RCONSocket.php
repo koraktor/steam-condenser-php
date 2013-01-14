@@ -3,13 +3,14 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2012, Sebastian Staudt
+ * Copyright (c) 2008-2013, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
 
 require_once STEAM_CONDENSER_PATH . 'TCPSocket.php';
 require_once STEAM_CONDENSER_PATH . 'exceptions/RCONBanException.php';
+require_once STEAM_CONDENSER_PATH . 'exceptions/RCONNoAuthException.php';
 require_once STEAM_CONDENSER_PATH . 'exceptions/PacketFormatException.php';
 require_once STEAM_CONDENSER_PATH . 'steam/packets/rcon/RCONPacket.php';
 require_once STEAM_CONDENSER_PATH . 'steam/packets/rcon/RCONPacketFactory.php';
@@ -87,12 +88,23 @@ class RCONSocket extends SteamSocket {
      * @return SteamPacket The packet replied from the server
      * @throws RCONBanException if the IP of the local machine has been banned
      *         on the game server
+     * @throws RCONNoAuthException if an authenticated connection has been
+     *         dropped by the server
      */
     public function getReply() {
-        if($this->receivePacket(4) == 0) {
-            $this->socket->close();
+        try {
+            if ($this->receivePacket(4) == 0) {
+                $this->socket->close();
 
-            return null;
+                throw new RCONNoAuthException();
+            }
+        } catch (SocketException $e) {
+            if (defined('SOCKET_ECONNRESET') &&
+                $e->getCode() == SOCKET_ECONNRESET) {
+                throw new RCONBanException();
+            } else {
+                throw $e;
+            }
         }
 
         $packetSize     = $this->buffer->getLong();

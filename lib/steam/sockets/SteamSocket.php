@@ -119,10 +119,9 @@ abstract class SteamSocket {
         } catch (SocketException $e) {
             if (defined('SOCKET_ECONNRESET') &&
                 $e->getCode() == SOCKET_ECONNRESET) {
-                return 0;
-            } else {
-                throw $e;
+                $this->socket->close();
             }
+            throw $e;
         }
         $this->buffer->put($data);
         $bytesRead = $this->buffer->position();
