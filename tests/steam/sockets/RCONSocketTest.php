@@ -84,7 +84,10 @@ class RCONSocketTest extends PHPUnit_Framework_TestCase {
         $socket->socket = $tcpSocket;
         $socket->expects($this->once())->method('receivePacket')->with(4)->will($this->returnValue(0));
 
-        $this->assertEquals(null, $socket->getReply());
+        try {
+            $socket->getReply();
+            $this->fail("No exception thrown.");
+        } catch (RCONNoAuthException $e) {}
     }
 
 }
