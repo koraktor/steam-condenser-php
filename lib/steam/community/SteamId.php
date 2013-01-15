@@ -319,8 +319,8 @@ class SteamId extends XMLData {
      *         data
     */
     private function fetchFriends() {
-        $this->friends = array();
         $friendsData = $this->getData($this->getBaseUrl() . '/friends?xml=1');
+        $this->friends = array();
         foreach($friendsData->friends->friend as $friend) {
             $this->friends[] = SteamId::create((string) $friend, false);
         }
@@ -334,10 +334,10 @@ class SteamId extends XMLData {
      *         data
      */
     private function fetchGames() {
+        $gamesData = $this->getData($this->getBaseUrl() . '/games?xml=1');
+
         $this->games = array();
         $this->playtimes = array();
-
-        $gamesData = $this->getData($this->getBaseUrl() . '/games?xml=1');
 
         foreach($gamesData->games->game as $gameData) {
             $appId = (int) $gameData->appID;
