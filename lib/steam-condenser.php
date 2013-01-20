@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2010-2012, Sebastian Staudt
+ * Copyright (c) 2010-2013, Sebastian Staudt
  *
  * @author  Sebastian Staudt
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
@@ -11,7 +11,7 @@
  */
 
 define('STEAM_CONDENSER_PATH', dirname(__FILE__) . '/');
-define('STEAM_CONDENSER_VERSION', '1.3.0');
+define('STEAM_CONDENSER_VERSION', '1.3.1');
 
 require_once STEAM_CONDENSER_PATH . 'steam/servers/GoldSrcServer.php';
 require_once STEAM_CONDENSER_PATH . 'steam/servers/MasterServer.php';
