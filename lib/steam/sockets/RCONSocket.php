@@ -92,19 +92,9 @@ class RCONSocket extends SteamSocket {
      *         dropped by the server
      */
     public function getReply() {
-        try {
-            if ($this->receivePacket(4) == 0) {
-                $this->socket->close();
-
-                throw new RCONNoAuthException();
-            }
-        } catch (SocketException $e) {
-            if (defined('SOCKET_ECONNRESET') &&
-                $e->getCode() == SOCKET_ECONNRESET) {
-                throw new RCONBanException();
-            } else {
-                throw $e;
-            }
+        if ($this->receivePacket(4) == 0) {
+            $this->socket->close();
+            throw new RCONBanException();
         }
 
         $packetSize     = $this->buffer->getLong();

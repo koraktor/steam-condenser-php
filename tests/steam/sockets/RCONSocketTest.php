@@ -87,7 +87,9 @@ class RCONSocketTest extends PHPUnit_Framework_TestCase {
         try {
             $socket->getReply();
             $this->fail("No exception thrown.");
-        } catch (RCONNoAuthException $e) {}
+        } catch (Exception $e) {
+            $this->assertInstanceOf('RCONBanException', $e);
+        }
     }
 
     public function testConnectionReset() {
@@ -98,7 +100,9 @@ class RCONSocketTest extends PHPUnit_Framework_TestCase {
         try {
             $socket->getReply();
             $this->fail("No exception thrown.");
-        } catch (RCONBanException $e) {}
+        } catch (Exception $e) {
+            $this->assertInstanceOf('SocketException', $e);
+        }
     }
 
 }

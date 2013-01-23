@@ -102,9 +102,19 @@ class SourceServer extends GameServer {
         $this->rconRequestId = $this->generateRconRequestId();
 
         $this->rconSocket->send(new RCONAuthRequest($this->rconRequestId, $password));
-        $this->rconSocket->getReply();
-        $reply = $this->rconSocket->getReply();
-        $this->rconAuthenticated = $reply->getRequestId() == $this->rconRequestId;
+
+        try {
+            $this->rconSocket->getReply();
+            $reply = $this->rconSocket->getReply();
+            $this->rconAuthenticated = $reply->getRequestId() == $this->rconRequestId;
+        } catch (SocketException $e) {
+            if (defined('SOCKET_ECONNRESET') &&
+                $e->getCode() == SOCKET_ECONNRESET) {
+                throw new RCONBanException();
+            } else {
+                throw $e;
+            }
+        }
 
         return $this->rconAuthenticated;
     }
@@ -138,13 +148,14 @@ class SourceServer extends GameServer {
                     $this->rconAuthenticated = false;
                     throw new RCONNoAuthException();
                 }
-            } catch (RCONBanException $e) {
-                if ($this->rconAuthenticated) {
+            } catch (SocketException $e) {
+                if (defined('SOCKET_ECONNRESET') &&
+                    $e->getCode() == SOCKET_ECONNRESET) {
                     $this->rconAuthenticated = false;
                     throw new RCONNoAuthException();
+                } else {
+                    throw $e;
                 }
-
-                throw $e;
             }
 
             $response[] = $responsePacket->getResponse();
