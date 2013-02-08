@@ -73,6 +73,33 @@ class MasterServerTest extends PHPUnit_Framework_TestCase {
         $this->server->getServers();
     }
 
+    public function testGetServersForced() {
+        MasterServer::setRetries(1);
+
+        $this->socket->expects($this->at(0))->method('send')->with($this->isInstanceOf('A2M_GET_SERVERS_BATCH2_Packet'));
+        $this->socket->expects($this->at(1))->method('getReply')->will($this->returnValue(new M2A_SERVER_BATCH_Packet("\xA\x7F\0\0\x1\x69\x87\x7F\0\0\x1\x69\x88")));
+        $this->socket->expects($this->at(2))->method('send')->with($this->isInstanceOf('A2M_GET_SERVERS_BATCH2_Packet'));
+        $this->socket->expects($this->at(3))->method('getReply')->will($this->throwException(new TimeoutException()));
+
+        $this->assertEquals(array(array('127.0.0.1', 27015), array('127.0.0.1', 27016)), $this->server->getServers(MasterServer::REGION_ALL, 'filter', true));
+    }
+
+    public function testGetServersSwapIp() {
+        $this->socket->expects($this->at(0))->method('send')->with($this->isInstanceOf('A2M_GET_SERVERS_BATCH2_Packet'));
+        $this->socket->expects($this->at(1))->method('getReply')->will($this->returnValue(new M2A_SERVER_BATCH_Packet("\xA\x7F\0\0\x1\x69\x87\x7F\0\0\x1\x69\x88")));
+        $this->socket->expects($this->at(2))->method('send')->with($this->isInstanceOf('A2M_GET_SERVERS_BATCH2_Packet'));
+        $this->socket->expects($this->at(3))->method('getReply')->will($this->throwException(new TimeoutException()));
+        $this->socket->expects($this->at(4))->method('send')->with($this->isInstanceOf('A2M_GET_SERVERS_BATCH2_Packet'));
+        $this->socket->expects($this->at(5))->method('getReply')->will($this->throwException(new TimeoutException()));
+        $this->socket->expects($this->at(6))->method('send')->with($this->isInstanceOf('A2M_GET_SERVERS_BATCH2_Packet'));
+        $this->socket->expects($this->at(7))->method('getReply')->will($this->throwException(new TimeoutException()));
+        $this->server->expects($this->exactly(3))->method('rotateIp')->will($this->returnValue(false));
+        $this->socket->expects($this->at(8))->method('send')->with($this->isInstanceOf('A2M_GET_SERVERS_BATCH2_Packet'));
+        $this->socket->expects($this->at(9))->method('getReply')->will($this->returnValue(new M2A_SERVER_BATCH_Packet("\xA\x7F\0\0\x2\x69\x87\x7F\0\0\x2\x69\x88\0\0\0\0\0\0")));
+
+        $this->assertEquals(array(array('127.0.0.1', 27015), array('127.0.0.1', 27016), array('127.0.0.2', 27015), array('127.0.0.2', 27016)), $this->server->getServers());
+    }
+
     public function testSendHeartbeat() {
         $reply1 = 'reply1';
         $reply2 = 'reply2';

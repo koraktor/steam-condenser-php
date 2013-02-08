@@ -205,13 +205,15 @@ class MasterServer extends Server {
                         trigger_error("Request to master server {$this->ipAddress} timed out, retrying...");
                     }
                 } while(!$finished);
+                break;
             } catch(Exception $e) {
-                if($this->rotateIp() && !$force) {
+                if ($force) {
+                    break;
+                } else if($this->rotateIp()) {
                     throw $e;
                 }
                 trigger_error("Request to master server failed, retrying {$this->ipAddress}...");
             }
-            break;
         }
 
         return $serverArray;
