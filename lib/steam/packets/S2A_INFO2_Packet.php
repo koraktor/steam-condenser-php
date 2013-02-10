@@ -24,6 +24,12 @@ require_once STEAM_CONDENSER_PATH . 'steam/packets/S2A_INFO_BasePacket.php';
  */
 class S2A_INFO2_Packet extends S2A_INFO_BasePacket {
 
+    const EDF_GAME_ID     = 0x01;
+    const EDF_GAME_PORT   = 0x80;
+    const EDF_SERVER_ID   = 0x10;
+    const EDF_SERVER_TAGS = 0x20;
+    const EDF_SOURCE_TV   = 0x40;
+
     /**
      * Creates a new S2A_INFO2 response object based on the given data
      *
@@ -32,44 +38,45 @@ class S2A_INFO2_Packet extends S2A_INFO_BasePacket {
     public function __construct($data) {
         parent::__construct(SteamPacket::S2A_INFO2_HEADER, $data);
 
-        $this->networkVersion = $this->contentData->getByte();
-        $this->serverName = $this->contentData->getString();
-        $this->mapName = $this->contentData->getString();
-        $this->gameDir = $this->contentData->getString();
-        $this->gameDesc = $this->contentData->getString();
-        $this->appId = $this->contentData->getShort();
-        $this->numberOfPlayers = $this->contentData->getByte();
-        $this->maxPlayers = $this->contentData->getByte();
-        $this->botNumber = $this->contentData->getByte();
-        $this->dedicated = chr($this->contentData->getByte());
-        $this->operatingSystem = chr($this->contentData->getByte());
-        $this->passwordProtected = $this->contentData->getByte() == 1;
-        $this->secureServer = $this->contentData->getByte() == 1;
-        $this->gameVersion = $this->contentData->getString();
+        $this->info['networkVersion'] = $this->contentData->getByte();
+        $this->info['serverName'] = $this->contentData->getString();
+        $this->info['mapName'] = $this->contentData->getString();
+        $this->info['gameDir'] = $this->contentData->getString();
+        $this->info['gameDesc'] = $this->contentData->getString();
+        $this->info['appId'] = $this->contentData->getShort();
+        $this->info['numberOfPlayers'] = $this->contentData->getByte();
+        $this->info['maxPlayers'] = $this->contentData->getByte();
+        $this->info['botNumber'] = $this->contentData->getByte();
+        $this->info['dedicated'] = chr($this->contentData->getByte());
+        $this->info['operatingSystem'] = chr($this->contentData->getByte());
+        $this->info['passwordProtected'] = $this->contentData->getByte() == 1;
+        $this->info['secureServer'] = $this->contentData->getByte() == 1;
+        $this->info['gameVersion'] = $this->contentData->getString();
 
         if($this->contentData->remaining() > 0) {
             $extraDataFlag = $this->contentData->getByte();
 
-            if($extraDataFlag & 0x80) {
-                $this->serverPort = $this->contentData->getShort();
+            if ($extraDataFlag & self::EDF_GAME_PORT) {
+                $this->info['serverPort'] = $this->contentData->getShort();
             }
 
-            if($extraDataFlag & 0x10) {
-                $this->serverId = $this->contentData->getUnsignedLong() | ($this->contentData->getUnsignedLong() << 32);
+            if ($extraDataFlag & self::EDF_SERVER_ID) {
+                $this->info['serverId'] = $this->contentData->getUnsignedLong() | ($this->contentData->getUnsignedLong() << 32);
             }
 
-            if($extraDataFlag & 0x40) {
-                $this->tvPort = $this->contentData->getShort();
-                $this->tvName = $this->contentData->getString();
+            if ($extraDataFlag & self::EDF_SOURCE_TV) {
+                $this->info['tvPort'] = $this->contentData->getShort();
+                $this->info['tvName'] = $this->contentData->getString();
             }
 
-            if($extraDataFlag & 0x20) {
-                $this->serverTags = $this->contentData->getString();
+            if ($extraDataFlag & self::EDF_SERVER_TAGS) {
+                $this->info['serverTags'] = $this->contentData->getString();
             }
 
-            if ($extraDataFlag & 0x01) {
-                $this->gameId = $this->contentData->getUnsignedLong() | ($this->contentData->getUnsignedLong() << 32);
+            if ($extraDataFlag & self::EDF_GAME_ID) {
+                $this->info['gameId'] = $this->contentData->getUnsignedLong() | ($this->contentData->getUnsignedLong() << 32);
             }
         }
     }
+
 }

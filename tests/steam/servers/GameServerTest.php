@@ -265,8 +265,8 @@ class GameServerTest extends PHPUnit_Framework_TestCase {
         $server = $this->serverBuilder->setMethods(array('initSocket', 'getReply', 'rconAuth', 'rconExec', 'sendRequest'))->getMock();
         $server->expects($this->once())->method('sendRequest')->with($this->isInstanceOf('A2S_INFO_Packet'));
 
-        $packet = $this->getMockBuilder('S2A_INFO_BasePacket')->disableOriginalConstructor()->setMethods(array('getInfoHash'))->getMock();
-        $packet->expects($this->once())->method('getInfoHash')->will($this->returnValue(array('test' => 'test')));
+        $packet = $this->getMockBuilder('S2A_INFO_BasePacket')->disableOriginalConstructor()->setMethods(array('getInfo'))->getMock();
+        $packet->expects($this->once())->method('getInfo')->will($this->returnValue(array('test' => 'test')));
         $server->expects($this->once())->method('getReply')->will($this->returnValue($packet));
 
         $server->handleResponseForRequest(GameServer::REQUEST_INFO);

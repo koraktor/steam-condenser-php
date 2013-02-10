@@ -302,7 +302,7 @@ abstract class GameServer extends Server {
         $responsePacket = $this->getReply();
 
         if($responsePacket instanceof S2A_INFO_BasePacket) {
-            $this->infoHash = $responsePacket->getInfoHash();
+            $this->infoHash = $responsePacket->getInfo();
         } elseif($responsePacket instanceof S2A_PLAYER_Packet) {
             $this->playerHash = $responsePacket->getPlayerHash();
         } elseif($responsePacket instanceof S2A_RULES_Packet) {

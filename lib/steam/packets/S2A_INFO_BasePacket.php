@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2011, Sebastian Staudt
+ * Copyright (c) 2008-2013, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -23,19 +23,9 @@ require_once STEAM_CONDENSER_PATH . 'steam/packets/SteamPacket.php';
 abstract class S2A_INFO_BasePacket extends SteamPacket {
 
     /**
-     * @var String
+     * @var array
      */
-    private $mapName;
-
-    /**
-     * @var int
-     */
-    private $networkVersion;
-
-    /**
-     * @var String
-     */
-    private $serverName;
+    protected $info = array();
 
     /**
      * Returns a generated array of server properties from the instance
@@ -43,7 +33,8 @@ abstract class S2A_INFO_BasePacket extends SteamPacket {
      *
      * @return array The information provided by the server
      */
-    public function getInfoHash() {
-        return array_diff_key(get_object_vars($this), array('contentData' => null, 'headerData' => null));
+    public function getInfo() {
+        return $this->info;
     }
+
 }
