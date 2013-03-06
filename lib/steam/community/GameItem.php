@@ -112,7 +112,6 @@ class GameItem {
         $this->level            = $itemData->level;
         $this->name             = $this->getSchemaData()->item_name;
         $origins = $this->inventory->getItemSchema()->getOrigins();
-        $this->origin           = $origins[$itemData->origin];
         $this->originalId       = $itemData->original_id;
         $this->preliminary      = ($itemData->inventory & 0x40000000) != 0;
         $qualities = $this->inventory->getItemSchema()->getQualities();
@@ -125,6 +124,9 @@ class GameItem {
         if (!empty($this->getSchemaData()->item_set)) {
             $itemSets = $this->inventory->getItemSchema()->getItemSets();
             $this->itemSet = $itemSets[$this->getSchemaData()->item_set];
+        }
+        if (property_exists($itemData, 'origin')) {
+            $this->origin = $origins[$itemData->origin];
         }
         if (property_exists($itemData, 'flag_cannot_trade')) {
             $this->tradeable = !!$itemData->flag_cannot_trade;
