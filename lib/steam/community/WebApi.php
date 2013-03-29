@@ -204,6 +204,8 @@ class WebApi {
      * @throws WebApiException if the request failed
      */
     protected function request($url) {
+        trigger_error("Querying Steam Web API: " . str_replace(self::$apiKey, 'SECRET', $url), E_USER_NOTICE);
+
         $data = @file_get_contents($url);
 
         if(empty($data)) {
