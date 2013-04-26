@@ -253,13 +253,6 @@ class SteamId extends XMLData {
         
         $profile = $resultSummaries->response->players[0];
         $profileBans = $resultBans->players[0];
-        if ( true ) {
-          print("<pre>");
-          var_dump($profile);
-          print("</pre><hr /><pre>");
-          var_dump($profileBans);
-          print("</pre>");
-        }
 
         if(!empty($profile->error)) {
             throw new SteamCondenserException((string) $profile->error);
