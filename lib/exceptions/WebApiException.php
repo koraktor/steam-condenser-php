@@ -76,7 +76,7 @@ class WebApiException extends SteamCondenserException {
                 $message = 'Your Web API request has been rejected. You most likely did not specify a valid Web API key.';
                 break;
             default:
-                $message = 'An unexpected error occured while executing a Web API request.';
+                $message = 'An unexpected error occurred while executing a Web API request.';
         }
 
         parent::__construct($message);
