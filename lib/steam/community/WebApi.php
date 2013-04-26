@@ -179,7 +179,7 @@ class WebApi {
      */
     protected function _load($format, $interface, $method, $version = 1, $params = null) {
         $version = str_pad($version, 4, '0', STR_PAD_LEFT);
-        $url = "http://api.steampowered.com/$interface/$method/v$version/";
+        $url = "https://api.steampowered.com/$interface/$method/v$version/";
 
         $params['format'] = $format;
         $params['key']    = self::$apiKey;
