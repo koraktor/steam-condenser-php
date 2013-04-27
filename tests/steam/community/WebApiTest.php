@@ -64,8 +64,18 @@ class WebApiTest extends PHPUnit_Framework_TestCase {
         WebApi::getJSONData('interface', 'method', 2, array('test' => 'param'));
     }
 
-
     public function testLoad() {
+        $data = 'data';
+        $webApi = $this->getMockBuilder('WebApi')->setMethods(array('request'))->disableOriginalConstructor()->getMock();
+        $webApi->expects($this->once())->method('request')->with('https://api.steampowered.com/interface/method/v0002/?test=param&format=json&key=0123456789ABCDEF0123456789ABCDEF')->will($this->returnValue($data));
+        $this->instance->setValue($webApi);
+
+        $this->assertEquals('data', WebApi::load('json', 'interface', 'method', 2, array('test' => 'param')));
+    }
+
+    public function testLoadInsecure() {
+        WebApi::setSecure(false);
+
         $data = 'data';
         $webApi = $this->getMockBuilder('WebApi')->setMethods(array('request'))->disableOriginalConstructor()->getMock();
         $webApi->expects($this->once())->method('request')->with('http://api.steampowered.com/interface/method/v0002/?test=param&format=json&key=0123456789ABCDEF0123456789ABCDEF')->will($this->returnValue($data));
