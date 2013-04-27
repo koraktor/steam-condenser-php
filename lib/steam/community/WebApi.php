@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2010-2012, Sebastian Staudt
+ * Copyright (c) 2010-2013, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -30,6 +30,11 @@ class WebApi {
      * @var WebApi
      */
     protected static $instance = null;
+
+    /**
+     * @var bool
+     */
+    protected static $secure = true;
 
     /**
      * Returns the Steam Web API key
@@ -87,6 +92,15 @@ class WebApi {
      */
     public static function load($format, $interface, $method, $version = 1, $params = null) {
         return self::instance()->_load($format, $interface, $method, $version, $params);
+    }
+
+    /**
+     * Sets whether HTTPS should be used for the communication with the Web API
+     *
+     * @param bool $secure Whether to use HTTPS
+     */
+    public static function setSecure($secure) {
+        self::$secure = $secure;
     }
 
     /**
@@ -179,7 +193,8 @@ class WebApi {
      */
     protected function _load($format, $interface, $method, $version = 1, $params = null) {
         $version = str_pad($version, 4, '0', STR_PAD_LEFT);
-        $url = "https://api.steampowered.com/$interface/$method/v$version/";
+        $protocol = (self::$secure) ? 'https' : 'http';
+        $url = "$protocol://api.steampowered.com/$interface/$method/v$version/";
 
         $params['format'] = $format;
         $params['key']    = self::$apiKey;
