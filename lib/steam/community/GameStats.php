@@ -93,7 +93,7 @@ class GameStats extends XMLData {
     }
 
     /**
-     * Returns the base Steam Communtiy URL for the given player and game IDs
+     * Returns the base Steam Community URL for the given player and game IDs
      *
      * @param string $userId The 64bit SteamID or custom URL of the user
      * @param mixed $gameId The application ID or short name of the game
@@ -195,7 +195,7 @@ class GameStats extends XMLData {
     }
 
     /**
-     * Returns the base Steam Communtiy URL for the stats contained in this
+     * Returns the base Steam Community URL for the stats contained in this
      * object
      *
      * @return string The base URL used for queries on these stats
