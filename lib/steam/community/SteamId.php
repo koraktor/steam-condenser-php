@@ -245,14 +245,10 @@ class SteamId extends XMLData {
      */
     public function fetchData() {
         
-        $params = array('steamids' => $this->steamId64);
+        $params = array('steamids' => $this->steamId64, 'steamid' => $this->steamId64);
         $jsonSummaries = WebApi::getJSON('ISteamUser', 'GetPlayerSummaries', 2, $params);
-        $jsonBans = WebApi::getJSON('ISteamUser', 'GetPlayerBans', 1, $params);
         $resultSummaries = json_decode($jsonSummaries);
-        $resultBans = json_decode($jsonBans);
-        
         $profile = $resultSummaries->response->players[0];
-        $profileBans = $resultBans->players[0];
 
         if(!empty($profile->error)) {
             throw new SteamCondenserException((string) $profile->error);
@@ -262,9 +258,19 @@ class SteamId extends XMLData {
             throw new SteamCondenserException((string) $profile->privacyMessage);
         }
         
+        $jsonBans = WebApi::getJSON('ISteamUser', 'GetPlayerBans', 1, $params);
+        $jsonGroups = WebApi::getJSON('ISteamUser', 'GetUserGroupList', 1, $params);
+        $resultBans = json_decode($jsonBans);
+        $resultGroups = json_decode($jsonGroups);
+        
+        
+        $profileBans = $resultBans->players[0];
+        $proflieGroups = $resultGroups->response;
+
         // Raw structure dump
         $this->GetPlayerSummaries = $profile;
         $this->GetPlayerBans = $profileBans;
+        //$this->GetUserGroupList = $proflieGroups;
 
         if(!empty($profile->mostPlayedGames)) {
             foreach($profile->mostPlayedGames->mostPlayedGame as $mostPlayedGame) {
@@ -272,9 +278,9 @@ class SteamId extends XMLData {
             }
         }
 
-        if(!empty($profile->groups)) {
-            foreach($profile->groups->group as $group) {
-                $this->groups[] = SteamGroup::create((string) $group->groupID64, false);
+        if(!empty($proflieGroups->groups)) {
+            foreach($proflieGroups->groups as $group) {
+                $this->groups[] = SteamGroup::create((string) $group->gid, false);
             }
         }
 
