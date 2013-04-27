@@ -228,6 +228,23 @@ class SteamGame {
     }
 
     /**
+     * Returns the schema of this game
+     *
+     * @return structure
+     *   The schema for the game.
+     */
+    public function getSchemaForGame() {
+        if ( empty($this->schema) ) {
+          $params = array('appid' => $this->appId);
+          $result = WebApi::getJSON('ISteamUserStats', 'GetSchemaForGame', 2, $params);
+          $result = json_decode($result);
+          $this->schema = $result->game;
+        }
+        
+        return $this->schema;
+    }
+
+    /**
      * Returns the short name of this game (also known as "friendly name")
      *
      * @return string|null
