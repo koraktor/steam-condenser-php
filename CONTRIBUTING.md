@@ -11,8 +11,8 @@ improved documentation, a fixed bug or a whole new feature.
     `feature-x`
  3. Make your modifications, complying with the
     [code conventions](#code-conventions)
- 4. Commit small logical changes, each with a descriptive commit message. Please
-    don't mix unrelated changes in a single commit.
+ 4. Commit small logical changes, each with a descriptive commit message.
+    Please don't mix unrelated changes in a single commit.
 
 ## Commit messages
 
@@ -41,9 +41,9 @@ Please format your commit messages as follows:
    * Line endings must be line feeds (\n)
    * Add a newline at end of file
  * Name conventions:
-   * *UpperCamelCase* for classes
-   * *lowerCamelCase* for fields, methods and variables
-   * *UPPERCASE* for constants
+   * `UpperCamelCase` for classes
+   * `lowerCamelCase` for fields, methods and variables
+   * `UPPER_CASE` for constants
 
 ## Further information
 
