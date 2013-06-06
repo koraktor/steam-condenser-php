@@ -30,12 +30,13 @@ class SocketException extends SteamCondenserException {
      * extension or with the given message.
      *
      * @param int|string $errorCode The error code or message
-     * @see socket_lasterror()s
+     * @see socket_lasterror()
      * @see socket_strerror()
      */
     public function __construct($errorCode) {
         if (is_string($errorCode)) {
             $errorMessage = $errorCode;
+            $errorCode = null;
         } else {
             $this->errorCode = $errorCode;
             $errorMessage = socket_strerror($errorCode) . " (Code: $errorCode)";
