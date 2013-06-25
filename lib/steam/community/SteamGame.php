@@ -230,8 +230,7 @@ class SteamGame {
     /**
      * Returns the schema of this game
      *
-     * @return structure
-     *   The schema for the game.
+     * @return stdClass The schema for the game.
      */
     public function getSchemaForGame() {
         if ( empty($this->schema) ) {
