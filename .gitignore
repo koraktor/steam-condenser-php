@@ -1,0 +1,7 @@
+# Miscellaneous unimportant OS files.
+.DS_Store
+thumbs.db
+
+# Composer ignores
+/vendor/*
+composer.lock

@@ -12,6 +12,7 @@ require_once STEAM_CONDENSER_PATH . 'exceptions/SteamCondenserException.php';
 require_once STEAM_CONDENSER_PATH . 'steam/community/GameStats.php';
 require_once STEAM_CONDENSER_PATH . 'steam/community/SteamGame.php';
 require_once STEAM_CONDENSER_PATH . 'steam/community/SteamGroup.php';
+require_once STEAM_CONDENSER_PATH . 'steam/community/WebApi.php';
 require_once STEAM_CONDENSER_PATH . 'steam/community/XMLData.php';
 
 /**
@@ -30,11 +31,6 @@ class SteamId extends XMLData {
     private static $steamIds = array();
 
     /**
-     * @var string
-     */
-    private $customUrl;
-
-    /**
      * @var int
      */
     private $fetchTime;
@@ -50,16 +46,6 @@ class SteamId extends XMLData {
     private $games;
 
     /**
-     * @var bool
-     */
-    private $limited;
-
-    /**
-     * @var string
-     */
-    private $nickname;
-
-    /**
      * @var array
      */
     private $playtimes;
@@ -70,9 +56,14 @@ class SteamId extends XMLData {
     private $steamId64;
 
     /**
-     * @var string
+     * @var stdClass
      */
-    private $tradeBanState;
+    private $getPlayerSummaries;
+
+    /**
+     * @var stdClass
+     */
+    private $getPlayerBans;
 
     /**
      * Returns whether the requested Steam ID is already cached
@@ -246,14 +237,18 @@ class SteamId extends XMLData {
     }
 
     /**
-     * Fetchs data from the Steam Community by querying the XML version of the
+     * Fetches data from the Steam Community by querying the WebAPI version of the
      * profile specified by the ID of this Steam ID
      *
      * @throws SteamCondenserException if the Steam ID data is not available,
      *         e.g. when it is private, or when it cannot be parsed
      */
     public function fetchData() {
-        $profile = $this->getData($this->getBaseUrl() . '?xml=1');
+        
+        $params = array('steamids' => $this->steamId64, 'steamid' => $this->steamId64);
+        $jsonSummaries = WebApi::getJSON('ISteamUser', 'GetPlayerSummaries', 2, $params);
+        $resultSummaries = json_decode($jsonSummaries);
+        $profile = $resultSummaries->response->players[0];
 
         if(!empty($profile->error)) {
             throw new SteamCondenserException((string) $profile->error);
@@ -262,29 +257,18 @@ class SteamId extends XMLData {
         if(!empty($profile->privacyMessage)) {
             throw new SteamCondenserException((string) $profile->privacyMessage);
         }
+        
+        $jsonBans = WebApi::getJSON('ISteamUser', 'GetPlayerBans', 1, $params);
+        $jsonGroups = WebApi::getJSON('ISteamUser', 'GetUserGroupList', 1, $params);
+        $resultBans = json_decode($jsonBans);
+        $resultGroups = json_decode($jsonGroups);
+        
+        $profileBans = $resultBans->players[0];
+        $proflieGroups = $resultGroups->response;
 
-        $this->nickname      = htmlspecialchars_decode((string) $profile->steamID);
-        $this->steamId64     = (string) $profile->steamID64;
-        $this->limited       = (bool)(int) $profile->isLimitedAccount;
-        $this->tradeBanState = (string) $profile->tradeBanState;
-        $this->vacBanned     = (bool)(int) $profile->vacBanned;
-
-        $this->imageUrl = substr((string) $profile->avatarIcon, 0, -4);
-        $this->onlineState = (string) $profile->onlineState;
-        $this->privacyState = (string) $profile->privacyState;
-        $this->stateMessage = (string) $profile->stateMessage;
-        $this->visibilityState = (int) $profile->visibilityState;
-
-        if($this->isPublic()) {
-            $this->customUrl = strtolower((string) $profile->customURL);
-            $this->headLine = htmlspecialchars_decode((string) $profile->headline);
-            $this->hoursPlayed = (float) $profile->hoursPlayed2Wk;
-            $this->location = (string) $profile->location;
-            $this->memberSince = (string) $profile->memberSince;
-            $this->realName = htmlspecialchars_decode((string) $profile->realname);
-            $this->steamRating = (float) $profile->steamRating;
-            $this->summary = htmlspecialchars_decode((string) $profile->summary);
-        }
+        // Raw structure dump
+        $this->getPlayerSummaries = $profile;
+        $this->getPlayerBans = $profileBans;
 
         if(!empty($profile->mostPlayedGames)) {
             foreach($profile->mostPlayedGames->mostPlayedGame as $mostPlayedGame) {
@@ -292,9 +276,9 @@ class SteamId extends XMLData {
             }
         }
 
-        if(!empty($profile->groups)) {
-            foreach($profile->groups->group as $group) {
-                $this->groups[] = SteamGroup::create((string) $group->groupID64, false);
+        if(!empty($proflieGroups->groups)) {
+            foreach($proflieGroups->groups as $group) {
+                $this->getUserGroupList[$group->gid] = SteamGroup::create((string) $group->gid, false);
             }
         }
 
@@ -319,10 +303,12 @@ class SteamId extends XMLData {
      *         data
     */
     private function fetchFriends() {
-        $friendsData = $this->getData($this->getBaseUrl() . '/friends?xml=1');
         $this->friends = array();
-        foreach($friendsData->friends->friend as $friend) {
-            $this->friends[] = SteamId::create((string) $friend, false);
+        $params = array('steamid' => $this->steamId64);
+        $jsonFriends = WebApi::getJSON('ISteamUser', 'GetFriendList', 1, $params);
+        $resultFriends = json_decode($jsonFriends);
+        foreach($resultFriends->friendslist->friends as $friend) {
+          $this->friends[] = $friend;
         }
     }
 
@@ -384,6 +370,26 @@ class SteamId extends XMLData {
     }
 
     /**
+     * Returns the URL of the requested avatar size.
+     *
+     * @return string The URL of the requested image.
+    */
+    public function getAvatarUrl($size="") {
+      $returnImage = null;
+      switch (strtolower($size)) {
+        case "full":
+          $returnImage = $this->getPlayerSummaries->avatarfull;
+          break;
+        case "medium":
+          $returnImage = $this->getPlayerSummaries->avatarmedium;
+          break;
+        default:
+          $returnImage = $this->getPlayerSummaries->avatar;
+      }
+      return $returnImage;
+    }
+
+    /**
      * Returns the base URL for this Steam ID
      *
      * This URL is different for Steam IDs having a custom URL.
@@ -391,10 +397,10 @@ class SteamId extends XMLData {
      * @return string The base URL for this SteamID
      */
     public function getBaseUrl() {
-        if(empty($this->customUrl)) {
+        if(empty($this->getPlayerSummaries->profileurl)) {
             return "http://steamcommunity.com/profiles/{$this->steamId64}";
         } else {
-            return "http://steamcommunity.com/id/{$this->customUrl}";
+            return $this->getPlayerSummaries->profileurl;
         }
     }
 
@@ -410,7 +416,7 @@ class SteamId extends XMLData {
      * @return string The custom URL of this Steam ID
      */
     public function getCustomUrl() {
-        return $this->customUrl;
+        return $this->getPlayerSummaries->profileurl;
     }
 
     /**
@@ -444,7 +450,7 @@ class SteamId extends XMLData {
      * @return string The URL of the full-sized avatar
      */
     public function getFullAvatarUrl() {
-        return $this->imageUrl . '_full.jpg';
+        return $this->getPlayerSummaries->avatarfull;
     }
 
     /**
@@ -495,7 +501,7 @@ class SteamId extends XMLData {
      * @return string The URL of the icon-sized avatar
      */
     public function getIconAvatarUrl() {
-        return $this->imageUrl . '.jpg';
+        return $this->getPlayerSummaries->avatar;
     }
 
     /**
@@ -519,7 +525,7 @@ class SteamId extends XMLData {
      * @return string The URL of the medium-sized avatar
      */
     public function getMediumAvatarUrl() {
-        return $this->imageUrl . '_medium.jpg';
+        return $this->getPlayerSummaries->avatarmedium;
     }
 
     /**
@@ -528,7 +534,7 @@ class SteamId extends XMLData {
      * @return string The Steam nickname of the user
      */
     public function getNickname() {
-        return $this->nickname;
+        return $this->getPlayerSummaries->personaname;
     }
 
     /**
@@ -574,7 +580,7 @@ class SteamId extends XMLData {
      * @return string This user's trading ban state
      */
     public function getTradeBanState() {
-        return $this->tradeBanState;
+        return $this->getPlayerBans->EconomyBan;
     }
 
     /**
@@ -583,7 +589,16 @@ class SteamId extends XMLData {
      * @return bool <var>true</var> if the user has been banned by VAC
      */
     public function isBanned() {
-        return $this->vacBanned;
+        return $this->getPlayerBans->VACBanned;
+    }
+
+    /**
+     * Returns whether the owner of this Steam ID is Community banned
+     *
+     * @return bool <var>true</var> if the user has been banned by Community
+     */
+    public function isCommunityBanned() {
+        return $this->getPlayerBans->CommunityBanned;
     }
 
     /**
@@ -602,7 +617,7 @@ class SteamId extends XMLData {
      * @return bool <var>true</var> if the user is in-game
      */
     public function isInGame() {
-        return $this->onlineState == 'in-game';
+        return (bool)!empty($this->getPlayerSummaries->gameid);
     }
 
     /**
@@ -621,7 +636,7 @@ class SteamId extends XMLData {
      * @return bool <var>true</var> if the user is online
      */
     public function isOnline() {
-        return ($this->onlineState == 'online') || ($this->onlineState == 'in-game');
+        return ($this->getPlayerSummaries->personastate > 0);
     }
 
     /**
@@ -630,7 +645,7 @@ class SteamId extends XMLData {
      * @return bool <var>true</var> if this Steam ID is public
      */
     public function isPublic() {
-        return $this->privacyState == 'public';
+        return ($this->getPlayerSummaries->communityvisibilitystate == 5);
     }
 
 }
