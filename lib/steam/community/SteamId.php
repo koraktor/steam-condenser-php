@@ -263,14 +263,12 @@ class SteamId extends XMLData {
         $resultBans = json_decode($jsonBans);
         $resultGroups = json_decode($jsonGroups);
         
-        
         $profileBans = $resultBans->players[0];
         $proflieGroups = $resultGroups->response;
 
         // Raw structure dump
         $this->getPlayerSummaries = $profile;
         $this->getPlayerBans = $profileBans;
-        //$this->GetUserGroupList = $proflieGroups;
 
         if(!empty($profile->mostPlayedGames)) {
             foreach($profile->mostPlayedGames->mostPlayedGame as $mostPlayedGame) {
@@ -280,7 +278,7 @@ class SteamId extends XMLData {
 
         if(!empty($proflieGroups->groups)) {
             foreach($proflieGroups->groups as $group) {
-                $this->groups[] = SteamGroup::create((string) $group->gid, false);
+                $this->getUserGroupList[$group->gid] = SteamGroup::create((string) $group->gid, false);
             }
         }
 
