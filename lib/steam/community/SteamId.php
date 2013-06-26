@@ -237,7 +237,7 @@ class SteamId extends XMLData {
     }
 
     /**
-     * Fetches data from the Steam Community by querying the XML version of the
+     * Fetches data from the Steam Community by querying the WebAPI version of the
      * profile specified by the ID of this Steam ID
      *
      * @throws SteamCondenserException if the Steam ID data is not available,
