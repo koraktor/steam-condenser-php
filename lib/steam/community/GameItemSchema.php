@@ -194,8 +194,8 @@ class GameItemSchema {
         $index = -1;
         foreach ($data->qualities as $key => $value) {
             $index ++;
-            if (property_exists($data->qualityNames, $key)) {
-                $qualityName = $data->qualityNames->$key;
+            if (property_exists($data->qualities, $key)) {
+                $qualityName = $key;
             }
             if (empty($qualityName)) {
                 $qualityName = ucwords($key);
