@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2012, Sebastian Staudt
+ * Copyright (c) 2008-2013, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -31,7 +31,7 @@ class MasterServer extends Server {
     /**
      * @var string The master server address to query for GoldSrc game servers
      */
-    const GOLDSRC_MASTER_SERVER = 'hl1master.steampowered.com:27010';
+    const GOLDSRC_MASTER_SERVER = 'hl1master.steampowered.com:27011';
 
     /**
      * @var string The master server address to query for GoldSrc game servers
