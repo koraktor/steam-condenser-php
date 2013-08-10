@@ -197,7 +197,9 @@ class WebApi {
         $url = "$protocol://api.steampowered.com/$interface/$method/v$version/";
 
         $params['format'] = $format;
-        $params['key']    = self::$apiKey;
+        if (self::$apiKey != null) {
+            $params['key'] = self::$apiKey;
+        }
 
         if($params != null && !empty($params)) {
             $url .= '?';
