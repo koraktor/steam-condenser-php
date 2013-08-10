@@ -46,6 +46,20 @@ class WebApi {
     }
 
     /**
+     * Returns a raw list of interfaces and their methods that are available in
+     * Steam's Web API
+     *
+     * This can be used for reference when accessing interfaces and methods
+     * that have not yet been implemented by Steam Condenser.
+     *
+     * @return array The list of interfaces and methods
+     */
+    public static function getInterfaces() {
+        $data = self::getJSON('ISteamWebAPIUtil', 'GetSupportedAPIList');
+        return json_decode($data)->apilist->interfaces;
+    }
+
+    /**
      * Fetches JSON data from Steam Web API using the specified interface,
      * method and version. Additional parameters are supplied via HTTP GET.
      *
