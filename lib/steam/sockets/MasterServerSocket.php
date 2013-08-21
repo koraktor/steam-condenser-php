@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2011, Sebastian Staudt
+ * Copyright (c) 2008-2013, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -21,6 +21,27 @@ require_once STEAM_CONDENSER_PATH . 'steam/sockets/SteamSocket.php';
 class MasterServerSocket extends SteamSocket {
 
     /**
+     * @var Monolog\Logger The Monolog logger for this class
+     */
+    private static $log;
+
+    /**
+     * Creates a new UDP socket to communicate with the server on the given IP
+     * address and port
+     *
+     * @param string $ipAddress Either the IP address or the DNS name of the
+     *        server
+     * @param int $portNumber The port the server is listening on
+     */
+    public function __construct($ipAddress, $portNumber = 27015) {
+        parent::__construct($ipAddress, $portNumber);
+
+        if (!isset(self::$log)) {
+            self::$log = new \Monolog\Logger('MasterServerSocket');
+        }
+    }
+
+    /**
      * Reads a single packet from the socket
      *
      * @return SteamPacket The packet replied from the server
@@ -35,7 +56,7 @@ class MasterServerSocket extends SteamSocket {
 
         $packet = SteamPacketFactory::getPacketFromData($this->buffer->get());
 
-        trigger_error("Received reply of type \"" . get_class($packet) . "\"");
+        self::$log->addDebug("Received reply of type \"" . get_class($packet) . "\"");
 
         return $packet;
     }

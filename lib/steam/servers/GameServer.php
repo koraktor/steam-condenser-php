@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2012, Sebastian Staudt
+ * Copyright (c) 2008-2013, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -31,6 +31,11 @@ abstract class GameServer extends Server {
     const REQUEST_INFO      = 1;
     const REQUEST_PLAYER    = 2;
     const REQUEST_RULES     = 3;
+
+    /**
+     * @var Monolog\Logger The Monolog logger for this class
+     */
+    private static $log;
 
     /**
      * @var int The challenge number to communicate with the server
@@ -148,6 +153,10 @@ abstract class GameServer extends Server {
         parent::__construct($address, $port);
 
         $this->rconAuthenticated = false;
+
+        if (!isset(self::$log)) {
+            self::$log = new \Monolog\Logger('MasterServer');
+        }
     }
 
     /**
@@ -314,7 +323,7 @@ abstract class GameServer extends Server {
         }
 
         if(!($responsePacket instanceof $expectedResponse)) {
-            trigger_error("Expected {$expectedResponse}, got " . get_class($responsePacket) . '.');
+            self::$log->addInfo("Expected {$expectedResponse}, got " . get_class($responsePacket) . '.');
             if($repeatOnFailure) {
                 $this->handleResponseForRequest($requestType, false);
             }

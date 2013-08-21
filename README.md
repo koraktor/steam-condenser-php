@@ -8,7 +8,13 @@ Currently it is implemented in Java, PHP and Ruby.
 ## Requirements
 
 * Linux, MacOS X or Windows
-* PHP 5 or newer
+* PHP 5.3 or newer
+
+The following PHP library is required:
+
+* Monolog
+
+Composer will install this for you.
 
 The following extensions are required:
 

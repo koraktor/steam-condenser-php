@@ -25,6 +25,11 @@ require_once STEAM_CONDENSER_PATH . 'steam/sockets/SteamSocket.php';
 class GoldSrcSocket extends SteamSocket {
 
     /**
+     * @var Monolog\Logger The Monolog logger for this class
+     */
+    private static $log;
+
+    /**
      * @var boolean
      */
     private $isHLTV;
@@ -48,6 +53,10 @@ class GoldSrcSocket extends SteamSocket {
     public function __construct($ipAddress, $portNumber = 27015, $isHLTV = false) {
         parent::__construct($ipAddress, $portNumber);
         $this->isHLTV = $isHLTV;
+
+        if (!isset(self::$log)) {
+            self::$log = new \Monolog\Logger('GoldSrcSocket');
+        }
     }
 
     /**
@@ -71,7 +80,7 @@ class GoldSrcSocket extends SteamSocket {
 
                 $splitPackets[$packetNumber - 1] = $this->buffer->get();
 
-                trigger_error("Received packet $packetNumber of $packetCount for request #$requestId");
+                self::$log->addDebug("Received packet $packetNumber of $packetCount for request #$requestId");
 
                 if(sizeof($splitPackets) < $packetCount) {
                     try {
@@ -89,7 +98,7 @@ class GoldSrcSocket extends SteamSocket {
             $packet = SteamPacketFactory::getPacketFromData($this->buffer->get());
         }
 
-        trigger_error("Received packet of type \"" . get_class($packet) . "\"");
+        self::$log->addDebug("Received packet of type \"" . get_class($packet) . "\"");
 
         return $packet;
     }

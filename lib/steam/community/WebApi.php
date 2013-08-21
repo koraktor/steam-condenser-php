@@ -22,6 +22,11 @@ require_once STEAM_CONDENSER_PATH . 'exceptions/WebApiException.php';
 class WebApi {
 
     /**
+     * @var Monolog\Logger The Monolog logger for this class
+     */
+    private static $log;
+
+    /**
      * @var string
      */
     private static $apiKey = null;
@@ -123,8 +128,9 @@ class WebApi {
      * @return WebApi The internal <var>WebApi</var> instance
      */
     private static function instance() {
-        if(self::$instance == null) {
+        if (self::$instance == null) {
             self::$instance = new WebApi();
+            self::$log = new \Monolog\Logger('WebApi');
         }
 
         return self::$instance;
@@ -235,7 +241,7 @@ class WebApi {
      * @throws WebApiException if the request failed
      */
     protected function request($url) {
-        trigger_error("Querying Steam Web API: " . str_replace(self::$apiKey, 'SECRET', $url), E_USER_NOTICE);
+        self::$log->addDebug("Querying Steam Web API: " . str_replace(self::$apiKey, 'SECRET', $url));
 
         $data = @file_get_contents($url);
 

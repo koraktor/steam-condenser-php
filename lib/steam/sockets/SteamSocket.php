@@ -25,6 +25,11 @@ require_once STEAM_CONDENSER_PATH . 'steam/packets/SteamPacketFactory.php';
 abstract class SteamSocket {
 
     /**
+     * @var Monolog\Logger The Monolog logger for this class
+     */
+    private static $log;
+
+    /**
      * @var int The default socket timeout
      */
     protected static $timeout = 1000;
@@ -61,6 +66,10 @@ abstract class SteamSocket {
      * @param int $portNumber The port the server is listening on
      */
     public function __construct($ipAddress, $portNumber = 27015) {
+        if (!isset(self::$log)) {
+            self::$log = new \Monolog\Logger('SteamSocket');
+        }
+
         $this->socket = new UDPSocket();
         $this->socket->connect($ipAddress, $portNumber, 0);
     }
@@ -141,8 +150,9 @@ abstract class SteamSocket {
      * @see SteamPacket::__toString()
      */
     public function send(SteamPacket $dataPacket) {
-        trigger_error("Sending packet of type \"" . get_class($dataPacket) . "\"...");
+        self::$log->addDebug("Sending packet of type \"" . get_class($dataPacket) . "\"...");
 
         $this->socket->send($dataPacket->__toString());
     }
+
 }

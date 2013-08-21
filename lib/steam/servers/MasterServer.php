@@ -27,6 +27,11 @@ require_once STEAM_CONDENSER_PATH . 'steam/sockets/MasterServerSocket.php';
 class MasterServer extends Server {
 
     /**
+     * @var Monolog\Logger The Monolog logger for this class
+     */
+    private static $log;
+
+    /**
      * @var string The master server address to query for GoldSrc game servers
      */
     const GOLDSRC_MASTER_SERVER = 'hl1master.steampowered.com:27011';
@@ -90,6 +95,23 @@ class MasterServer extends Server {
      * @var MasterServerSocket
      */
     protected $socket;
+
+    /**
+     * Creates a new master server instance with the given address and port
+     *
+     * @param string $address Either an IP address, a DNS name or one of them
+     *        combined with the port number. If a port number is given, e.g.
+     *        'server.example.com:27016' it will override the second argument.
+     * @param int $port The port the server is listening on
+     * @throws SteamCondenserException if an host name cannot be resolved
+     */
+    public function __construct($address, $port = null) {
+        parent::__construct($address, $port);
+
+        if (!isset(self::$log)) {
+            self::$log = new \Monolog\Logger('MasterServer');
+        }
+    }
 
     /**
      * Sets the number of consecutive requests that may fail, before getting
@@ -172,7 +194,7 @@ class MasterServer extends Server {
                         if($failCount == self::$retries) {
                             throw $e;
                         }
-                        trigger_error("Request to master server {$this->ipAddress} timed out, retrying...");
+                        self::$log->addInfo("Request to master server {$this->ipAddress} timed out, retrying...");
                     }
                 } while(!$finished);
                 break;
@@ -182,7 +204,7 @@ class MasterServer extends Server {
                 } else if($this->rotateIp()) {
                     throw $e;
                 }
-                trigger_error("Request to master server failed, retrying {$this->ipAddress}...");
+                self::$log->addInfo("Request to master server failed, retrying {$this->ipAddress}...");
             }
         }
 

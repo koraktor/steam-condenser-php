@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2011, Sebastian Staudt
+ * Copyright (c) 2008-2013, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -20,6 +20,27 @@ require_once STEAM_CONDENSER_PATH . 'steam/sockets/SteamSocket.php';
  * @subpackage sockets
  */
 class SourceSocket extends SteamSocket {
+
+    /**
+     * @var Monolog\Logger The Monolog logger for this class
+     */
+    private static $log;
+
+    /**
+     * Creates a new UDP socket to communicate with the Source server on the
+     * given IP address and port
+     *
+     * @param string $ipAddress Either the IP address or the DNS name of the
+     *        server
+     * @param int $portNumber The port the server is listening on
+     */
+    public function __construct($ipAddress, $portNumber = 27015) {
+        parent::__construct($ipAddress, $portNumber);
+
+        if (!isset(self::$log)) {
+            self::$log = new \Monolog\Logger('SourceSocket');
+        }
+    }
 
     /**
      * Reads a packet from the socket
@@ -52,7 +73,7 @@ class SourceSocket extends SteamSocket {
 
                 $splitPackets[$packetNumber] = $this->buffer->get();
 
-                trigger_error("Received packet $packetNumber of $packetCount for request #$requestId");
+                self::$log->addDebug("Received packet $packetNumber of $packetCount for request #$requestId");
 
                 if(sizeof($splitPackets) < $packetCount) {
                     try {
@@ -75,9 +96,9 @@ class SourceSocket extends SteamSocket {
         }
 
         if($isCompressed) {
-            trigger_error("Received compressed reply of type \"" . get_class($packet) . "\"");
+            self::$log->addDebug("Received compressed reply of type \"" . get_class($packet) . "\"");
         } else {
-            trigger_error("Received reply of type \"" . get_class($packet) . "\"");
+            self::$log->addDebug("Received reply of type \"" . get_class($packet) . "\"");
         }
 
         return $packet;

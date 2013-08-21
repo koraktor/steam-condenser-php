@@ -30,6 +30,11 @@ require_once STEAM_CONDENSER_PATH . 'steam/sockets/SteamSocket.php';
 class RCONSocket extends SteamSocket {
 
     /**
+     * @var Monolog\Logger The Monolog logger for this class
+     */
+    private static $log;
+
+    /**
      * @var string
      */
     private $ipAddress;
@@ -48,6 +53,10 @@ class RCONSocket extends SteamSocket {
      * @param int $portNumber The port the server is listening on
      */
     public function __construct($ipAddress, $portNumber) {
+        if (!isset(self::$log)) {
+            self::$log = new \Monolog\Logger('SourceSocket');
+        }
+
         $this->buffer = ByteBuffer::allocate(1400);
         $this->ipAddress = $ipAddress;
         $this->portNumber = $portNumber;
@@ -109,7 +118,7 @@ class RCONSocket extends SteamSocket {
 
         $packet = RCONPacketFactory::getPacketFromData($packetData);
 
-        trigger_error('Received packet of type ' . get_class($packet));
+        self::$log->addDebug('Received packet of type ' . get_class($packet));
 
         return $packet;
     }
