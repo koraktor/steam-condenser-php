@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2011, Sebastian Staudt
+ * Copyright (c) 2008-2013, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -21,8 +21,6 @@ require_once STEAM_CONDENSER_PATH . 'steam/packets/A2S_SERVERQUERY_GETCHALLENGE_
 require_once STEAM_CONDENSER_PATH . 'steam/packets/S2C_CHALLENGE_Packet.php';
 require_once STEAM_CONDENSER_PATH . 'steam/packets/A2M_GET_SERVERS_BATCH2_Packet.php';
 require_once STEAM_CONDENSER_PATH . 'steam/packets/M2A_SERVER_BATCH_Packet.php';
-require_once STEAM_CONDENSER_PATH . 'steam/packets/M2C_ISVALIDMD5_Packet.php';
-require_once STEAM_CONDENSER_PATH . 'steam/packets/M2S_REQUESTRESTART_Packet.php';
 require_once STEAM_CONDENSER_PATH . 'steam/packets/S2A_LOGSTRING_Packet.php';
 
 /**
@@ -82,12 +80,6 @@ abstract class SteamPacketFactory {
 
             case SteamPacket::M2A_SERVER_BATCH_HEADER:
                 return new M2A_SERVER_BATCH_Packet($data);
-
-            case SteamPacket::M2C_ISVALIDMD5_HEADER:
-                return new M2C_ISVALIDMD5_Packet($data);
-
-            case SteamPacket::M2S_REQUESTRESTART_HEADER:
-                return new M2S_REQUESTRESTART_Packet($data);
 
             case SteamPacket::RCON_GOLDSRC_CHALLENGE_HEADER:
             case SteamPacket::RCON_GOLDSRC_NO_CHALLENGE_HEADER:
