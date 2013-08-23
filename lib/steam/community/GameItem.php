@@ -98,7 +98,7 @@ class GameItem {
      * Creates a new instance of a GameItem with the given data
      *
      * @param GameInventory $inventory The inventory this item is contained in
-     * @param array $itemData The data specifying this item
+     * @param stdClass $itemData The data specifying this item
      * @throws WebApiException on Web API errors
      */
     public function __construct(GameInventory $inventory, $itemData) {
