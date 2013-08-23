@@ -215,7 +215,7 @@ class GameInventory {
      *
      * @return int The application ID of the game this inventory belongs to
      */
-    private function getAppId() {
+    public function getAppId() {
         return $this->appId;
     }
 
