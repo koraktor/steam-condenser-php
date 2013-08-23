@@ -32,10 +32,11 @@ class S2A_PLAYER_Packet extends SteamPacket {
      * Creates a new S2A_PLAYER response object based on the given data
      *
      * @param string $contentData The raw packet data sent by the server
+     * @throws PacketFormatException if the packet data is missing
      */
     public function __construct($contentData) {
-        if(empty($contentData)) {
-            throw new Exception('Wrong formatted S2A_PLAYER packet.');
+        if (empty($contentData)) {
+            throw new PacketFormatException('Wrong formatted S2A_RULES packet.');
         }
         parent::__construct(SteamPacket::S2A_PLAYER_HEADER, $contentData);
 
