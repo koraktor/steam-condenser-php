@@ -24,6 +24,11 @@ class MasterServerSocketTest extends PHPUnit_Framework_TestCase {
         $bufferProperty = $reflectionSocket->getProperty('buffer');
         $bufferProperty->setAccessible(true);
         $bufferProperty->setValue($this->socket, $this->buffer);
+
+        $log = new \ReflectionProperty('MasterServerSocket', 'log');
+        $log->setAccessible(true);
+        $log->setValue(new \Monolog\Logger('MasterServerSocket'));
+        $log->getValue()->pushHandler(new \Monolog\Handler\NullHandler());
     }
 
     public function testIncorrectPacket() {

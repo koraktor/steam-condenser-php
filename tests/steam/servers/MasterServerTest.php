@@ -28,6 +28,11 @@ class MasterServerTest extends PHPUnit_Framework_TestCase {
         $this->server = $this->getMockBuilder('TestableMasterServer')->disableOriginalConstructor()->setMethods(array('rotateIp'))->getMock();
 
         $this->server->socket = $this->socket;
+
+        $log = new \ReflectionProperty('MasterServer', 'log');
+        $log->setAccessible(true);
+        $log->setValue(new \Monolog\Logger('MasterServer'));
+        $log->getValue()->pushHandler(new \Monolog\Handler\NullHandler());
     }
 
     public function testGetServers() {
