@@ -137,8 +137,8 @@ class SourceServer extends GameServer {
         }
 
         $this->rconSocket->send(new RCONExecRequest($this->rconRequestId, $command));
-        $this->rconSocket->send(new RCONTerminator($this->rconRequestId));
 
+        $isMulti = false;
         $response = array();
         do {
             try {
@@ -147,6 +147,11 @@ class SourceServer extends GameServer {
                 if ($responsePacket instanceof RCONAuthResponse) {
                     $this->rconAuthenticated = false;
                     throw new RCONNoAuthException();
+                }
+
+                if (!$isMulti && strlen($responsePacket->getResponse()) > 0) {
+                    $isMulti = true;
+                    $this->rconSocket->send(new RCONTerminator($this->rconRequestId));
                 }
             } catch (SocketException $e) {
                 if (defined('SOCKET_ECONNRESET') &&
@@ -159,7 +164,7 @@ class SourceServer extends GameServer {
             }
 
             $response[] = $responsePacket->getResponse();
-        } while(sizeof($response) < 3 || strlen($responsePacket->getResponse()) > 0);
+        } while($isMulti && !(empty($response[sizeof($response) - 2]) && empty($response[sizeof($response) - 1])));
 
         return trim(join('', $response));
     }
