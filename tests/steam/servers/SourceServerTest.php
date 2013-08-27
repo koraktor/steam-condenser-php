@@ -58,33 +58,30 @@ class SourceServerTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($server->rconAuth('password'));
     }
 
-    public function testRconExec() {
-        $this->rconSocket->expects($this->at(0))->method('send')->with($this->logicalAnd($this->isInstanceOf('RCONExecRequest'), $this->attributeEqualTo('requestId', 1234)));
-        $this->rconSocket->expects($this->at(1))->method('send')->with($this->logicalAnd($this->isInstanceOf('RCONTerminator'), $this->attributeEqualTo('requestId', 1234)));
-        $this->rconSocket->expects($this->at(2))->method('getReply')->will($this->returnValue(new RCONExecResponse(1234, 'test')));
-        $this->rconSocket->expects($this->at(3))->method('getReply')->will($this->returnValue(new RCONExecResponse(1234, '')));
-        $this->rconSocket->expects($this->at(4))->method('getReply')->will($this->returnValue(new RCONExecResponse(1234, '')));
+    public function testRconExecEmpty() {
+        $this->rconSocket->expects($this->once())->method('send')->with($this->logicalAnd($this->isInstanceOf('RCONExecRequest'), $this->attributeEqualTo('requestId', 1234)));
+        $this->rconSocket->expects($this->once())->method('getReply')->will($this->returnValue(new RCONExecResponse(1234, '')));
         $server = new TestableSourceServer('127.0.0.1');
         $server->rconAuthenticated = true;
         $server->rconRequestId = 1234;
         $server->rconSocket = $this->rconSocket;
 
-        $this->assertEquals('test', $server->rconExec('test'));
+        $this->assertEquals('', $server->rconExec('testx'));
     }
 
     public function testRconExecLongReply() {
         $this->rconSocket->expects($this->at(0))->method('send')->with($this->logicalAnd($this->isInstanceOf('RCONExecRequest'), $this->attributeEqualTo('requestId', 1234)));
-        $this->rconSocket->expects($this->at(1))->method('send')->with($this->logicalAnd($this->isInstanceOf('RCONTerminator'), $this->attributeEqualTo('requestId', 1234)));
-        $this->rconSocket->expects($this->at(2))->method('getReply')->will($this->returnValue(new RCONExecResponse(1234, 'test ')));
-        $this->rconSocket->expects($this->at(3))->method('getReply')->will($this->returnValue(new RCONExecResponse(1234, 'test ')));
-        $this->rconSocket->expects($this->at(4))->method('getReply')->will($this->returnValue(new RCONExecResponse(1234, 'test')));
+        $this->rconSocket->expects($this->at(1))->method('getReply')->will($this->returnValue(new RCONExecResponse(1234, 'test ')));
+        $this->rconSocket->expects($this->at(2))->method('send')->with($this->logicalAnd($this->isInstanceOf('RCONTerminator'), $this->attributeEqualTo('requestId', 1234)));
+        $this->rconSocket->expects($this->at(3))->method('getReply')->will($this->returnValue(new RCONExecResponse(1234, 'test')));
+        $this->rconSocket->expects($this->at(4))->method('getReply')->will($this->returnValue(new RCONExecResponse(1234, '')));
         $this->rconSocket->expects($this->at(5))->method('getReply')->will($this->returnValue(new RCONExecResponse(1234, '')));
         $server = new TestableSourceServer('127.0.0.1');
         $server->rconAuthenticated = true;
         $server->rconRequestId = 1234;
         $server->rconSocket = $this->rconSocket;
 
-        $this->assertEquals('test test test', $server->rconExec('test'));
+        $this->assertEquals('test test', $server->rconExec('test'));
     }
 
     public function testRconExecNoAuth() {
@@ -95,8 +92,7 @@ class SourceServerTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testRconExecInvalidAuth() {
-        $this->rconSocket->expects($this->at(0))->method('send')->with($this->logicalAnd($this->isInstanceOf('RCONExecRequest'), $this->attributeEqualTo('requestId', 1234)));
-        $this->rconSocket->expects($this->at(1))->method('send')->with($this->logicalAnd($this->isInstanceOf('RCONTerminator'), $this->attributeEqualTo('requestId', 1234)));
+        $this->rconSocket->expects($this->once())->method('send')->with($this->logicalAnd($this->isInstanceOf('RCONExecRequest'), $this->attributeEqualTo('requestId', 1234)));
         $this->rconSocket->expects($this->once())->method('getReply')->will($this->returnValue(new RCONAuthResponse(1234)));
         $server = new TestableSourceServer('127.0.0.1');
         $server->rconAuthenticated = true;
