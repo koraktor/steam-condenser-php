@@ -100,10 +100,7 @@ class GameStats extends XMLData {
      * @return string The base URL used for the given stats IDs
      */
     protected static function _getBaseUrl($userId, $gameId) {
-        $gameUrl = $gameId;
-        if(is_numeric($gameId)) {
-            $gameUrl = 'appid/' . $gameUrl;
-        }
+        $gameUrl = is_numeric($gameId) ? "appid/$gameId" : $gameId;
 
         if(is_numeric($userId)) {
             return "http://steamcommunity.com/profiles/$userId/stats/$gameUrl";
