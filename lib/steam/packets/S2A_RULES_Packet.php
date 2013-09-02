@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2011, Sebastian Staudt
+ * Copyright (c) 2008-2013, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -32,10 +32,11 @@ class S2A_RULES_Packet extends SteamPacket {
      * Creates a new S2A_RULES response object based on the given data
      *
      * @param string $contentData The raw packet data sent by the server
+     * @throws PacketFormatException if the packet data is missing
      */
     public function __construct($contentData) {
-        if(empty($contentData)) {
-            throw new Exception('Wrong formatted S2A_RULES packet.');
+        if (empty($contentData)) {
+            throw new PacketFormatException('Wrong formatted S2A_RULES packet.');
         }
         parent::__construct(SteamPacket::S2A_RULES_HEADER, $contentData);
 

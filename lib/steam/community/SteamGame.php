@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2011-2012, Sebastian Staudt
+ * Copyright (c) 2011-2013, Sebastian Staudt
  */
 
 require_once STEAM_CONDENSER_PATH . 'steam/community/GameLeaderboard.php';
@@ -61,12 +61,14 @@ class SteamGame {
         }
     }
 
-    /*
+    /**
      * Checks if a game is up-to-date by reading information from a
      * <var>steam.inf</var> file and comparing it using the Web API
      *
-     * @param string $path The file system path of the `steam.inf` file
+     * @param string $path The file system path of the <var>steam.inf</var>
+     *        file
      * @return bool <var>true</var> if the game is up-to-date
+     * @throws SteamCondenserException if the <var>steam.inf</var> is invalid
      */
     public static function checkSteamInf($path) {
         $steamInf = file_get_contents($path);

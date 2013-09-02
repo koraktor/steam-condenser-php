@@ -63,7 +63,7 @@ abstract class SteamPacket {
     }
 
     /**
-     * @return string The data payload of the packet
+     * @return ByteBuffer The data payload of the packet
      */
     public function getData() {
         return $this->contentData;

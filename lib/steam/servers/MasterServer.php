@@ -198,7 +198,7 @@ class MasterServer extends Server {
                     }
                 } while(!$finished);
                 break;
-            } catch(Exception $e) {
+            } catch(TimeoutException $e) {
                 if ($force) {
                     break;
                 } else if($this->rotateIp()) {

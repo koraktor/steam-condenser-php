@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2011-2012, Sebastian Staudt
+ * Copyright (c) 2011-2013, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -47,7 +47,7 @@ class Portal2Stats extends GameStats {
         }
 
         if(empty($this->inventory)) {
-            $this->inventory = Portal2Inventory::create($this->user->getSteamId64());
+            $this->inventory = Portal2Inventory::createInventory($this->user->getId());
         }
 
         return $this->inventory;
