@@ -3,12 +3,12 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2009-2012, Sebastian Staudt
+ * Copyright (c) 2009-2014, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
 
-require_once dirname(__FILE__) . '/../../../lib/steam-condenser.php';
+namespace SteamCondenser\Community;
 
 /**
  * @author     Sebastian Staudt
@@ -16,10 +16,10 @@ require_once dirname(__FILE__) . '/../../../lib/steam-condenser.php';
  * @package    steam-condenser
  * @subpackage tests
  */
-class SteamIdTest extends PHPUnit_Framework_TestCase {
+class SteamIdTest extends \PHPUnit_Framework_TestCase {
 
     public function setUp() {
-        $this->webApiInstance = new ReflectionProperty('WebApi', 'instance');
+        $this->webApiInstance = new \ReflectionProperty('\SteamCondenser\Community\WebApi', 'instance');
         $this->webApiInstance->setAccessible(true);
     }
 
@@ -43,7 +43,7 @@ class SteamIdTest extends PHPUnit_Framework_TestCase {
 
         $steamId = new SteamId('76561197983311154', false);
 
-        $reflectionObject = new ReflectionObject($steamId);
+        $reflectionObject = new \ReflectionObject($steamId);
         $cacheMethod = $reflectionObject->getMethod('cache');
         $cacheMethod->setAccessible(true);
         $cacheMethod->invoke($steamId);
@@ -56,7 +56,7 @@ class SteamIdTest extends PHPUnit_Framework_TestCase {
 
         $steamId = new SteamId('Son_of_Thor', false);
 
-        $reflectionObject = new ReflectionObject($steamId);
+        $reflectionObject = new \ReflectionObject($steamId);
         $cacheMethod = $reflectionObject->getMethod('cache');
         $cacheMethod->setAccessible(true);
         $cacheMethod->invoke($steamId);
@@ -65,8 +65,8 @@ class SteamIdTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testFetch() {
-        $data = new SimpleXMLElement(getFixture('sonofthor.xml'));
-        $mockBuilder = $this->getMockBuilder('SteamId');
+        $data = new \SimpleXMLElement(getFixture('sonofthor.xml'));
+        $mockBuilder = $this->getMockBuilder('\SteamCondenser\Community\SteamId');
         $mockBuilder->setConstructorArgs(array('Son_of_Thor', false));
         $mockBuilder->setMethods(array('getData'));
         $steamId = $mockBuilder->getMock();
@@ -92,7 +92,7 @@ class SteamIdTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testResolveVanityUrl() {
-        $webApi = $this->getMockBuilder('WebApi')->setMethods(array('_getJSON'))->disableOriginalConstructor()->getMock();
+        $webApi = $this->getMockBuilder('\SteamCondenser\Community\WebApi')->setMethods(array('_getJSON'))->disableOriginalConstructor()->getMock();
         $webApi->expects($this->once())->method('_getJSON')->with('ISteamUser', 'ResolveVanityURL', 1, array('vanityurl' => 'koraktor'))->will($this->returnValue('{ "response": { "success": 1, "steamid": "76561197961384956" } }'));
         $this->webApiInstance->setValue($webApi);
 
@@ -101,7 +101,7 @@ class SteamIdTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testResolveUnknownVanityUrl() {
-        $webApi = $this->getMockBuilder('WebApi')->setMethods(array('_getJSON'))->disableOriginalConstructor()->getMock();
+        $webApi = $this->getMockBuilder('\SteamCondenser\Community\WebApi')->setMethods(array('_getJSON'))->disableOriginalConstructor()->getMock();
         $webApi->expects($this->once())->method('_getJSON')->with('ISteamUser', 'ResolveVanityURL', 1, array('vanityurl' => 'unknown'))->will($this->returnValue('{ "response": { "success": 42 } }'));
         $this->webApiInstance->setValue($webApi);
 

@@ -3,13 +3,12 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2009-2013, Sebastian Staudt
+ * Copyright (c) 2009-2014, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
 
-require_once dirname(__FILE__) . '/../../../lib/steam-condenser.php';
-require_once STEAM_CONDENSER_PATH . 'steam/community/SteamGroup.php';
+namespace SteamCondenser\Community;
 
 /**
  * @author     Sebastian Staudt
@@ -17,14 +16,14 @@ require_once STEAM_CONDENSER_PATH . 'steam/community/SteamGroup.php';
  * @package    steam-condenser
  * @subpackage tests
  */
-class SteamGroupTest extends PHPUnit_Framework_TestCase {
+class SteamGroupTest extends \PHPUnit_Framework_TestCase {
 
     public function testCacheSteamId64() {
         $this->assertFalse(SteamGroup::isCached('103582791429521412'));
 
         $steamGroup = new SteamGroup('103582791429521412', false);
 
-        $reflectionObject = new ReflectionObject($steamGroup);
+        $reflectionObject = new \ReflectionObject($steamGroup);
         $cacheMethod = $reflectionObject->getMethod('cache');
         $cacheMethod->setAccessible(true);
         $cacheMethod->invoke($steamGroup);
@@ -37,7 +36,7 @@ class SteamGroupTest extends PHPUnit_Framework_TestCase {
 
         $steamGroup = new SteamGroup('valve', false);
 
-        $reflectionObject = new ReflectionObject($steamGroup);
+        $reflectionObject = new \ReflectionObject($steamGroup);
         $cacheMethod = $reflectionObject->getMethod('cache');
         $cacheMethod->setAccessible(true);
         $cacheMethod->invoke($steamGroup);
@@ -60,8 +59,8 @@ class SteamGroupTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testFetchMembers() {
-        $data = new SimpleXMLElement(getFixture('valve-members.xml'));
-        $mockBuilder = $this->getMockBuilder('SteamGroup');
+        $data = new \SimpleXMLElement(getFixture('valve-members.xml'));
+        $mockBuilder = $this->getMockBuilder('\SteamCondenser\Community\SteamGroup');
         $mockBuilder->setConstructorArgs(array('valve', false));
         $mockBuilder->setMethods(array('getData'));
         $group = $mockBuilder->getMock();
@@ -86,8 +85,8 @@ class SteamGroupTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testMemberCount() {
-        $data = new SimpleXMLElement(getFixture('valve-members.xml'));
-        $mockBuilder = $this->getMockBuilder('SteamGroup');
+        $data = new \SimpleXMLElement(getFixture('valve-members.xml'));
+        $mockBuilder = $this->getMockBuilder('\SteamCondenser\Community\SteamGroup');
         $mockBuilder->setConstructorArgs(array('valve', false));
         $mockBuilder->setMethods(array('getData'));
         $group = $mockBuilder->getMock();

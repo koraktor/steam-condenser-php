@@ -3,13 +3,12 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2012, Sebastian Staudt
+ * Copyright (c) 2012-2014, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
 
-require_once dirname(__FILE__) . '/../../../lib/steam-condenser.php';
-require_once STEAM_CONDENSER_PATH . 'steam/servers/GoldSrcServer.php';
+namespace SteamCondenser\Servers;
 
 class TestableGoldSrcServer extends GoldSrcServer {
 
@@ -19,7 +18,7 @@ class TestableGoldSrcServer extends GoldSrcServer {
 
 }
 
-class GoldSrcServerTest extends PHPUnit_Framework_TestCase {
+class GoldSrcServerTest extends \PHPUnit_Framework_TestCase {
 
     public function testRconAuth() {
         $server = new TestableGoldSrcServer('127.0.0.1');
@@ -29,7 +28,7 @@ class GoldSrcServerTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testRconExec() {
-        $socket = $this->getMockBuilder('UDPSocket')->setMethods(array('rconExec'))->disableOriginalConstructor()->getMock();
+        $socket = $this->getMockBuilder('\SteamCondenser\UDPSocket')->setMethods(array('rconExec'))->disableOriginalConstructor()->getMock();
         $socket->expects($this->once())->method('rconExec')->with('password', 'command')->will($this->returnValue('test'));
         $server = new TestableGoldSrcServer('127.0.0.1');
         $server->rconPassword = 'password';
