@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2012, Sebastian Staudt
+ * Copyright (c) 2008-2013, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -20,13 +20,20 @@ require_once STEAM_CONDENSER_PATH . 'steam/community/XMLData.php';
  */
 class SteamGroup extends XMLData {
 
+    const AVATAR_URL = 'http://media.steampowered.com/steamcommunity/public/images/avatars/%s/%s%s.jpg';
+
     /**
      * @var array
      */
     private static $steamGroups = array();
 
     /**
-     * @var String
+     * @var string
+     */
+    private $avatarHash;
+
+    /**
+     * @var string
      */
     private $customUrl;
 
@@ -41,9 +48,24 @@ class SteamGroup extends XMLData {
     private $groupId64;
 
     /**
+     * @var string
+     */
+    private $headline;
+
+    /**
      * @var array
      */
     private $members;
+
+    /**
+     * @var string
+     */
+    private $name;
+
+    /**
+     * @var string
+     */
+    private $summary;
 
     /**
      * Returns whether the requested group is already cached
@@ -151,6 +173,33 @@ class SteamGroup extends XMLData {
     }
 
     /**
+     * Returns the URL to this group's full avatar
+     *
+     * @return string The URL to this group's full avatar
+     */
+    public function getAvatarFullUrl() {
+        return sprintf(self::AVATAR_URL, substr($this->avatarHash, 0, 2), $this->avatarHash, '_full');
+    }
+
+    /**
+     * Returns the URL to this group's icon avatar
+     *
+     * @return string The URL to this group's icon avatar
+     */
+    public function getAvatarIconUrl() {
+        return sprintf(self::AVATAR_URL, substr($this->avatarHash, 0, 2), $this->avatarHash, '');
+    }
+
+    /**
+     * Returns the URL to this group's medium avatar
+     *
+     * @return string The URL to this group's medium avatar
+     */
+    public function getAvatarMediumUrl() {
+        return sprintf(self::AVATAR_URL, substr($this->avatarHash, 0, 2), $this->avatarHash, '_medium');
+    }
+
+    /**
      * Returns the base URL for this group's page
      *
      * This URL is different for groups having a custom URL.
@@ -196,6 +245,15 @@ class SteamGroup extends XMLData {
     }
 
     /**
+     * Returns this group's headline text
+     *
+     * @return string This group's headline text
+     */
+    public function getHeadline() {
+        return $this->headline;
+    }
+
+    /**
      * Returns the number of members this group has
      *
      * If the members have already been fetched the size of the member array is
@@ -203,7 +261,7 @@ class SteamGroup extends XMLData {
      * multiple requests for big groups.
      *
      * @return int The number of this group's members
-     * @see #fetchPage()
+     * @see  *fetchPage()
      */
     public function getMemberCount() {
         if(empty($this->memberCount)) {
@@ -222,7 +280,7 @@ class SteamGroup extends XMLData {
      * If the members haven't been fetched yet, this is done now.
      *
      * @return array The Steam ID's of the members of this group
-     * @see #fetchMembers()
+     * @see  *fetchMembers()
      */
     public function getMembers() {
         if(sizeof($this->members) != $this->memberCount) {
@@ -230,6 +288,24 @@ class SteamGroup extends XMLData {
         }
 
         return $this->members;
+    }
+
+    /**
+     * Returns this group's name
+     *
+     * @return string This group's name
+     */
+    public function getName() {
+        return $this->name;
+    }
+
+    /**
+     * Returns this group's summary text
+     *
+     * @return string This group's summary text
+     */
+    public function getSummary() {
+        return $this->summary;
     }
 
     /**
@@ -246,14 +322,20 @@ class SteamGroup extends XMLData {
      *
      * @param int $page The member page to fetch
      * @return int The total number of pages of this group's member listing
-     * @see #fetchMembers()
+     * @see  *fetchMembers()
      */
     private function fetchPage($page) {
         $url = "{$this->getBaseUrl()}/memberslistxml?p=$page";
         $memberData = $this->getData($url);
 
         if($page == 1) {
-            $this->groupId64 = (string) $memberData->groupID64;
+            preg_match('/\/([0-9a-f]+)\.jpg$/', (string) $memberData->groupDetails->avatarIcon, $matches);
+            $this->avatarHash = $matches[1];
+            $this->customUrl  = (string) $memberData->groupDetails->groupURL;
+            $this->groupId64  = (string) $memberData->groupID64;
+            $this->name       = (string) $memberData->groupDetails->groupName;
+            $this->headline   = (string) $memberData->groupDetails->headline;
+            $this->summary    = (string) $memberData->groupDetails->summary;
         }
         $this->memberCount = (int) $memberData->memberCount;
         $totalPages = (int) $memberData->totalPages;

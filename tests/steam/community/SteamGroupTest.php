@@ -60,11 +60,20 @@ class SteamGroupTest extends PHPUnit_Framework_TestCase {
         $group->expects($this->once())->method('getData')->with('http://steamcommunity.com/groups/valve/memberslistxml?p=1')->will($this->returnValue($data));
         $group->fetchMembers();
 
+        $this->assertEquals('http://media.steampowered.com/steamcommunity/public/images/avatars/1d/1d8baf5a2b5968ae5ca65d7a971c02e222c9a17e_full.jpg', $group->getAvatarFullUrl());
+        $this->assertEquals('http://media.steampowered.com/steamcommunity/public/images/avatars/1d/1d8baf5a2b5968ae5ca65d7a971c02e222c9a17e.jpg', $group->getAvatarIconUrl());
+        $this->assertEquals('http://media.steampowered.com/steamcommunity/public/images/avatars/1d/1d8baf5a2b5968ae5ca65d7a971c02e222c9a17e_medium.jpg', $group->getAvatarMediumUrl());
+        $this->assertEquals('Valve', $group->getCustomUrl());
+        $this->assertEquals('VALVE', $group->getHeadline());
+        $this->assertEquals(239, $group->getMemberCount());
+        $this->assertEquals('Valve', $group->getName());
+        $this->assertEquals('In addition to producing best-selling entertainment titles, Valve is a developer of leading-edge technologies such as the Source™ game engine and Steam™, a broadband platform for the delivery and management of digital content.', $group->getSummary());
+
         $groupMembers = $group->getMembers();
         $this->assertEquals('103582791429521412', $group->getGroupId64());
-        $this->assertEquals('76561197960265740', $groupMembers[0]->getSteamId64());
+        $this->assertEquals('76561197985607672', $groupMembers[0]->getSteamId64());
         $this->assertFalse($groupMembers[0]->isFetched());
-        $this->assertEquals('76561197970323416', $groupMembers[sizeof($groupMembers) - 1]->getSteamId64());
+        $this->assertEquals('76561198086572943', $groupMembers[sizeof($groupMembers) - 1]->getSteamId64());
         $this->assertTrue($group->isFetched());
     }
 
@@ -76,7 +85,7 @@ class SteamGroupTest extends PHPUnit_Framework_TestCase {
         $group = $mockBuilder->getMock();
         $group->expects($this->once())->method('getData')->with('http://steamcommunity.com/groups/valve/memberslistxml?p=1')->will($this->returnValue($data));
 
-        $this->assertEquals(221, $group->getMemberCount());
+        $this->assertEquals(239, $group->getMemberCount());
         $this->assertTrue($group->isFetched());
     }
 
