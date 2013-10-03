@@ -261,7 +261,7 @@ class SteamGroup extends XMLData {
      * multiple requests for big groups.
      *
      * @return int The number of this group's members
-     * @see  *fetchPage()
+     * @see #fetchPage()
      */
     public function getMemberCount() {
         if(empty($this->memberCount)) {
@@ -280,7 +280,7 @@ class SteamGroup extends XMLData {
      * If the members haven't been fetched yet, this is done now.
      *
      * @return array The Steam ID's of the members of this group
-     * @see  *fetchMembers()
+     * @see #fetchMembers()
      */
     public function getMembers() {
         if(sizeof($this->members) != $this->memberCount) {
@@ -322,7 +322,7 @@ class SteamGroup extends XMLData {
      *
      * @param int $page The member page to fetch
      * @return int The total number of pages of this group's member listing
-     * @see  *fetchMembers()
+     * @see #fetchMembers()
      */
     private function fetchPage($page) {
         $url = "{$this->getBaseUrl()}/memberslistxml?p=$page";
