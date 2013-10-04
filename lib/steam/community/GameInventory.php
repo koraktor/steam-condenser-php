@@ -180,9 +180,18 @@ class GameInventory {
 
     /**
      * Saves this inventory in the cache
+     *
+     * @return bool <var>false</var> if this inventory is already cached
      */
     public function cache() {
+        if (array_key_exists($this->appId, self::$cache) &&
+            array_key_exists($this->steamId64, self::$cache[$this->appId])) {
+            return false;
+        }
+
         self::$cache[$this->appId][$this->steamId64] = $this;
+
+        return true;
     }
 
     /**

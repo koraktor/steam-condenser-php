@@ -138,21 +138,6 @@ class SteamGroup extends XMLData {
     }
 
     /**
-     * Saves this SteamGroup in the cache
-     *
-     * @return <var>false</var> if this group is already cached
-     */
-    public function cache() {
-        if(!array_key_exists($this->groupId64, self::$steamGroups)) {
-            self::$steamGroups[$this->groupId64] = $this;
-            if(!empty($this->customUrl) &&
-               !array_key_exists($this->customUrl, self::$steamGroups)) {
-               self::$steamGroups[$this->customUrl] = $this;
-            }
-        }
-    }
-
-    /**
      * Loads the members of this group
      *
      * This might take several HTTP requests as the Steam Community splits this
@@ -315,6 +300,25 @@ class SteamGroup extends XMLData {
      */
     public function isFetched() {
         return !empty($this->fetchTime);
+    }
+
+    /**
+     * Saves this SteamGroup in the cache
+     *
+     * @return bool <var>false</var> if this group is already cached
+     */
+    private function cache() {
+        if (!array_key_exists($this->groupId64, self::$steamGroups)) {
+            self::$steamGroups[$this->groupId64] = $this;
+            if(!empty($this->customUrl) &&
+               !array_key_exists($this->customUrl, self::$steamGroups)) {
+               self::$steamGroups[$this->customUrl] = $this;
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     /**

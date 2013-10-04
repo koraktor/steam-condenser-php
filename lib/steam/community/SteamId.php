@@ -233,19 +233,6 @@ class SteamId extends XMLData {
     }
 
     /**
-     * Saves this <var>SteamId</var> instance in the cache
-     */
-    public function cache() {
-        if(!array_key_exists($this->steamId64, self::$steamIds)) {
-            self::$steamIds[$this->steamId64] = $this;
-            if(!empty($this->customUrl) &&
-               !array_key_exists($this->customUrl, self::$steamIds)) {
-               self::$steamIds[$this->customUrl] = $this;
-            }
-        }
-    }
-
-    /**
      * Fetchs data from the Steam Community by querying the XML version of the
      * profile specified by the ID of this Steam ID
      *
@@ -631,6 +618,25 @@ class SteamId extends XMLData {
      */
     public function isPublic() {
         return $this->privacyState == 'public';
+    }
+
+    /**
+     * Saves this <var>SteamId</var> instance in the cache
+     *
+     * @return bool <var>false</var> if this Steam ID is already cached
+     */
+    private function cache() {
+        if(!array_key_exists($this->steamId64, self::$steamIds)) {
+            self::$steamIds[$this->steamId64] = $this;
+            if(!empty($this->customUrl) &&
+               !array_key_exists($this->customUrl, self::$steamIds)) {
+               self::$steamIds[$this->customUrl] = $this;
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
 }
