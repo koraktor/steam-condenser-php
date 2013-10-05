@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2009-2011, Sebastian Staudt
+ * Copyright (c) 2009-2013, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -22,8 +22,12 @@ class SteamGroupTest extends PHPUnit_Framework_TestCase {
     public function testCacheSteamId64() {
         $this->assertFalse(SteamGroup::isCached('103582791429521412'));
 
-        $steamId = new SteamGroup('103582791429521412', false);
-        $steamId->cache();
+        $steamGroup = new SteamGroup('103582791429521412', false);
+
+        $reflectionObject = new ReflectionObject($steamGroup);
+        $cacheMethod = $reflectionObject->getMethod('cache');
+        $cacheMethod->setAccessible(true);
+        $cacheMethod->invoke($steamGroup);
 
         $this->assertTrue(SteamGroup::isCached('103582791429521412'));
     }
@@ -31,8 +35,12 @@ class SteamGroupTest extends PHPUnit_Framework_TestCase {
     public function testCacheCustomUrl() {
         $this->assertFalse(SteamGroup::isCached('valve'));
 
-        $steamId = new SteamGroup('valve', false);
-        $steamId->cache();
+        $steamGroup = new SteamGroup('valve', false);
+
+        $reflectionObject = new ReflectionObject($steamGroup);
+        $cacheMethod = $reflectionObject->getMethod('cache');
+        $cacheMethod->setAccessible(true);
+        $cacheMethod->invoke($steamGroup);
 
         $this->assertTrue(SteamGroup::isCached('valve'));
     }

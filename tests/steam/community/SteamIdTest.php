@@ -42,7 +42,11 @@ class SteamIdTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse(SteamId::isCached('76561197983311154'));
 
         $steamId = new SteamId('76561197983311154', false);
-        $steamId->cache();
+
+        $reflectionObject = new ReflectionObject($steamId);
+        $cacheMethod = $reflectionObject->getMethod('cache');
+        $cacheMethod->setAccessible(true);
+        $cacheMethod->invoke($steamId);
 
         $this->assertTrue(SteamId::isCached('76561197983311154'));
     }
@@ -51,7 +55,11 @@ class SteamIdTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse(SteamId::isCached('Son_of_Thor'));
 
         $steamId = new SteamId('Son_of_Thor', false);
-        $steamId->cache();
+
+        $reflectionObject = new ReflectionObject($steamId);
+        $cacheMethod = $reflectionObject->getMethod('cache');
+        $cacheMethod->setAccessible(true);
+        $cacheMethod->invoke($steamId);
 
         $this->assertTrue(SteamId::isCached('son_of_thor'));
     }
