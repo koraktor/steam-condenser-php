@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2009-2011, Sebastian Staudt
+ * Copyright (c) 2009-2013, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -31,7 +31,12 @@ abstract class XMLData {
         try {
             return @new SimpleXMLElement($url, 0, true);
         } catch (Exception $e) {
-            throw new SteamCondenserException("XML could not be parsed", 0, $e);
+            $errorMessage = "XML could not be parsed: " . $e->getMessage();
+            if ((float) phpversion() < 5.3) {
+                throw new SteamCondenserException($errorMessage, 0);
+            } else {
+                throw new SteamCondenserException($errorMessage, 0, $e);
+            }
         }
     }
 

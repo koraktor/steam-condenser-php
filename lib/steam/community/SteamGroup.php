@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2012, Sebastian Staudt
+ * Copyright (c) 2008-2013, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -20,13 +20,20 @@ require_once STEAM_CONDENSER_PATH . 'steam/community/XMLData.php';
  */
 class SteamGroup extends XMLData {
 
+    const AVATAR_URL = 'http://media.steampowered.com/steamcommunity/public/images/avatars/%s/%s%s.jpg';
+
     /**
      * @var array
      */
     private static $steamGroups = array();
 
     /**
-     * @var String
+     * @var string
+     */
+    private $avatarHash;
+
+    /**
+     * @var string
      */
     private $customUrl;
 
@@ -41,9 +48,24 @@ class SteamGroup extends XMLData {
     private $groupId64;
 
     /**
+     * @var string
+     */
+    private $headline;
+
+    /**
      * @var array
      */
     private $members;
+
+    /**
+     * @var string
+     */
+    private $name;
+
+    /**
+     * @var string
+     */
+    private $summary;
 
     /**
      * Returns whether the requested group is already cached
@@ -116,21 +138,6 @@ class SteamGroup extends XMLData {
     }
 
     /**
-     * Saves this SteamGroup in the cache
-     *
-     * @return <var>false</var> if this group is already cached
-     */
-    public function cache() {
-        if(!array_key_exists($this->groupId64, self::$steamGroups)) {
-            self::$steamGroups[$this->groupId64] = $this;
-            if(!empty($this->customUrl) &&
-               !array_key_exists($this->customUrl, self::$steamGroups)) {
-               self::$steamGroups[$this->customUrl] = $this;
-            }
-        }
-    }
-
-    /**
      * Loads the members of this group
      *
      * This might take several HTTP requests as the Steam Community splits this
@@ -148,6 +155,33 @@ class SteamGroup extends XMLData {
         } while($page < $totalPages);
 
         $this->fetchTime = time();
+    }
+
+    /**
+     * Returns the URL to this group's full avatar
+     *
+     * @return string The URL to this group's full avatar
+     */
+    public function getAvatarFullUrl() {
+        return sprintf(self::AVATAR_URL, substr($this->avatarHash, 0, 2), $this->avatarHash, '_full');
+    }
+
+    /**
+     * Returns the URL to this group's icon avatar
+     *
+     * @return string The URL to this group's icon avatar
+     */
+    public function getAvatarIconUrl() {
+        return sprintf(self::AVATAR_URL, substr($this->avatarHash, 0, 2), $this->avatarHash, '');
+    }
+
+    /**
+     * Returns the URL to this group's medium avatar
+     *
+     * @return string The URL to this group's medium avatar
+     */
+    public function getAvatarMediumUrl() {
+        return sprintf(self::AVATAR_URL, substr($this->avatarHash, 0, 2), $this->avatarHash, '_medium');
     }
 
     /**
@@ -196,6 +230,15 @@ class SteamGroup extends XMLData {
     }
 
     /**
+     * Returns this group's headline text
+     *
+     * @return string This group's headline text
+     */
+    public function getHeadline() {
+        return $this->headline;
+    }
+
+    /**
      * Returns the number of members this group has
      *
      * If the members have already been fetched the size of the member array is
@@ -233,12 +276,49 @@ class SteamGroup extends XMLData {
     }
 
     /**
+     * Returns this group's name
+     *
+     * @return string This group's name
+     */
+    public function getName() {
+        return $this->name;
+    }
+
+    /**
+     * Returns this group's summary text
+     *
+     * @return string This group's summary text
+     */
+    public function getSummary() {
+        return $this->summary;
+    }
+
+    /**
      * Returns whether the data for this group has already been fetched
      *
      * @return bool <var>true</var> if the group's members have been fetched
      */
     public function isFetched() {
         return !empty($this->fetchTime);
+    }
+
+    /**
+     * Saves this SteamGroup in the cache
+     *
+     * @return bool <var>false</var> if this group is already cached
+     */
+    private function cache() {
+        if (!array_key_exists($this->groupId64, self::$steamGroups)) {
+            self::$steamGroups[$this->groupId64] = $this;
+            if(!empty($this->customUrl) &&
+               !array_key_exists($this->customUrl, self::$steamGroups)) {
+               self::$steamGroups[$this->customUrl] = $this;
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -253,7 +333,13 @@ class SteamGroup extends XMLData {
         $memberData = $this->getData($url);
 
         if($page == 1) {
-            $this->groupId64 = (string) $memberData->groupID64;
+            preg_match('/\/([0-9a-f]+)\.jpg$/', (string) $memberData->groupDetails->avatarIcon, $matches);
+            $this->avatarHash = $matches[1];
+            $this->customUrl  = (string) $memberData->groupDetails->groupURL;
+            $this->groupId64  = (string) $memberData->groupID64;
+            $this->name       = (string) $memberData->groupDetails->groupName;
+            $this->headline   = (string) $memberData->groupDetails->headline;
+            $this->summary    = (string) $memberData->groupDetails->summary;
         }
         $this->memberCount = (int) $memberData->memberCount;
         $totalPages = (int) $memberData->totalPages;

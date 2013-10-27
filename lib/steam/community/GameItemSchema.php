@@ -309,9 +309,18 @@ class GameItemSchema {
 
     /**
      * Saves this item schema in the cache
+     *
+     * @return bool <var>false</var> if this item schema is already cached
      */
     private function cache() {
+        if (array_key_exists($this->appId, self::$cache) &&
+            array_key_exists($this->language, self::$cache[$this->appId])) {
+            return false;
+        }
+
         self::$cache[$this->appId][$this->language] = $this;
+
+        return true;
     }
 
 }
