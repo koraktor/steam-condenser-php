@@ -116,14 +116,12 @@ abstract class SteamSocket {
 
         try {
             $data = $this->socket->recv($this->buffer->remaining());
-        } catch (SocketException $e) {
-            if (defined('SOCKET_ECONNRESET') &&
-                $e->getCode() == SOCKET_ECONNRESET) {
-                $this->socket->close();
-            }
+            $this->buffer->put($data);
+        } catch (ConnectionResetException $e) {
+            $this->socket->close();
             throw $e;
         }
-        $this->buffer->put($data);
+
         $bytesRead = $this->buffer->position();
         $this->buffer->rewind();
         $this->buffer->limit($bytesRead);

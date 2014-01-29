@@ -153,14 +153,9 @@ class SourceServer extends GameServer {
                     $isMulti = true;
                     $this->rconSocket->send(new RCONTerminator($this->rconRequestId));
                 }
-            } catch (SocketException $e) {
-                if (defined('SOCKET_ECONNRESET') &&
-                    $e->getCode() == SOCKET_ECONNRESET) {
-                    $this->rconAuthenticated = false;
-                    throw new RCONNoAuthException();
-                } else {
-                    throw $e;
-                }
+            } catch (ConnectionResetException $e) {
+                $this->rconAuthenticated = false;
+                throw new RCONNoAuthException();
             }
 
             $response[] = $responsePacket->getResponse();

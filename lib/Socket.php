@@ -3,11 +3,12 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2013, Sebastian Staudt
+ * Copyright (c) 2008-2014, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
 
+require_once STEAM_CONDENSER_PATH . 'exceptions/ConnectionResetException.php';
 require_once STEAM_CONDENSER_PATH . 'exceptions/SocketException.php';
 
 /**
@@ -112,10 +113,19 @@ abstract class Socket {
      */
     public function recv($length = 128) {
         if($this->socketsEnabled) {
-            $data = @socket_read($this->socket, $length, PHP_BINARY_READ);
+            $data = null;
+            $result = socket_recv($this->socket, $data, $length, MSG_WAITALL);
 
-            if ($data === false) {
-                throw new SocketException(socket_last_error($this->socket));
+            if ($data == null) {
+                throw new ConnectionResetException();
+            }
+            if ($result === false) {
+                $errorCode = socket_last_error($this->socket);
+                if (defined('SOCKET_ECONNRESET') &&
+                        $errorCode == SOCKET_ECONNRESET) {
+                    throw new ConnectionResetException();
+                }
+                throw new SocketException($errorCode);
             }
         } else {
             $data = fread($this->socket, $length);
