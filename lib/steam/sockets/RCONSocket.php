@@ -85,16 +85,18 @@ class RCONSocket extends SteamSocket {
      * using multiple TCP packets. The data is received in chunks and
      * concatenated into a single response packet.
      *
-     * @return SteamPacket The packet replied from the server
-     * @throws RCONBanException if the IP of the local machine has been banned
-     *         on the game server
-     * @throws RCONNoAuthException if an authenticated connection has been
-     *         dropped by the server
+     * @return SteamPacket The packet replied from the server or
+     *         <var>null</var> if the connection has been closed by the server
      */
     public function getReply() {
-        if ($this->receivePacket(4) == 0) {
+        try {
+            if ($this->receivePacket(4) == 0) {
+                $this->socket->close();
+                return null;
+            }
+        } catch (ConnectionResetException $e) {
             $this->socket->close();
-            throw new RCONBanException();
+            return null;
         }
 
         $packetSize     = $this->buffer->getLong();

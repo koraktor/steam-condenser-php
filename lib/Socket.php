@@ -113,13 +113,9 @@ abstract class Socket {
      */
     public function recv($length = 128) {
         if($this->socketsEnabled) {
-            $data = null;
-            $result = socket_recv($this->socket, $data, $length, MSG_WAITALL);
+            $data = socket_read($this->socket, $length);
 
-            if ($data == null) {
-                throw new ConnectionResetException();
-            }
-            if ($result === false) {
+            if ($data === false) {
                 $errorCode = socket_last_error($this->socket);
                 if (defined('SOCKET_ECONNRESET') &&
                         $errorCode == SOCKET_ECONNRESET) {
