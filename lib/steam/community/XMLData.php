@@ -28,8 +28,14 @@ abstract class XMLData {
      * @throws SteamCondenserException if the data cannot be parsed
      */
     protected function getData($url) {
+        
+        if( ! $xml = @file_get_contents($url) ) {
+		    $errorMessage = "An error occurred when retrieving XML from the Steam server . HTTP Response: " .  $http_response_header[0];
+		    throw new SteamCondenserException($errorMessage, 0);
+	    }
+		
         try {
-            return @new SimpleXMLElement($url, 0, true);
+            return @new SimpleXMLElement($xml);
         } catch (Exception $e) {
             $errorMessage = "XML could not be parsed: " . $e->getMessage();
             if ((float) phpversion() < 5.3) {
