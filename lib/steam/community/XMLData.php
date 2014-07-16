@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2009-2013, Sebastian Staudt
+ * Copyright (c) 2009-2014, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -28,8 +28,14 @@ abstract class XMLData {
      * @throws SteamCondenserException if the data cannot be parsed
      */
     protected function getData($url) {
+        if (!$xml = @file_get_contents($url)) {
+            preg_match('/^.* (\d{3}) (.*)$/', $http_response_header[0], $http_status);
+            $errorMessage = "Failed to retrieve XML data because of an HTTP error: {$http_status[1]} (status code: {$http_status[0]})";
+            throw new SteamCondenserException($errorMessage, 0);
+        }
+
         try {
-            return @new SimpleXMLElement($url, 0, true);
+            return @new SimpleXMLElement($xml);
         } catch (Exception $e) {
             $errorMessage = "XML could not be parsed: " . $e->getMessage();
             if ((float) phpversion() < 5.3) {

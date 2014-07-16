@@ -103,18 +103,12 @@ class SourceServer extends GameServer {
 
         $this->rconSocket->send(new RCONAuthRequest($this->rconRequestId, $password));
 
-        try {
-            $this->rconSocket->getReply();
-            $reply = $this->rconSocket->getReply();
-            $this->rconAuthenticated = $reply->getRequestId() == $this->rconRequestId;
-        } catch (SocketException $e) {
-            if (defined('SOCKET_ECONNRESET') &&
-                $e->getCode() == SOCKET_ECONNRESET) {
-                throw new RCONBanException();
-            } else {
-                throw $e;
-            }
+        $reply = $this->rconSocket->getReply();
+        if ($reply == null) {
+            throw new RCONBanException();
         }
+        $reply = $this->rconSocket->getReply();
+        $this->rconAuthenticated = $reply->getRequestId() == $this->rconRequestId;
 
         return $this->rconAuthenticated;
     }
@@ -141,26 +135,17 @@ class SourceServer extends GameServer {
         $isMulti = false;
         $response = array();
         do {
-            try {
-                $responsePacket = $this->rconSocket->getReply();
+            $responsePacket = $this->rconSocket->getReply();
 
-                if ($responsePacket instanceof RCONAuthResponse) {
-                    $this->rconAuthenticated = false;
-                    throw new RCONNoAuthException();
-                }
+            if ($responsePacket == null ||
+                    $responsePacket instanceof RCONAuthResponse) {
+                $this->rconAuthenticated = false;
+                throw new RCONNoAuthException();
+            }
 
-                if (!$isMulti && strlen($responsePacket->getResponse()) > 0) {
-                    $isMulti = true;
-                    $this->rconSocket->send(new RCONTerminator($this->rconRequestId));
-                }
-            } catch (SocketException $e) {
-                if (defined('SOCKET_ECONNRESET') &&
-                    $e->getCode() == SOCKET_ECONNRESET) {
-                    $this->rconAuthenticated = false;
-                    throw new RCONNoAuthException();
-                } else {
-                    throw $e;
-                }
+            if (!$isMulti && strlen($responsePacket->getResponse()) > 0) {
+                $isMulti = true;
+                $this->rconSocket->send(new RCONTerminator($this->rconRequestId));
             }
 
             $response[] = $responsePacket->getResponse();

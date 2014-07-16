@@ -37,6 +37,7 @@ included LICENSE file.
 * Adam Lavin – adam(at)lavoaster.co.uk
 * Al Ganiev – helios.ag(at)gmail.com
 * Daniel Phin – pro(at)danielph.in
+* Elliot Hesp – elliot.hesp(at)gmail.com
 
 ## See Also
 
