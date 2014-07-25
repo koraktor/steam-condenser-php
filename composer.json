@@ -22,6 +22,7 @@
         "monolog/monolog": "~1.10"
     },
     "require-dev": {
+        "phpdocumentor/phpdocumentor": "~2.6.1",
         "phpunit/phpunit": "~4.1.3"
     },
     "autoload": {
