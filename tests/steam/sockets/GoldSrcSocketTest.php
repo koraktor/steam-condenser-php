@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2012, Sebastian Staudt
+ * Copyright (c) 2012-2014, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -115,7 +115,7 @@ class GoldSrcSocketTest extends PHPUnit_Framework_TestCase {
         $socket = $this->socketBuilder->getMock();
         $socket->expects($this->once())->method('rconGetChallenge');
         $socket->expects($this->at(1))->method('rconSend')->with('rcon -1 password command');
-        $socket->expects($this->at(2))->method('rconSend')->with('rcon -1 password');
+        $socket->expects($this->at(3))->method('rconSend')->with('rcon -1 password');
 
         $packet1 = new RCONGoldSrcResponse("test \0\0");
         $packet2 = new RCONGoldSrcResponse("test\0\0");
@@ -132,13 +132,13 @@ class GoldSrcSocketTest extends PHPUnit_Framework_TestCase {
         $socket = $this->socketBuilder->getMock();
         $socket->expects($this->once())->method('rconGetChallenge');
         $socket->expects($this->at(1))->method('rconSend')->with('rcon -1 password command');
-        $socket->expects($this->at(2))->method('rconSend')->with('rcon -1 password');
+        $socket->expects($this->at(3))->method('rconSend')->with('rcon -1 password');
 
         $packet1 = new RCONGoldSrcResponse("test \0\0");
         $packet2 = new RCONGoldSrcResponse("test\0\0");
         $packet3 = new RCONGoldSrcResponse("\0\0");
 
-        $socket->expects($this->at(3))->method('getReply')->will($this->throwException(new TimeoutException()));
+        $socket->expects($this->at(2))->method('getReply')->will($this->throwException(new TimeoutException()));
         $socket->expects($this->at(4))->method('getReply')->will($this->returnValue($packet1));
         $socket->expects($this->at(5))->method('getReply')->will($this->returnValue($packet2));
         $socket->expects($this->at(6))->method('getReply')->will($this->returnValue($packet3));
