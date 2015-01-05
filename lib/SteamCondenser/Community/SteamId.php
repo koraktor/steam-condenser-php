@@ -156,7 +156,7 @@ class SteamId extends XMLData {
         if(self::isCached($id) && !$bypassCache) {
             $steamId = self::$steamIds[$id];
             if($fetch && !$steamId->isFetched()) {
-                $steamId->fetchMembers();
+                $steamId->fetchData();
             }
 
             return $steamId;

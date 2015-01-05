@@ -121,7 +121,6 @@ class GoldSrcSocket extends SteamSocket {
         }
 
         $this->rconSend("rcon {$this->rconChallenge} $password $command");
-        $this->rconSend("rcon {$this->rconChallenge} $password");
         if($this->isHLTV) {
             try {
                 $response = $this->getReply()->getResponse();
@@ -137,6 +136,8 @@ class GoldSrcSocket extends SteamSocket {
         } elseif(trim($response) == 'You have been banned from this server.') {
             throw new \SteamCondenser\Exceptions\RCONBanException();
         }
+
+        $this->rconSend("rcon {$this->rconChallenge} $password");
 
         do {
             $responsePart = $this->getReply()->getResponse();
