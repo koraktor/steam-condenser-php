@@ -45,7 +45,7 @@ class S2A_INFO_DETAILED_Packet extends S2A_INFO_BasePacket {
         $this->info['passwordProtected'] = $this->contentData->getByte() == 1;
         $this->info['isMod'] = $this->contentData->getByte() == 1;
 
-        if($this->isMod) {
+        if($this->info['isMod']) {
             $this->info['modInfo']['urlInfo'] = $this->contentData->getString();
             $this->info['modInfo']['urlDl'] = $this->contentData->getString();
             $this->contentData->getByte();
