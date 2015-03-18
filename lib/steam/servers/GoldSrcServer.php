@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2012, Sebastian Staudt
+ * Copyright (c) 2008-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -74,18 +74,29 @@ class GoldSrcServer extends GameServer {
     }
 
     /**
-     * Saves the password for authenticating the RCON communication with the
-     * server
+     * Tries to establish RCON authentication with the server with the given
+     * password
+     *
+     * This will send an empty command that will ensure the given password was
+     * correct. If successful, the password is stored for future use.
      *
      * @param string $password The RCON password of the server
-     * @return bool GoldSrc's RCON does not preauthenticate connections so
-     *         this method always returns <var>true</var>
-     * @see rconAuth()
+     * @return bool <var>true</var> if authentication was successful
+     * @see #rconExec
+     * @throws TimeoutException if the request times out
      */
     public function rconAuth($password) {
         $this->rconPassword = $password;
 
-        return true;
+        try {
+            $this->rconAuthenticated = true;
+            $this->rconExec('');
+        } catch (RCONNoAuthException $e) {
+            $this->rconAuthenticated = false;
+            $this->rconPassword = null;
+        }
+
+        return $this->rconAuthenticated;
     }
 
     /**
@@ -94,11 +105,22 @@ class GoldSrcServer extends GameServer {
      * @param string $command The command to execute on the server via RCON
      * @return string The output of the executed command
      * @see rconExec()
+     * @throws RCONNoAuthException if no correct RCON password has been given
+     *         yet or it is rejected by the server
      * @throws SteamCondenserException if a problem occurs while parsing the
      *         reply
      * @throws TimeoutException if the request times out
      */
     public function rconExec($command) {
-        return trim($this->socket->rconExec($this->rconPassword, $command));
+        if (!$this->rconAuthenticated) {
+            throw new RCONNoAuthException();
+        }
+
+        try {
+            return trim($this->socket->rconExec($this->rconPassword, $command));
+        } catch (RCONNoAuthException $e) {
+            $this->rconAuthenticated = false;
+            throw $e;
+        }
     }
 }
