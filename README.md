@@ -33,6 +33,7 @@ included LICENSE file.
 * Daniel Phin – pro(at)danielph.in
 * Elliot Hesp – elliot.hesp(at)gmail.com
 * Michael Priest – pingers(at)gmail.com
+* Alex Harchuk – alexharchuk(at)yahoo.com
 
 ## See Also
 
