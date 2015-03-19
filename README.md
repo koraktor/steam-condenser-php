@@ -1,5 +1,9 @@
-Steam Condenser [![Build Status](https://secure.travis-ci.org/koraktor/steam-condenser-php.png)](http://travis-ci.org/koraktor/steam-condenser-php)
+Steam Condenser
 ===============
+
+[![PHP version](https://badge.fury.io/ph/koraktor%2Fsteam-condenser.svg)](http://badge.fury.io/ph/koraktor%2Fsteam-condenser)
+[![Build Status](https://secure.travis-ci.org/koraktor/steam-condenser-php.svg?branch=1.3-stable)](http://travis-ci.org/koraktor/steam-condenser-php)
+[![Code Climate](https://codeclimate.com/github/koraktor/steam-condenser-php/badges/gpa.svg)](https://codeclimate.com/github/koraktor/steam-condenser-php)
 
 The Steam Condenser is a multi-language library for querying the Steam
 Community, Source and GoldSrc game servers as well as the Steam master servers.
