@@ -81,8 +81,8 @@ class SourceServer extends GameServer {
      * @see SourceSocket
      */
     public function initSocket() {
-        $this->rconSocket = new Sockets\RCONSocket($this->ipAddress, $this->port);
-        $this->socket = new Sockets\SourceSocket($this->ipAddress, $this->port);
+        $this->rconSocket = new Sockets\RCONSocket($this->ipAddress, $this->port, $this->log());
+        $this->socket = new Sockets\SourceSocket($this->ipAddress, $this->port, $this->log());
     }
 
     /**

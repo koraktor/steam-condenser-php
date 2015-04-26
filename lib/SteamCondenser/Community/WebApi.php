@@ -11,6 +11,7 @@
 namespace SteamCondenser\Community;
 
 use SteamCondenser\Exceptions\WebApiException;
+use SteamCondenser\SteamCondenser;
 
 /**
  * This adds support for Steam Web API to classes needing this functionality.
@@ -21,12 +22,7 @@ use SteamCondenser\Exceptions\WebApiException;
  * @package    steam-condenser
  * @subpackage community
  */
-class WebApi {
-
-    /**
-     * @var \Monolog\Logger The Monolog logger for this class
-     */
-    private static $log;
+class WebApi extends SteamCondenser {
 
     /**
      * @var string
@@ -132,7 +128,7 @@ class WebApi {
     private static function instance() {
         if (self::$instance == null) {
             self::$instance = new WebApi();
-            self::$log = new \Monolog\Logger('WebApi');
+            parent::__construct(self::LEVEL_DEBUG);
         }
 
         return self::$instance;
@@ -158,7 +154,7 @@ class WebApi {
      * Private constructor to prevent direct usage of <var>WebApi</var>
      * instances
      */
-    private function __construct() {}
+    protected function __construct() {}
 
     /**
      * Fetches JSON data from Steam Web API using the specified interface,
@@ -243,7 +239,7 @@ class WebApi {
      * @throws WebApiException if the request failed
      */
     protected function request($url) {
-        self::$log->addDebug("Querying Steam Web API: " . str_replace(self::$apiKey, 'SECRET', $url));
+        $this->log->addDebug("Querying Steam Web API: " . str_replace(self::$apiKey, 'SECRET', $url));
 
         $data = @file_get_contents($url);
 

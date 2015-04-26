@@ -24,24 +24,16 @@ use SteamCondenser\Servers\Packets\SteamPacketFactory;
 class SourceSocket extends SteamSocket {
 
     /**
-     * @var \Monolog\Logger The Monolog logger for this class
-     */
-    private static $log;
-
-    /**
      * Creates a new UDP socket to communicate with the Source server on the
      * given IP address and port
      *
      * @param string $ipAddress Either the IP address or the DNS name of the
      *        server
      * @param int $portNumber The port the server is listening on
+     * @param \Monolog\Logger $loggerInstance The Monolog instance
      */
-    public function __construct($ipAddress, $portNumber = 27015) {
-        parent::__construct($ipAddress, $portNumber);
-
-        if (!isset(self::$log)) {
-            self::$log = new \Monolog\Logger('SourceSocket');
-        }
+    public function __construct($ipAddress, $portNumber = 27015, $loggerInstance = null) {
+        parent::__construct($ipAddress, $portNumber, $loggerInstance);
     }
 
     /**
@@ -53,7 +45,7 @@ class SourceSocket extends SteamSocket {
      * Additionally Source may compress big packets using bzip2. Those packets
      * will be compressed.
      *
-     * @return SteamPacket The packet replied from the server
+     * @return \SteamCondenser\Servers\Packets\SteamPacket The packet replied from the server
      */
     public function getReply() {
         $this->receivePacket(1400);
@@ -75,7 +67,7 @@ class SourceSocket extends SteamSocket {
 
                 $splitPackets[$packetNumber] = $this->buffer->get();
 
-                self::$log->addDebug("Received packet $packetNumber of $packetCount for request #$requestId");
+                $this->log()->addDebug("Received packet $packetNumber of $packetCount for request #$requestId");
 
                 if(sizeof($splitPackets) < $packetCount) {
                     try {
@@ -98,9 +90,9 @@ class SourceSocket extends SteamSocket {
         }
 
         if($isCompressed) {
-            self::$log->addDebug("Received compressed reply of type \"" . get_class($packet) . "\"");
+            $this->log()->addDebug("Received compressed reply of type \"" . get_class($packet) . "\"");
         } else {
-            self::$log->addDebug("Received reply of type \"" . get_class($packet) . "\"");
+            $this->log()->addDebug("Received reply of type \"" . get_class($packet) . "\"");
         }
 
         return $packet;

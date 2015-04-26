@@ -15,9 +15,17 @@ use SteamCondenser\Servers\Packets\RCON\RCONGoldSrcResponse;
 
 class GoldSrcSocketTest extends \PHPUnit_Framework_TestCase {
 
+    protected $socketBuilder;
+
+    /**
+     * @var \Monolog\Logger $logInstance
+     */
+    protected $logInstance;
+
     public function setUp() {
         $this->socketBuilder = $this->getMockBuilder('\SteamCondenser\Servers\Sockets\GoldSrcSocket');
         $this->socketBuilder->setConstructorArgs(array('127.0.0.1'));
+        $this->logInstance = $this->getMockBuilder('\Monolog\Logger')->disableOriginalConstructor()->getMock();
     }
 
     public function testHLTV() {
@@ -64,9 +72,11 @@ class GoldSrcSocketTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testSinglePacket() {
-        $this->socketBuilder->setMethods(array('receivePacket'));
+        $this->socketBuilder->setMethods(array('receivePacket', 'log'));
         $socket = $this->socketBuilder->getMock();
         $socket->expects($this->once())->method('receivePacket')->with(1400);
+
+        $socket->expects($this->once())->method('log')->will($this->returnValue($this->logInstance));
 
         $bufferBuilder = $this->getMockBuilder('\SteamCondenser\ByteBuffer');
         $bufferBuilder->setMethods(array('get', 'getLong'));
@@ -87,10 +97,12 @@ class GoldSrcSocketTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testSplitPackets() {
-        $this->socketBuilder->setMethods(array('receivePacket'));
+        $this->socketBuilder->setMethods(array('receivePacket', 'log'));
         $socket = $this->socketBuilder->getMock();
         $socket->expects($this->at(0))->method('receivePacket')->with(1400);
-        $socket->expects($this->at(1))->method('receivePacket')->with()->will($this->returnValue(1400));
+        $socket->expects($this->at(2))->method('receivePacket')->with()->will($this->returnValue(1400));
+
+        $socket->expects($this->any())->method('log')->will($this->returnValue($this->logInstance));
 
         $bufferBuilder = $this->getMockBuilder('\SteamCondenser\ByteBuffer');
         $bufferBuilder->setMethods(array('get', 'getByte', 'getLong'));

@@ -37,11 +37,6 @@ abstract class GameServer extends Server {
     const REQUEST_RULES     = 3;
 
     /**
-     * @var \Monolog\Logger The Monolog logger for this class
-     */
-    private static $log;
-
-    /**
      * @var int The challenge number to communicate with the server
      */
     protected $challengeNumber;
@@ -152,16 +147,14 @@ abstract class GameServer extends Server {
      *        combined with the port number. If a port number is given, e.g.
      *        'server.example.com:27016' it will override the second argument.
      * @param int $port The port the server is listening on
+     * @param int $loglevel The loglevel for this logger instance
      * @throws SteamCondenserException if an host name cannot be resolved
      */
-    public function __construct($address, $port = 27015) {
-        parent::__construct($address, $port);
+    public function __construct($address, $port = 27015, $loglevel = self::LEVEL_DEBUG) {
+        parent::__construct($address, $port, $loglevel);
 
         $this->rconAuthenticated = false;
 
-        if (!isset(self::$log)) {
-            self::$log = new \Monolog\Logger('GameServer');
-        }
     }
 
     /**
@@ -328,7 +321,7 @@ abstract class GameServer extends Server {
         }
 
         if(!($responsePacket instanceof $expectedResponse)) {
-            self::$log->addInfo("Expected {$expectedResponse}, got " . get_class($responsePacket) . '.');
+            $this->log()->addInfo("Expected {$expectedResponse}, got " . get_class($responsePacket) . '.');
             if($repeatOnFailure) {
                 $this->handleResponseForRequest($requestType, false);
             }
@@ -354,7 +347,7 @@ abstract class GameServer extends Server {
      * @see rconAuth()
      * @throws SteamCondenserException if a problem occurs while parsing the
      *         reply
-     * @throws TimeoutException if the request times out
+     * @throws \SteamCondenser\Exceptions\TimeoutException if the request times out
      */
     abstract public function rconAuth($password);
 
@@ -366,7 +359,7 @@ abstract class GameServer extends Server {
      * @see rconExec()
      * @throws SteamCondenserException if a problem occurs while parsing the
      *         reply
-     * @throws TimeoutException if the request times out
+     * @throws \SteamCondenser\Exceptions\TimeoutException if the request times out
      */
     abstract public function rconExec($command);
 

@@ -12,11 +12,24 @@ namespace SteamCondenser\Servers\Sockets;
 
 class SourceSocketTest extends \PHPUnit_Framework_TestCase {
 
+    protected $socketBuilder;
+
+    protected $socket;
+
+    protected $buffer;
+
+    /**
+     * @var \Monolog\Logger $logInstance
+     */
+    protected $logInstance;
+
     public function setUp() {
         $this->socketBuilder = $this->getMockBuilder('\SteamCondenser\Servers\Sockets\SourceSocket');
         $this->socketBuilder->disableOriginalConstructor();
-        $this->socketBuilder->setMethods(array('receivePacket'));
+        $this->socketBuilder->setMethods(array('receivePacket', 'log'));
         $this->socket = $this->socketBuilder->getMock();
+
+        $this->logInstance = $this->getMockBuilder('\Monolog\Logger')->disableOriginalConstructor()->getMock();
 
         $this->buffer = $this->getMockBuilder('\SteamCondenser\ByteBuffer')->disableOriginalConstructor()->getMock();
         $reflectionSocket = new \ReflectionObject($this->socket);
@@ -27,6 +40,7 @@ class SourceSocketTest extends \PHPUnit_Framework_TestCase {
 
     public function testSimpleReply() {
         $this->socket->expects($this->once())->method('receivePacket')->with(1400);
+        $this->socket->expects($this->once())->method('log')->will($this->returnValue($this->logInstance));
 
         $this->buffer->expects($this->once())->method('getLong')->will($this->returnValue(-1));
         $this->buffer->expects($this->once())->method('get')->will($this->returnValue('A'));
@@ -37,6 +51,8 @@ class SourceSocketTest extends \PHPUnit_Framework_TestCase {
     public function testSplitReply() {
         $this->socket->expects($this->at(0))->method('receivePacket')->with(1400);
         $this->socket->expects($this->at(1))->method('receivePacket')->with()->will($this->returnValue(1400));
+
+        $this->socket->expects($this->any())->method('log')->will($this->returnValue($this->logInstance));
 
         $this->buffer->expects($this->exactly(4))->method('getLong')->will($this->onConsecutiveCalls(-2, 1234, -2, 1234));
         $this->buffer->expects($this->exactly(4))->method('getByte')->will($this->onConsecutiveCalls(0x2, 0x0, 0x2, 0x1));
@@ -51,6 +67,7 @@ class SourceSocketTest extends \PHPUnit_Framework_TestCase {
     public function testCompressedReply() {
         $this->socket->expects($this->at(0))->method('receivePacket')->with(1400);
         $this->socket->expects($this->at(1))->method('receivePacket')->with()->will($this->returnValue(1400));
+        $this->socket->expects($this->once())->method('log')->will($this->returnValue($this->logInstance));
 
         $this->buffer->expects($this->exactly(6))->method('getLong')->will($this->onConsecutiveCalls(-2, 2147484882, 0, -2, 2147484882, 0));
         $this->buffer->expects($this->exactly(2))->method('getUnsignedLong')->will($this->returnValue(1570726822));

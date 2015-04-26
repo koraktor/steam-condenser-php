@@ -10,6 +10,7 @@
 
 namespace SteamCondenser\Servers;
 
+use SteamCondenser\SteamCondenser;
 use SteamCondenser\Exceptions\RCONNoAuthException;
 
 /**
@@ -56,10 +57,11 @@ class GoldSrcServer extends GameServer {
      * @param int $port The port the server is listening on
      * @param bool $isHLTV HLTV servers need special treatment, so this is used
      *        to determine if the server is a HLTV server
-     * @throws SteamCondenserException if an host name cannot be resolved
+     * @param int $loglevel The loglevel for this logger instance
+     * @throws \SteamCondenser\Exceptions\SteamCondenserException if an host name cannot be resolved
      */
-    public function __construct($address, $port = 27015, $isHLTV = false) {
-        parent::__construct($address, $port);
+    public function __construct($address, $port = 27015, $isHLTV = false, $loglevel = self::LEVEL_DEBUG) {
+        parent::__construct($address, $port, $loglevel);
 
         $this->isHLTV = $isHLTV;
     }
@@ -70,7 +72,7 @@ class GoldSrcServer extends GameServer {
      * @see GoldSrcSocket
      */
     public function initSocket() {
-        $this->socket = new Sockets\GoldSrcSocket($this->ipAddress, $this->port, $this->isHLTV);
+        $this->socket = new Sockets\GoldSrcSocket($this->ipAddress, $this->port, $this->isHLTV, $this->log());
     }
 
     /**
@@ -83,7 +85,7 @@ class GoldSrcServer extends GameServer {
      * @param string $password The RCON password of the server
      * @return bool <var>true</var> if authentication was successful
      * @see #rconExec
-     * @throws TimeoutException if the request times out
+     * @throws \SteamCondenser\Exceptions\TimeoutException if the request times out
      */
     public function rconAuth($password) {
         $this->rconPassword = $password;
@@ -107,9 +109,9 @@ class GoldSrcServer extends GameServer {
      * @see rconExec()
      * @throws RCONNoAuthException if no correct RCON password has been given
      *         yet or it is rejected by the server
-     * @throws SteamCondenserException if a problem occurs while parsing the
+     * @throws \SteamCondenser\Exceptions\SteamCondenserException if a problem occurs while parsing the
      *         reply
-     * @throws TimeoutException if the request times out
+     * @throws \SteamCondenser\Exceptions\TimeoutException if the request times out
      */
     public function rconExec($command) {
         if (!$this->rconAuthenticated) {

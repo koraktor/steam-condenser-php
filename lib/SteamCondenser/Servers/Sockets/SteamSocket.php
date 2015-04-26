@@ -26,12 +26,6 @@ use SteamCondenser\Servers\Packets\SteamPacket;
  * @subpackage sockets
  */
 abstract class SteamSocket {
-
-    /**
-     * @var \Monolog\Logger The Monolog logger for this class
-     */
-    private static $log;
-
     /**
      * @var int The default socket timeout
      */
@@ -46,6 +40,11 @@ abstract class SteamSocket {
      * @var UDPSocket
      */
     protected $socket;
+
+    /**
+     * @var \Monolog\Logger
+     */
+    protected $log = null;
 
     /**
      * Sets the timeout for socket operations
@@ -67,14 +66,23 @@ abstract class SteamSocket {
      * @param string $ipAddress Either the IP address or the DNS name of the
      *        server
      * @param int $portNumber The port the server is listening on
+     * @param \Monolog\Logger $loggerInstance The Monolog instance
      */
-    public function __construct($ipAddress, $portNumber = 27015) {
-        if (!isset(self::$log)) {
-            self::$log = new \Monolog\Logger('SteamSocket');
+    public function __construct($ipAddress, $portNumber = 27015, $loggerInstance = null) {
+        if (isset($loggerInstance)) {
+            $this->log = $loggerInstance;
         }
 
         $this->socket = new UDPSocket();
         $this->socket->connect($ipAddress, $portNumber, 0);
+    }
+
+    /**
+     * @return \Monolog\Logger
+     */
+    protected function log()
+    {
+        return $this->log;
     }
 
     /**
@@ -151,8 +159,7 @@ abstract class SteamSocket {
      * @see SteamPacket::__toString()
      */
     public function send(SteamPacket $dataPacket) {
-        self::$log->addDebug("Sending packet of type \"" . get_class($dataPacket) . "\"...");
-
+        $this->log()->addDebug("Sending packet of type \"" . get_class($dataPacket) . "\"...");
         $this->socket->send($dataPacket->__toString());
     }
 

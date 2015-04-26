@@ -18,9 +18,16 @@ class TestableRCONSocket extends RCONSocket {
 
     public $socket;
 
+    /**
+     * @var \Monolog\Logger $log
+     */
+    public $log;
+
 }
 
 class RCONSocketTest extends \PHPUnit_Framework_TestCase {
+
+    protected $socketBuilder;
 
     public function setUp() {
         $this->socketBuilder = $this->getMockBuilder('\SteamCondenser\Servers\Sockets\TestableRCONSocket');
@@ -48,9 +55,13 @@ class RCONSocketTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testSend() {
+        $log = $this->getMockBuilder('\Monolog\Logger')->disableOriginalConstructor()->getMock();
+
         $socket = new TestableRCONSocket('127.0.0.1', 27015);
         $tcpSocket = $this->getMock('\SteamCondenser\TCPSocket');
         $socket->socket = $tcpSocket;
+        $socket->log = $log;
+
         $packet = $this->getMockBuilder('\SteamCondenser\Servers\Packets\RCON\RCONPacket')->disableOriginalConstructor()->getMock();
         $packet->expects($this->once())->method('__toString')->will($this->returnValue('test'));
         $tcpSocket->expects($this->exactly(2))->method('isOpen')->will($this->returnValue(true));
@@ -60,10 +71,13 @@ class RCONSocketTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testGetReply() {
+        $log = $this->getMockBuilder('\Monolog\Logger')->disableOriginalConstructor()->getMock();
+
         $buffer = $this->getMockBuilder('\SteamCondenser\ByteBuffer')->disableOriginalConstructor()->getMock();
         $this->socketBuilder->setMethods(array('receivePacket'));
         $socket = $this->socketBuilder->getMock();
         $socket->buffer = $buffer;
+        $socket->log = $log;
 
         $buffer->expects($this->once())->method('getLong')->will($this->returnValue(1234));
         $buffer->expects($this->exactly(2))->method('get')->will($this->onConsecutiveCalls("\xFF\0\0\0\0\0\0\0", "test\0\0"));
