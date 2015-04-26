@@ -310,7 +310,7 @@ class GameServerTest extends \PHPUnit_Framework_TestCase {
         $server->expects($this->at(1))->method('getReply')->will($this->returnValue($packet1));
         $packet2 = $this->getMockBuilder('\SteamCondenser\Servers\Packets\S2APLAYERPacket')->disableOriginalConstructor()->setMethods(array('getPlayerHash'))->getMock();
         $packet2->expects($this->once())->method('getPlayerHash')->will($this->returnValue(array('test' => 'test')));
-        $server->expects($this->at(3))->method('getReply')->will($this->returnValue($packet2));
+        $server->expects($this->at(4))->method('getReply')->will($this->returnValue($packet2));
 
         /**
          * @var \Monolog\Logger $log

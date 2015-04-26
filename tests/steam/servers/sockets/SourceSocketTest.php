@@ -50,7 +50,7 @@ class SourceSocketTest extends \PHPUnit_Framework_TestCase {
 
     public function testSplitReply() {
         $this->socket->expects($this->at(0))->method('receivePacket')->with(1400);
-        $this->socket->expects($this->at(1))->method('receivePacket')->with()->will($this->returnValue(1400));
+        $this->socket->expects($this->at(2))->method('receivePacket')->with()->will($this->returnValue(1400));
 
         $this->socket->expects($this->any())->method('log')->will($this->returnValue($this->logInstance));
 
@@ -66,8 +66,8 @@ class SourceSocketTest extends \PHPUnit_Framework_TestCase {
 
     public function testCompressedReply() {
         $this->socket->expects($this->at(0))->method('receivePacket')->with(1400);
-        $this->socket->expects($this->at(1))->method('receivePacket')->with()->will($this->returnValue(1400));
-        $this->socket->expects($this->once())->method('log')->will($this->returnValue($this->logInstance));
+        $this->socket->expects($this->at(2))->method('receivePacket')->with()->will($this->returnValue(1400));
+        $this->socket->expects($this->any())->method('log')->will($this->returnValue($this->logInstance));
 
         $this->buffer->expects($this->exactly(6))->method('getLong')->will($this->onConsecutiveCalls(-2, 2147484882, 0, -2, 2147484882, 0));
         $this->buffer->expects($this->exactly(2))->method('getUnsignedLong')->will($this->returnValue(1570726822));
