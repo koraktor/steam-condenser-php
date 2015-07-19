@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2014, Sebastian Staudt
+ * Copyright (c) 2008-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -24,6 +24,11 @@ class SteamPlayer {
      * @var int
      */
     private $clientPort;
+
+    /**
+     * @var int
+     */
+    private $connectionId;
 
     /**
      * @var float
@@ -64,11 +69,6 @@ class SteamPlayer {
      * @var int
      */
     private $rate;
-
-    /**
-     * @var int
-     */
-    private $realId;
 
     /**
      * @var int
@@ -117,11 +117,11 @@ class SteamPlayer {
         }
 
         $this->extended = true;
-        $this->realId   = intval($playerData['userid']);
+        $this->connectionId = intval($playerData['userid']);
         if(array_key_exists('state', $playerData)) {
-            $this->state    = $playerData['state'];
+            $this->state = $playerData['state'];
         }
-        $this->steamId  = $playerData['uniqueid'];
+        $this->steamId = $playerData['uniqueid'];
 
         if(!$this->isBot()) {
             $this->loss = intval($playerData['loss']);
@@ -146,6 +146,15 @@ class SteamPlayer {
      */
     public function getClientPort() {
         return $this->clientPort;
+    }
+
+    /**
+     * Returns the connection ID (as used on the server) of this player
+     *
+     * @return int The connection ID of this player
+     */
+    public function getConnectionId() {
+        return $this->connectionId;
     }
 
     /**
@@ -212,15 +221,6 @@ class SteamPlayer {
     }
 
     /**
-     * Returns the real ID (as used on the server) of this player
-     *
-     * @return int The real ID of this player
-     */
-    public function getRealId() {
-        return $this->realId;
-    }
-
-    /**
      * Returns the score of this player
      *
      * @return int The score of this player
@@ -274,7 +274,7 @@ class SteamPlayer {
      */
     public function __toString() {
         if($this->extended) {
-            return "#{$this->realId} \"{$this->name}\", SteamID: {$this->steamId} Score: {$this->score}, Time: {$this->connectTime}";
+            return "#{$this->connectionId} \"{$this->name}\", SteamID: {$this->steamId} Score: {$this->score}, Time: {$this->connectTime}";
         } else {
             return "#{$this->id} \"{$this->name}\", Score: {$this->score}, Time: {$this->connectTime}";
         }
