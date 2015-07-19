@@ -16,6 +16,8 @@ class GenericSteamSocket extends SteamSocket {
 
     public $socket;
 
+    public $log;
+
     public function getReply() {
         return null;
     }
@@ -30,11 +32,25 @@ class GenericSteamSocket extends SteamSocket {
  */
 class SteamSocketTest extends \PHPUnit_Framework_TestCase {
 
+    /**
+     * @var GenericSteamSocket $socket
+     */
+    protected $socket;
+
+    protected $udpSocket;
+
+    /**
+     * @var \Monolog\Logger $logInstance
+     */
+    protected $logInstance;
+
     public function setUp() {
         $this->udpSocket = $this->getMock('\SteamCondenser\UDPSocket');
+        $this->logInstance = $this->getMockBuilder('\Monolog\Logger')->disableOriginalConstructor()->getMock();
 
         $this->socket = new GenericSteamSocket('127.0.0.1');
         $this->socket->socket = $this->udpSocket;
+        $this->socket->log = $this->logInstance;
     }
 
     public function testCloseUdpSocket() {
@@ -72,8 +88,6 @@ class SteamSocketTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testSendPacket() {
-        \PHPUnit_Framework_Error_Notice::$enabled = FALSE;
-
         $packet = $this->getMockBuilder('\SteamCondenser\Servers\Packets\SteamPacket')
                         ->disableOriginalConstructor()->getMock();
         $packet->expects($this->once())->method('__toString')->will($this->returnValue('test'));

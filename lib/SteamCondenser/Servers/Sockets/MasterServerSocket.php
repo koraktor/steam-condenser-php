@@ -23,30 +23,22 @@ use SteamCondenser\Servers\Packets\SteamPacketFactory;
 class MasterServerSocket extends SteamSocket {
 
     /**
-     * @var \Monolog\Logger The Monolog logger for this class
-     */
-    private static $log;
-
-    /**
      * Creates a new UDP socket to communicate with the server on the given IP
      * address and port
      *
      * @param string $ipAddress Either the IP address or the DNS name of the
      *        server
      * @param int $portNumber The port the server is listening on
+     * @param \Monolog\Logger $loggerInstance The Monolog instance
      */
-    public function __construct($ipAddress, $portNumber = 27015) {
-        parent::__construct($ipAddress, $portNumber);
-
-        if (!isset(self::$log)) {
-            self::$log = new \Monolog\Logger('MasterServerSocket');
-        }
+    public function __construct($ipAddress, $portNumber = 27015, $loggerInstance = null) {
+        parent::__construct($ipAddress, $portNumber, $loggerInstance);
     }
 
     /**
      * Reads a single packet from the socket
      *
-     * @return SteamPacket The packet replied from the server
+     * @return \SteamCondenser\Servers\Packets\SteamPacket The packet replied from the server
      * @throws PacketFormatException if the packet has the wrong format
      */
     public function getReply() {
@@ -58,7 +50,7 @@ class MasterServerSocket extends SteamSocket {
 
         $packet = SteamPacketFactory::getPacketFromData($this->buffer->get());
 
-        self::$log->addDebug("Received reply of type \"" . get_class($packet) . "\"");
+        $this->log()->addDebug("Received reply of type \"" . get_class($packet) . "\"");
 
         return $packet;
     }

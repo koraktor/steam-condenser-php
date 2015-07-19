@@ -10,7 +10,6 @@
 
 namespace SteamCondenser\Servers\Sockets;
 
-use Monolog\Logger;
 use SteamCondenser\ByteBuffer;
 use SteamCondenser\Exceptions\ConnectionResetException;
 use SteamCondenser\TCPSocket;
@@ -31,11 +30,6 @@ use SteamCondenser\Servers\Packets\RCON\RCONPacketFactory;
 class RCONSocket extends SteamSocket {
 
     /**
-     * @var \Monolog\Logger The Monolog logger for this class
-     */
-    private static $log;
-
-    /**
      * @var string
      */
     private $ipAddress;
@@ -52,15 +46,16 @@ class RCONSocket extends SteamSocket {
      * @param string $ipAddress Either the IP address or the DNS name of the
      *        server
      * @param int $portNumber The port the server is listening on
+     * @param \Monolog\Logger $loggerInstance The Monolog instance
      */
-    public function __construct($ipAddress, $portNumber) {
-        if (!isset(self::$log)) {
-            self::$log = new Logger('\SteamCondenser\Servers\Sockets\RCONSocket');
-        }
-
+    public function __construct($ipAddress, $portNumber, $loggerInstance = null) {
         $this->buffer = ByteBuffer::allocate(1400);
         $this->ipAddress = $ipAddress;
         $this->portNumber = $portNumber;
+
+        if (isset($loggerInstance)) {
+            $this->log = $loggerInstance;
+        }
     }
 
     /**
@@ -121,7 +116,7 @@ class RCONSocket extends SteamSocket {
 
         $packet = RCONPacketFactory::getPacketFromData($packetData);
 
-        self::$log->addDebug('Received packet of type ' . get_class($packet));
+        $this->log()->addDebug('Received packet of type ' . get_class($packet));
 
         return $packet;
     }

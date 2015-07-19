@@ -29,11 +29,6 @@ use SteamCondenser\Servers\Sockets\MasterServerSocket;
 class MasterServer extends Server {
 
     /**
-     * @var \Monolog\Logger The Monolog logger for this class
-     */
-    private static $log;
-
-    /**
      * @var string The master server address to query for GoldSrc game servers
      */
     const GOLDSRC_MASTER_SERVER = 'hl1master.steampowered.com:27011';
@@ -105,14 +100,11 @@ class MasterServer extends Server {
      *        combined with the port number. If a port number is given, e.g.
      *        'server.example.com:27016' it will override the second argument.
      * @param int $port The port the server is listening on
-     * @throws SteamCondenserException if an host name cannot be resolved
+     * @param \Monolog\Logger Monolog Logger Instance
+     * @throws \SteamCondenser\Exceptions\SteamCondenserException if an host name cannot be resolved
      */
-    public function __construct($address, $port = null) {
-        parent::__construct($address, $port);
-
-        if (!isset(self::$log)) {
-            self::$log = new \Monolog\Logger('MasterServer');
-        }
+    public function __construct($address, $port = null, $loggerInstance = null) {
+        parent::__construct($address, $port, $loggerInstance);
     }
 
     /**
@@ -159,7 +151,7 @@ class MasterServer extends Server {
      *         region and filters
      * @see setTimeout()
      * @see A2M_GET_SERVERS_BATCH2_Packet
-     * @throws SteamCondenserException if a problem occurs while parsing the
+     * @throws \SteamCondenser\Exceptions\SteamCondenserException if a problem occurs while parsing the
      *         reply
      * @throws TimeoutException if too many timeouts occur while querying the
      *         master server
@@ -196,7 +188,7 @@ class MasterServer extends Server {
                         if($failCount == self::$retries) {
                             throw $e;
                         }
-                        self::$log->addInfo("Request to master server {$this->ipAddress} timed out, retrying...");
+                        $this->log()->addInfo("Request to master server {$this->ipAddress} timed out, retrying...");
                     }
                 } while(!$finished);
                 break;
@@ -206,7 +198,7 @@ class MasterServer extends Server {
                 } else if($this->rotateIp()) {
                     throw $e;
                 }
-                self::$log->addInfo("Request to master server failed, retrying {$this->ipAddress}...");
+                $this->log()->addInfo("Request to master server failed, retrying {$this->ipAddress}...");
             }
         }
 
@@ -219,7 +211,7 @@ class MasterServer extends Server {
      * @see MasterServerSocket
      */
     public function initSocket() {
-        $this->socket = new MasterServerSocket($this->ipAddress, $this->port);
+        $this->socket = new MasterServerSocket($this->ipAddress, $this->port, $this->log());
     }
 
 }

@@ -27,14 +27,12 @@ class MasterServerTest extends \PHPUnit_Framework_TestCase {
 
     public function setUp() {
         $this->socket = $this->getMockBuilder('\SteamCondenser\Servers\Sockets\MasterServerSocket')->disableOriginalConstructor()->setMethods(array('getReply', 'send'))->getMock();
-        $this->server = $this->getMockBuilder('\SteamCondenser\Servers\TestableMasterServer')->disableOriginalConstructor()->setMethods(array('rotateIp'))->getMock();
+        $this->server = $this->getMockBuilder('\SteamCondenser\Servers\TestableMasterServer')->disableOriginalConstructor()->setMethods(array('rotateIp', 'log'))->getMock();
+
+        $log = $this->getMockBuilder('\Monolog\Logger')->disableOriginalConstructor()->getMock();
+        $this->server->expects($this->any())->method('log')->will($this->returnValue($log));
 
         $this->server->socket = $this->socket;
-
-        $log = new \ReflectionProperty('\SteamCondenser\Servers\MasterServer', 'log');
-        $log->setAccessible(true);
-        $log->setValue(new \Monolog\Logger('MasterServer'));
-        $log->getValue()->pushHandler(new \Monolog\Handler\NullHandler());
     }
 
     public function testGetServers() {

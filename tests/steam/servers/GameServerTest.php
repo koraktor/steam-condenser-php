@@ -42,6 +42,8 @@ abstract class TestableGameServer extends GameServer {
 
 class GameServerTest extends \PHPUnit_Framework_TestCase {
 
+    protected $serverBuilder = null;
+
     public function setUp() {
         $this->serverBuilder = $this->getMockBuilder('\SteamCondenser\Servers\TestableGameServer');
         $this->serverBuilder->disableOriginalConstructor();
@@ -300,7 +302,7 @@ class GameServerTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testHandleUnexpectedResponse() {
-        $server = $this->serverBuilder->setMethods(array('initSocket', 'getReply', 'rconAuth', 'rconExec', 'sendRequest'))->getMock();
+        $server = $this->serverBuilder->setMethods(array('initSocket', 'getReply', 'rconAuth', 'rconExec', 'sendRequest', 'log'))->getMock();
         $server->expects($this->exactly(2))->method('sendRequest')->with($this->isInstanceOf('\SteamCondenser\Servers\Packets\A2SPLAYERPacket'));
 
         $packet1 = $this->getMockBuilder('\SteamCondenser\Servers\Packets\S2CCHALLENGEPacket')->disableOriginalConstructor()->setMethods(array('getChallengeNumber'))->getMock();
@@ -308,7 +310,13 @@ class GameServerTest extends \PHPUnit_Framework_TestCase {
         $server->expects($this->at(1))->method('getReply')->will($this->returnValue($packet1));
         $packet2 = $this->getMockBuilder('\SteamCondenser\Servers\Packets\S2APLAYERPacket')->disableOriginalConstructor()->setMethods(array('getPlayerHash'))->getMock();
         $packet2->expects($this->once())->method('getPlayerHash')->will($this->returnValue(array('test' => 'test')));
-        $server->expects($this->at(3))->method('getReply')->will($this->returnValue($packet2));
+        $server->expects($this->at(4))->method('getReply')->will($this->returnValue($packet2));
+
+        /**
+         * @var \Monolog\Logger $log
+         */
+        $log = $this->getMockBuilder('\Monolog\Logger')->disableOriginalConstructor()->getMock();
+        $server->expects($this->once())->method('log')->will($this->returnValue($log));
 
         $server->handleResponseForRequest(GameServer::REQUEST_PLAYER);
 

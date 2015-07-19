@@ -24,11 +24,6 @@ use \SteamCondenser\Servers\Packets\SteamPacketFactory;
 class GoldSrcSocket extends SteamSocket {
 
     /**
-     * @var \Monolog\Logger The Monolog logger for this class
-     */
-    private static $log;
-
-    /**
      * @var boolean
      */
     private $isHLTV;
@@ -48,14 +43,11 @@ class GoldSrcSocket extends SteamSocket {
      * @param bool $isHLTV <var>true</var> if the target server is a HTLV
      *        instance. HLTV behaves slightly different for RCON commands, this
      *        flag increases compatibility.
+     * @param \Monolog\Logger Monolog Logger Instance
      */
-    public function __construct($ipAddress, $portNumber = 27015, $isHLTV = false) {
-        parent::__construct($ipAddress, $portNumber);
+    public function __construct($ipAddress, $portNumber = 27015, $isHLTV = false, $loggerInstance = null) {
+        parent::__construct($ipAddress, $portNumber, $loggerInstance);
         $this->isHLTV = $isHLTV;
-
-        if (!isset(self::$log)) {
-            self::$log = new \Monolog\Logger('GoldSrcSocket');
-        }
     }
 
     /**
@@ -80,7 +72,7 @@ class GoldSrcSocket extends SteamSocket {
 
                 $splitPackets[$packetNumber - 1] = $this->buffer->get();
 
-                self::$log->addDebug("Received packet $packetNumber of $packetCount for request #$requestId");
+                $this->log()->addDebug("Received packet $packetNumber of $packetCount for request #$requestId");
 
                 if(sizeof($splitPackets) < $packetCount) {
                     try {
@@ -98,7 +90,7 @@ class GoldSrcSocket extends SteamSocket {
             $packet = SteamPacketFactory::getPacketFromData($this->buffer->get());
         }
 
-        self::$log->addDebug("Received packet of type \"" . get_class($packet) . "\"");
+        $this->log()->addDebug("Received packet of type \"" . get_class($packet) . "\"");
 
         return $packet;
     }
@@ -108,12 +100,12 @@ class GoldSrcSocket extends SteamSocket {
      *
      * @param string $password The password to authenticate with the server
      * @param string $command The command to execute on the server
-     * @return RCONGoldSrcResponse The response replied by the server
+     * @return \SteamCondenser\Servers\Packets\RCON\RCONGoldSrcResponse The response replied by the server
      * @see rconChallenge()
      * @see rconSend()
      * @throws RCONBanException if the IP of the local machine has been banned
      *         on the game server
-     * @throws RCONNoAuthException if the password is incorrect
+     * @throws \SteamCondenser\Exceptions\RCONNoAuthException if the password is incorrect
      */
     public function rconExec($password, $command) {
         if($this->rconChallenge == -1 || $this->isHLTV) {

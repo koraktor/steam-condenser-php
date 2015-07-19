@@ -10,6 +10,7 @@
 
 namespace SteamCondenser\Servers;
 
+use SteamCondenser\SteamCondenser;
 use SteamCondenser\Exceptions\SteamCondenserException;
 
 /**
@@ -22,7 +23,7 @@ use SteamCondenser\Exceptions\SteamCondenserException;
  * @package    steam-condenser
  * @subpackage servers
  */
-abstract class Server {
+abstract class Server extends SteamCondenser {
 
     /**
      * @var array The currently selected IP address of this server
@@ -51,10 +52,13 @@ abstract class Server {
      *        combined with the port number. If a port number is given, e.g.
      *        'server.example.com:27016' it will override the second argument.
      * @param int $port The port the server is listening on
+     * @param int $loglevel The loglevel for this logger instance
      * @see initSocket()
      * @throws SteamCondenserException if an host name cannot be resolved
      */
-    public function __construct($address, $port = null) {
+    public function __construct($address, $port = null, $loglevel = self::LEVEL_DEBUG) {
+        parent::__construct($loglevel);
+
         $address = strval($address);
 
         if(strpos($address, ':') !== false) {
@@ -76,7 +80,6 @@ abstract class Server {
         }
 
         $this->ipAddress = $this->ipAddresses[0];
-
 
         $this->initSocket();
     }
