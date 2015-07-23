@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2011-2014, Sebastian Staudt
+ * Copyright (c) 2011-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -62,7 +62,7 @@ abstract class Server {
             $port    = $address[1];
             $address = $address[0];
         }
-        $this->ipAddresses = array();
+        $this->ipAddresses = [];
         $this->ipIndex     = 0;
         $this->port        = intval($port);
 
@@ -134,7 +134,5 @@ abstract class Server {
      * communication
      */
     protected abstract function initSocket();
-
-
 
 }

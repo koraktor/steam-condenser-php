@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2011-2014, Sebastian Staudt
+ * Copyright (c) 2011-2015, Sebastian Staudt
  */
 
 namespace SteamCondenser\Community;
@@ -22,7 +22,7 @@ class SteamGame {
     /**
      * @var array
      */
-    private static $games = array();
+    private static $games = [];
 
     /**
      * @var int
@@ -95,7 +95,7 @@ class SteamGame {
      * @throws SteamCondenserException if the Web API request fails
      */
     public static function checkUpToDate($appId, $version) {
-        $params = array('appid' => $appId, 'version' => $version);
+        $params = ['appid' => $appId, 'version' => $version];
         $result = WebApi::getJSON('ISteamApps', 'UpToDateCheck', 1, $params);
         $result = json_decode($result)->response;
         if(!$result->success) {
@@ -222,7 +222,7 @@ class SteamGame {
      * @return int The number of players playing this game
      */
     public function getPlayerCount() {
-        $params = array('appid' => $this->appId);
+        $params = ['appid' => $this->appId];
         $result = WebApi::getJSON('ISteamUserStats', 'GetNumberOfCurrentPlayers', 1, $params);
         $result = json_decode($result);
 

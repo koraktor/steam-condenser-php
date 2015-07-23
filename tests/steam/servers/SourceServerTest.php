@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2012-2014, Sebastian Staudt
+ * Copyright (c) 2012-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -30,7 +30,7 @@ class TestableSourceServer extends SourceServer {
 class SourceServerTest extends \PHPUnit_Framework_TestCase {
 
     public function setUp() {
-        $this->rconSocket = $this->getMockBuilder('\SteamCondenser\Servers\Sockets\RCONSocket')->disableOriginalConstructor()->setMethods(array('close', 'getReply', 'send'))->getMock();
+        $this->rconSocket = $this->getMockBuilder('\SteamCondenser\Servers\Sockets\RCONSocket')->disableOriginalConstructor()->setMethods(['close', 'getReply', 'send'])->getMock();
     }
 
     public function testDisconnect() {
@@ -53,7 +53,7 @@ class SourceServerTest extends \PHPUnit_Framework_TestCase {
     public function testRconAuth() {
         $this->rconSocket->expects($this->once())->method('send')->with($this->logicalAnd($this->isInstanceOf('\SteamCondenser\Servers\Packets\RCON\RCONAuthRequest'), $this->attributeEqualTo('requestId', 1234)));
         $this->rconSocket->expects($this->exactly(2))->method('getReply')->will($this->returnValue(new RCONAuthResponse(1234)));
-        $server = $this->getMockBuilder('\SteamCondenser\Servers\TestableSourceServer')->disableOriginalConstructor()->setMethods(array('generateRconRequestId'))->getMock();
+        $server = $this->getMockBuilder('\SteamCondenser\Servers\TestableSourceServer')->disableOriginalConstructor()->setMethods(['generateRconRequestId'])->getMock();
         $server->rconSocket = $this->rconSocket;
         $server->expects($this->once())->method('generateRconRequestId')->will($this->returnValue(1234));
 

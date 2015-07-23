@@ -4,7 +4,7 @@
  * the terms of the new BSD License.
  *
  * Copyright (c) 2011, Nicholas Hastings
- *               2011, Sebastian Staudt
+ *               2011-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -36,7 +36,7 @@ class GameLeaderboard {
     /**
      * @var array
      */
-    private static $leaderboards = array();
+    private static $leaderboards = [];
 
     /**
      * @var int
@@ -118,7 +118,7 @@ class GameLeaderboard {
             throw new SteamCondenserException((string) $boardsData->error);
         }
 
-        self::$leaderboards[$gameName] = array();
+        self::$leaderboards[$gameName] = [];
         foreach($boardsData->leaderboard as $boardData) {
             $leaderboard = new GameLeaderboard($boardData);
             self::$leaderboards[$gameName][$leaderboard->getId()] = $leaderboard;
@@ -237,7 +237,7 @@ class GameLeaderboard {
             throw new SteamCondenserException((string) $xml->error);
         }
 
-        $entries = array();
+        $entries = [];
         foreach($xml->entries->entry as $entryData) {
             $rank = (int) $entryData->rank;
             $entries[$rank] = new GameLeaderboardEntry($entryData, $this);
@@ -271,7 +271,7 @@ class GameLeaderboard {
             throw new SteamCondenserException((string) $xml->error);
         }
 
-        $entries = array();
+        $entries = [];
         foreach($xml->entries->entry as $entryData) {
             $rank = (int) $entryData->rank;
             $entries[$rank] = new GameLeaderboardEntry($entryData, $this);

@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2014, Sebastian Staudt
+ * Copyright (c) 2008-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -43,7 +43,7 @@ class S2ARULESPacket extends SteamPacket {
         parent::__construct(SteamPacket::S2A_RULES_HEADER, $contentData);
 
         $rulesCount = $this->contentData->getShort();
-        $this->rulesArray = array();
+        $this->rulesArray = [];
 
         for($x = 0; $x < $rulesCount; $x++) {
             $rule  = $this->contentData->getString();

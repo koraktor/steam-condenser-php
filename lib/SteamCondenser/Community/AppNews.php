@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2010-2014, Sebastian Staudt
+ * Copyright (c) 2010-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -88,11 +88,10 @@ class AppNews {
      *         given options
      */
     public static function getNewsForApp($appId, $count = 5, $maxLength = null) {
-        $params = array('appid' => $appId, 'count' => $count,
-                        'maxlength' => $maxLength);
+        $params = ['appid' => $appId, 'count' => $count, 'maxlength' => $maxLength];
         $data = json_decode(WebApi::getJSON('ISteamNews', 'GetNewsForApp', 2, $params));
 
-        $newsItems = array();
+        $newsItems = [];
         foreach($data->appnews->newsitems as $newsData) {
             $newsItems[] = new AppNews($appId, $newsData);
         }

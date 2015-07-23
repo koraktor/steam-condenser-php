@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2012-2014, Sebastian Staudt
+ * Copyright (c) 2012-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -11,7 +11,7 @@
 class SteamPacketTest extends PHPUnit_Framework_TestCase {
 
     public function setUp() {
-        $this->packet = $this->getMockForAbstractClass('\SteamCondenser\Servers\Packets\SteamPacket', array(0x61, 'test'));
+        $this->packet = $this->getMockForAbstractClass('\SteamCondenser\Servers\Packets\SteamPacket', [0x61, 'test']);
     }
 
     public function testGetData() {

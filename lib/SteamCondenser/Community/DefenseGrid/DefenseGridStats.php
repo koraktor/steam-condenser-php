@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2009-2014, Sebastian Staudt
+ * Copyright (c) 2009-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -195,16 +195,18 @@ class DefenseGridStats extends GameStats {
 
         if(empty($this->alienStats)) {
             $alienData = $this->xmlData->stats->aliens;
-            $this->alienStats = array();
-            $aliens = array('bulwark', 'crasher', 'dart', 'decoy', 'drone',
-                'grunt', 'juggernaut', 'manta', 'racer', 'rumbler', 'seeker',
-                'spire', 'stealth', 'swarmer', 'turtle', 'walker');
+            $this->alienStats = [];
+            $aliens = [
+                    'bulwark', 'crasher', 'dart', 'decoy', 'drone', 'grunt',
+                    'juggernaut', 'manta', 'racer', 'rumbler', 'seeker',
+                    'spire', 'stealth', 'swarmer', 'turtle', 'walker'
+            ];
 
             foreach($aliens as $alien) {
-                $this->alienStats[$alien] = array(
+                $this->alienStats[$alien] = [
                     (int) $alienData->$alien->encountered->value,
                     (int) $alienData->$alien->killed->value
-                );
+                ];
             }
         }
 
@@ -432,38 +434,40 @@ class DefenseGridStats extends GameStats {
 
         if(empty($this->towerStats)) {
             $towerData = $this->xmlData->stats->towers;
-            $this->towerStats = array();
-            $towers = array('cannon', 'flak', 'gun', 'inferno', 'laser',
-                'meteor', 'missile', 'tesla');
+            $this->towerStats = [];
+            $towers = [
+                    'cannon', 'flak', 'gun', 'inferno', 'laser', 'meteor',
+                    'missile', 'tesla'
+            ];
 
             foreach($towers as $tower) {
-                $this->towerStats[$tower] = array();
+                $this->towerStats[$tower] = [];
                 for($i = 1; $i <= 3; $i++) {
                     $built = $towerData->xpath("{$tower}[@level=$i]/built/value");
                     $damage = $towerData->xpath("{$tower}[@level=$i]/damage/value");
-                    $this->towerStats[$tower][$i] = array(
+                    $this->towerStats[$tower][$i] = [
                         (int) $built[0],
                         (float) $damage[0]
-                    );
+                    ];
                 }
             }
 
-            $this->towerStats['command'] = array();
+            $this->towerStats['command'] = [];
             for($i = 1; $i <= 3; $i++) {
                 $built = $towerData->xpath("command[@level=$i]/built/value");
                 $resources = $towerData->xpath("command[@level=$i]/resource/value");
-                $this->towerStats['command'][$i] = array(
+                $this->towerStats['command'][$i] = [
                     (int) $built[0],
                     (float) $resources[0]
-                );
+                ];
             }
 
-            $this->towerStats['temporal'] = array();
+            $this->towerStats['temporal'] = [];
             for($i = 1; $i <= 3; $i++) {
                 $built = $towerData->xpath("temporal[@level=$i]/built/value");
-                $this->towerStats['temporal'][$i] = array(
+                $this->towerStats['temporal'][$i] = [
                     (int) $built[0]
-                );
+                ];
             }
         }
 

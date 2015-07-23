@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2009-2014, Sebastian Staudt
+ * Copyright (c) 2009-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -28,12 +28,12 @@ class L4D2Map extends L4DMap {
     /**
      * @var array The names of the special infected in Left4Dead 2
      */
-    protected static $SPECIAL_INFECTED = array('boomer', 'charger', 'hunter', 'jockey', 'smoker', 'spitter', 'tank');
+    protected static $SPECIAL_INFECTED = ['boomer', 'charger', 'hunter', 'jockey', 'smoker', 'spitter', 'tank'];
 
     /**
      * @var array The items available in Left4Dead 2
      */
-    private static $ITEMS = array('adrenaline', 'defibs', 'medkits', 'pills');
+    private static $ITEMS = ['adrenaline', 'defibs', 'medkits', 'pills'];
 
     /**
      * @var array
@@ -74,17 +74,17 @@ class L4D2Map extends L4DMap {
         if($this->played) {
             $this->bestTime = (float) $mapData->besttimemilliseconds / 1000;
 
-            $this->teammates = array();
+            $this->teammates = [];
             foreach($mapData->teammates->children() as $teammate) {
                 $this->teammates[] = new SteamId((string) $teammate, false);
             }
 
-            $this->items = array();
+            $this->items = [];
             foreach(self::$ITEMS as $item) {
                 $this->items[$item] = (int) $mapData->{"item_$item"};
             }
 
-            $this->kills = array();
+            $this->kills = [];
             foreach(self::$INFECTED as $infected) {
                 $this->kills[$infected] = (int) $mapData->{"kills_$infected"};
             }

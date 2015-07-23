@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2010-2014, Sebastian Staudt
+ * Copyright (c) 2010-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -29,12 +29,12 @@ class AlienSwarmStats extends GameStats {
     /**
      * @var string The names of all weapons in Alien Swarm
      */
-    private static $WEAPONS = array('Autogun', 'Cannon_Sentry', 'Chainsaw',
+    private static $WEAPONS = ['Autogun', 'Cannon_Sentry', 'Chainsaw',
         'Flamer', 'Grenade_Launcher', 'Hand_Grenades', 'Hornet_Barrage',
         'Incendiary_Sentry', 'Laser_Mines', 'Marskman_Rifle', 'Minigun',
         'Mining_Laser', 'PDW', 'Pistol', 'Prototype_Rifle', 'Rail_Rifle',
         'Rifle', 'Rifle_Grenade', 'Sentry_Gun', 'Shotgun', 'Tesla_Cannon',
-        'Vindicator', 'Vindicator_Grenade');
+        'Vindicator', 'Vindicator_Grenade'];
 
     /**
      * @var array
@@ -74,7 +74,7 @@ class AlienSwarmStats extends GameStats {
             $lifetimeStats = $this->xmlData->stats->lifetime;
             $this->hoursPlayed = (string) $lifetimeStats->timePlayed;
 
-            $this->lifetimeStats = array();
+            $this->lifetimeStats = [];
             $this->lifetimeStats['accuracy']           = (float) $lifetimeStats->accuracy;
             $this->lifetimeStats['aliensBurned']       = (int) $lifetimeStats->aliensburned;
             $this->lifetimeStats['aliensKilled']       = (int) $lifetimeStats->alienskilled;
@@ -117,7 +117,7 @@ class AlienSwarmStats extends GameStats {
         if(empty($this->favorites)) {
             $favoritesData = $this->xmlData->stats->favorites;
 
-            $this->favorites = array();
+            $this->favorites = [];
             $this->favorites['class']                      = (string) $favoritesData->class;
             $this->favorites['classImg']                   = (string) $favoritesData->classimg;
             $this->favorites['classPercentage']            = (float) $favoritesData->classpct;
@@ -159,7 +159,7 @@ class AlienSwarmStats extends GameStats {
         if(empty($this->itemStats)) {
             $itemStatsData = $this->xmlData->stats->weapons;
 
-            $this->itemStats = array();
+            $this->itemStats = [];
             $this->itemStats['ammoDeployed']           = (int) $itemStatsData->ammo_deployed;
             $this->itemStats['sentrygunsDeployed']     = (int) $itemStatsData->sentryguns_deployed;
             $this->itemStats['sentryFlamersDeployed']  = (int) $itemStatsData->sentry_flamers_deployed;
@@ -209,7 +209,7 @@ class AlienSwarmStats extends GameStats {
         }
 
         if(empty($this->missionStats)) {
-            $this->missionStats = array();
+            $this->missionStats = [];
             foreach($this->xmlData->stats->missions->children() as $missionData) {
                 $this->missionStats[$missionData->getName()] = new AlienSwarmMission($missionData);
             }
@@ -232,7 +232,7 @@ class AlienSwarmStats extends GameStats {
         }
 
         if(empty($this->weaponStats)) {
-            $this->weaponStats = array();
+            $this->weaponStats = [];
             foreach(self::$WEAPONS as $weaponNode) {
                 $weaponData = $this->xmlData->stats->weapons->$weaponNode;
                 $weapon = new AlienSwarmWeapon($weaponData);

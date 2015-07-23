@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2010-2014, Sebastian Staudt
+ * Copyright (c) 2010-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -110,7 +110,7 @@ class AlienSwarmMission {
         $this->totalGames           = (int) $missionData->gamestotal;
         $this->totalGamesPercentage = (float) $missionData->gamestotalpct;
 
-        $this->time = array();
+        $this->time = [];
         $this->time['average'] = (string) $missionData->avgtime;
         $this->time['brutal']  = (string) $missionData->brutaltime;
         $this->time['easy']    = (string) $missionData->easytime;

@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2014, Sebastian Staudt
+ * Copyright (c) 2008-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -25,7 +25,7 @@ class SteamId extends XMLData {
     /**
      * @var array
      */
-    private static $steamIds = array();
+    private static $steamIds = [];
 
     /**
      * @var string
@@ -87,7 +87,7 @@ class SteamId extends XMLData {
      * Clears the Steam ID cache
      */
     public static function clearCache() {
-        self::$steamIds = array();
+        self::$steamIds = [];
     }
 
     /**
@@ -193,7 +193,7 @@ class SteamId extends XMLData {
      * @throws WebApiException if the request to Steam's Web API fails
      */
     public static function resolveVanityUrl($vanityUrl) {
-        $params = array('vanityurl' => $vanityUrl);
+        $params = ['vanityurl' => $vanityUrl];
 
         $json = WebApi::getJSON('ISteamUser', 'ResolveVanityURL', 1, $params);
         $result = json_decode($json);
@@ -305,7 +305,7 @@ class SteamId extends XMLData {
     */
     private function fetchFriends() {
         $friendsData = $this->getData($this->getBaseUrl() . '/friends?xml=1');
-        $this->friends = array();
+        $this->friends = [];
         foreach($friendsData->friends->friend as $friend) {
             $this->friends[] = SteamId::create((string) $friend, false);
         }
@@ -321,8 +321,8 @@ class SteamId extends XMLData {
     private function fetchGames() {
         $gamesData = $this->getData($this->getBaseUrl() . '/games?xml=1');
 
-        $this->games = array();
-        $this->playtimes = array();
+        $this->games = [];
+        $this->playtimes = [];
 
         foreach($gamesData->games->game as $gameData) {
             $appId = (int) $gameData->appID;
@@ -330,7 +330,7 @@ class SteamId extends XMLData {
             $this->games[$appId] = $game;
             $recent = (float) $gameData->hoursLast2Weeks;
             $total = (float) str_replace(',', '', $gameData->hoursOnRecord);
-            $playtimes = array((int) ($recent * 60), (int) ($total * 60));
+            $playtimes = [(int) ($recent * 60), (int) ($total * 60)];
             $this->playtimes[$appId] = $playtimes;
         }
     }

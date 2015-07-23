@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2010-2014, Sebastian Staudt
+ * Copyright (c) 2010-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -58,7 +58,7 @@ class TF2GoldenWrench {
      */
     public static function getGoldenWrenches() {
         if(self::$goldenWrenches == null) {
-            self::$goldenWrenches = array();
+            self::$goldenWrenches = [];
 
             $data = json_decode(WebApi::getJSON('ITFItems_440', 'GetGoldenWrenches', 2));
             foreach($data->results->wrenches as $wrenchData) {

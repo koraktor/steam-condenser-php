@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2014, Sebastian Staudt
+ * Copyright (c) 2008-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -86,7 +86,7 @@ abstract class GameServer extends Server {
      * @see splitPlayerStatus()
      */
     protected function getPlayerStatusAttributes($statusHeader) {
-        $statusAttributes = array();
+        $statusAttributes = [];
         foreach(preg_split("/\s+/", $statusHeader) as $attribute) {
             if($attribute == 'connected') {
                 $statusAttributes[] = 'time';
@@ -116,28 +116,28 @@ abstract class GameServer extends Server {
 
         $firstQuote = strpos($playerStatus, '"');
         $lastQuote  = strrpos($playerStatus, '"');
-        $data = array(
+        $data = [
             substr($playerStatus, 0, $firstQuote),
             substr($playerStatus, $firstQuote + 1, $lastQuote - 1 - $firstQuote),
             substr($playerStatus, $lastQuote + 1)
-        );
+        ];
 
         $data = array_merge(
             array_filter(preg_split("/\s+/", trim($data[0]))),
-            array($data[1]),
+            [$data[1]],
             preg_split("/\s+/", trim($data[2]))
         );
         $data = array_values($data);
 
         if(sizeof($attributes) > sizeof($data) &&
            in_array('state', $attributes)) {
-            array_splice($data, 3, 0, array(null, null, null));
+            array_splice($data, 3, 0, [null, null, null]);
         } elseif(sizeof($attributes) < sizeof($data)) {
             unset($data[1]);
             $data = array_values($data);
         }
 
-        $playerData = array();
+        $playerData = [];
         for($i = 0; $i < sizeof($data); $i ++) {
             $playerData[$attributes[$i]] = $data[$i];
         }
@@ -439,7 +439,7 @@ abstract class GameServer extends Server {
             $this->rconAuth($rconPassword);
         }
 
-        $players = array();
+        $players = [];
         foreach(explode("\n", $this->rconExec('status')) as $line) {
             if(strpos($line, '#') === 0 && $line != '#end') {
                 $players[] = trim(substr($line, 1));

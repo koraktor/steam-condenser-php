@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2009-2014, Sebastian Staudt
+ * Copyright (c) 2009-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -50,7 +50,7 @@ class DoDSStats extends GameStats {
         }
 
         if(empty($this->classStats)) {
-            $this->classStats = array();
+            $this->classStats = [];
             foreach($this->xmlData->stats->classes->children() as $classData) {
                 $this->classStats[(string) $classData['key']] = new DoDSClass($classData);
             }

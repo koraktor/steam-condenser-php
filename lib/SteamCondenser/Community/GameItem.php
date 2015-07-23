@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2011-2014, Sebastian Staudt
+ * Copyright (c) 2011-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -132,7 +132,7 @@ class GameItem {
             $this->tradeable = !!$itemData->flag_cannot_trade;
         }
 
-        $attributesData = array();
+        $attributesData = [];
         if (property_exists($this->getSchemaData(), 'attributes')) {
             $attributesData = (array) $this->getSchemaData()->attributes;
         }
@@ -140,7 +140,7 @@ class GameItem {
             $attributesData = array_merge_recursive($attributesData, (array) $itemData->attributes);
         }
 
-        $this->attributes = array();
+        $this->attributes = [];
         foreach ($attributesData as $attributeData) {
             $attributeKey = property_exists($attributeData, 'defindex') ?
                 $attributeData->defindex : $attributeData->name;

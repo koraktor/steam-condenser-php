@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2010-2014, Sebastian Staudt
+ * Copyright (c) 2010-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -225,7 +225,7 @@ class WebApi {
 
         if($params != null && !empty($params)) {
             $url .= '?';
-            $url_params = array();
+            $url_params = [];
             foreach($params as $k => $v) {
                 $url_params[] = "$k=$v";
             }

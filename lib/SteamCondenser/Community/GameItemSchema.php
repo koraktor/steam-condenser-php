@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2012-2014, Sebastian Staudt
+ * Copyright (c) 2012-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -22,7 +22,7 @@ class GameItemSchema {
     /**
      * @var array
      */
-    public static $cache = array();
+    public static $cache = [];
 
     /**
      * @var int
@@ -83,7 +83,7 @@ class GameItemSchema {
      * Clears the item schema cache
      */
     public static function clearCache() {
-        self::$cache = array();
+        self::$cache = [];
     }
 
     /**
@@ -149,31 +149,31 @@ class GameItemSchema {
      *         cannot be fetched
      */
     public function fetch() {
-        $params = array('language' => $this->language);
+        $params = ['language' => $this->language];
         $data = WebApi::getJSONData("IEconItems_{$this->appId}", 'GetSchema', 1, $params);
 
-        $this->attributes = array();
+        $this->attributes = [];
         foreach ($data->attributes as $attribute) {
             $this->attributes[$attribute->defindex] = $attribute;
             $this->attributes[$attribute->name] = $attribute;
         }
 
-        $this->effects = array();
+        $this->effects = [];
         foreach ($data->attribute_controlled_attached_particles as $effect) {
             $this->effects[$effect->id] = $effect;
         }
 
-        $this->items = array();
-        $this->itemNames = array();
+        $this->items = [];
+        $this->itemNames = [];
         foreach ($data->items as $item) {
             $this->items[$item->defindex] = $item;
             $this->itemNames[$item->name] = $item->defindex;
         }
 
         if (!empty($data->levels)) {
-            $this->itemLevels = array();
+            $this->itemLevels = [];
             foreach ($data->item_levels as $itemLevelType) {
-                $itemLevels = array();
+                $itemLevels = [];
                 foreach ($itemLevelType->levels as $itemLevel) {
                     $itemLevels[$itemLevel->level] = $itemLevel->name;
                 }
@@ -181,17 +181,17 @@ class GameItemSchema {
             }
         }
 
-        $this->itemSets = array();
+        $this->itemSets = [];
         foreach ($data->item_sets as $itemSet) {
             $this->itemSets[$itemSet->item_set] = $itemSet;
         }
 
-        $this->origins = array();
+        $this->origins = [];
         foreach ($data->originNames as $origin) {
             $this->origins[$origin->origin] = $origin->name;
         }
 
-        $this->qualities = array();
+        $this->qualities = [];
         $index = -1;
         foreach ($data->qualities as $key => $value) {
             $index ++;

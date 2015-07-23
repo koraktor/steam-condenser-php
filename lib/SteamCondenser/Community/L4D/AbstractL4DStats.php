@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2009-2014, Sebastian Staudt
+ * Copyright (c) 2009-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -26,7 +26,7 @@ abstract class AbstractL4DStats extends GameStats {
     /**
      * @var array The names of the special infected in Left4Dead
      */
-    protected static $SPECIAL_INFECTED = array('boomer', 'hunter', 'smoker', 'tank');
+    protected static $SPECIAL_INFECTED = ['boomer', 'hunter', 'smoker', 'tank'];
 
     /**
      * @var array
@@ -94,7 +94,7 @@ abstract class AbstractL4DStats extends GameStats {
         }
 
         if(empty($this->favorites)) {
-            $this->favorites = array();
+            $this->favorites = [];
             $this->favorites['campaign']                = (string) $this->xmlData->stats->favorites->campaign;
             $this->favorites['campaignPercentage']      = (int)    $this->xmlData->stats->favorites->campaignpct;
             $this->favorites['character']               = (string) $this->xmlData->stats->favorites->character;
@@ -123,7 +123,7 @@ abstract class AbstractL4DStats extends GameStats {
         }
 
         if(empty($this->lifetimeStats)) {
-            $this->lifetimeStats = array();
+            $this->lifetimeStats = [];
             $this->lifetimeStats['finalesSurvived']           = (int)    $this->xmlData->stats->lifetime->finales;
             $this->lifetimeStats['gamesPlayed']               = (int)    $this->xmlData->stats->lifetime->gamesplayed;
             $this->lifetimeStats['finalesSurvivedPercentage'] = $this->lifetimeStats['finalesSurvived'] / $this->lifetimeStats['gamesPlayed'];
@@ -154,7 +154,7 @@ abstract class AbstractL4DStats extends GameStats {
         }
 
         if(empty($this->survivalStats)) {
-          $this->survivalStats = array();
+          $this->survivalStats = [];
           $this->survivalStats['goldMedals']   = (int)   $this->xmlData->stats->survival->goldmedals;
           $this->survivalStats['silverMedals'] = (int)   $this->xmlData->stats->survival->silvermedals;
           $this->survivalStats['bronzeMedals'] = (int)   $this->xmlData->stats->survival->bronzemedals;
@@ -180,7 +180,7 @@ abstract class AbstractL4DStats extends GameStats {
         }
 
         if(empty($this->teamplayStats)) {
-          $this->teamplayStats = array();
+          $this->teamplayStats = [];
           $this->teamplayStats['revived']                    = (int)    $this->xmlData->stats->teamplay->revived;
           $this->teamplayStats['mostRevivedDifficulty']      = (string) $this->xmlData->stats->teamplay->reviveddiff;
           $this->teamplayStats['avgRevived']                 = (float)  $this->xmlData->stats->teamplay->revivedavg;
@@ -212,7 +212,7 @@ abstract class AbstractL4DStats extends GameStats {
         }
 
         if(empty($this->versusStats)) {
-            $this->versusStats = array();
+            $this->versusStats = [];
             $this->versusStats['gamesPlayed']               = (int)    $this->xmlData->stats->versus->gamesplayed;
             $this->versusStats['gamesCompleted']            = (int)    $this->xmlData->stats->versus->gamescompleted;
             $this->versusStats['finalesSurvived']           = (int)    $this->xmlData->stats->versus->finales;
@@ -224,7 +224,7 @@ abstract class AbstractL4DStats extends GameStats {
             $this->versusStats['highestSurvivorScore']      = (int)    $this->xmlData->stats->versus->survivorscore;
 
             foreach($this->SPECIAL_INFECTED() as $infected) {
-              $this->versusStats[$infected] = array();
+              $this->versusStats[$infected] = [];
               $this->versusStats[$infected]['specialAttacks'] = (int)   $this->xmlData->stats->versus->{$infected . 'special'};
               $this->versusStats[$infected]['mostDamage']     = (int)   $this->xmlData->stats->versus->{$infected . 'dmg'};
               $this->versusStats[$infected]['avgLifespan']    = (float) $this->xmlData->stats->versus->{$infected . 'lifespan'};

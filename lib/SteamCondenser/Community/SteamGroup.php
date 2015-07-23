@@ -24,7 +24,7 @@ class SteamGroup extends XMLData {
     /**
      * @var array
      */
-    private static $steamGroups = array();
+    private static $steamGroups = [];
 
     /**
      * @var string
@@ -81,7 +81,7 @@ class SteamGroup extends XMLData {
      * Clears the group cache
      */
     public static function clearCache() {
-        self::$steamGroups = array();
+        self::$steamGroups = [];
     }
 
     /**
@@ -127,7 +127,7 @@ class SteamGroup extends XMLData {
         }
 
         $this->fetched = false;
-        $this->members = array();
+        $this->members = [];
 
         if($fetch) {
             $this->fetchMembers();

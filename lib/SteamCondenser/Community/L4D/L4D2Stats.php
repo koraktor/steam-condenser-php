@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2009-2014, Sebastian Staudt
+ * Copyright (c) 2009-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -22,7 +22,7 @@ class L4D2Stats extends AbstractL4DStats {
     /**
      * @var array The names of the special infected in Left4Dead 2
      */
-    protected static $SPECIAL_INFECTED = array('boomer', 'charger', 'hunter', 'jockey', 'smoker', 'spitter', 'tank');
+    protected static $SPECIAL_INFECTED = ['boomer', 'charger', 'hunter', 'jockey', 'smoker', 'spitter', 'tank'];
 
     /**
      * @var array
@@ -43,12 +43,12 @@ class L4D2Stats extends AbstractL4DStats {
     public function __construct($steamId) {
         parent::__construct($steamId, 'l4d2');
 
-        $this->damagePercentages = array(
+        $this->damagePercentages = [
             'melee' => (float) $this->xmlData->stats->weapons->meleePctDmg,
             'pistols' => (float) $this->xmlData->stats->weapons->pistolsPctDmg,
             'rifles' => (float) $this->xmlData->stats->weapons->bulletsPctDmg,
             'shotguns' => (float) $this->xmlData->stats->weapons->shellsPctDmg
-        );
+        ];
     }
 
     /**
@@ -126,7 +126,7 @@ class L4D2Stats extends AbstractL4DStats {
         }
 
         if(empty($this->scavengeStats)) {
-            $this->scavengeStats = array();
+            $this->scavengeStats = [];
             $this->scavengeStats['avgCansPerRound'] = (float) $this->xmlData->stats->scavenge->avgcansperround;
             $this->scavengeStats['perfectRounds']   = (int)   $this->xmlData->stats->scavenge->perfect16canrounds;
             $this->scavengeStats['roundsLost']      = (int)   $this->xmlData->stats->scavenge->roundslost;
@@ -134,10 +134,10 @@ class L4D2Stats extends AbstractL4DStats {
             $this->scavengeStats['roundsWon']       = (int)   $this->xmlData->stats->scavenge->roundswon;
             $this->scavengeStats['totalCans']       = (int)   $this->xmlData->stats->scavenge->totalcans;
 
-            $this->scavengeStats['maps'] = array();
+            $this->scavengeStats['maps'] = [];
             foreach($this->xmlData->stats->scavenge->mapstats->children() as $mapData) {
                 $map_id = (string) $mapData->name;
-                $this->scavengeStats['maps'][$map_id] = array();
+                $this->scavengeStats['maps'][$map_id] = [];
                 $this->scavengeStats['maps'][$map_id]['avgRoundScore']     = (int)    $mapData->avgscoreperround;
                 $this->scavengeStats['maps'][$map_id]['highestGameScore']  = (int)    $mapData->highgamescore;
                 $this->scavengeStats['maps'][$map_id]['highestRoundScore'] = (int)    $mapData->avgscoreperround;
@@ -146,10 +146,10 @@ class L4D2Stats extends AbstractL4DStats {
                 $this->scavengeStats['maps'][$map_id]['roundsWon']         = (int)    $mapData->roundswon;
             }
 
-            $this->scavengeStats['infected'] = array();
+            $this->scavengeStats['infected'] = [];
             foreach($this->xmlData->stats->scavenge->infectedstats->children() as $infectedData) {
                 $infectedId = (string) $infectedData->name;
-                $this->scavengeStats['infected'][$infectedId] = array();
+                $this->scavengeStats['infected'][$infectedId] = [];
                 $this->scavengeStats['infected'][$infectedId]['maxDamagePerLife']    = (int) $infectedData->maxdmg1life;
                 $this->scavengeStats['infected'][$infectedId]['maxPoursInterrupted'] = (int) $infectedData->maxpoursinterrupted;
                 $this->scavengeStats['infected'][$infectedId]['specialAttacks']      = (int) $infectedData->specialattacks;
@@ -190,7 +190,7 @@ class L4D2Stats extends AbstractL4DStats {
 
         if(empty($this->survivalStats)) {
             parent::getSurvivalStats();
-            $this->survivalStats['maps'] = array();
+            $this->survivalStats['maps'] = [];
             foreach($this->xmlData->stats->survival->maps->children() as $mapData) {
                 $map = new L4D2Map($mapData);
                 $this->survivalStats['maps'][$map->getId()] = $map;
@@ -214,14 +214,14 @@ class L4D2Stats extends AbstractL4DStats {
         }
 
         if(empty($this->weaponStats)) {
-          $this->weaponStats = array();
+          $this->weaponStats = [];
           foreach($this->xmlData->stats->weapons->children() as $weaponData) {
             if(empty($weaponData)) {
                 continue;
             }
 
             $weaponName = $weaponData->getName();
-            if(!in_array($weaponName, array('bilejars', 'molotov', 'pipes'))) {
+            if(!in_array($weaponName, ['bilejars', 'molotov', 'pipes'])) {
               $weapon = new L4D2Weapon($weaponData);
             }
             else {

@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2011-2014, Sebastian Staudt
+ * Copyright (c) 2011-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -30,7 +30,7 @@ class GameInventory {
     /**
      * @var array
      */
-    public static $cache = array();
+    public static $cache = [];
 
     /**
      * @var string
@@ -76,7 +76,7 @@ class GameInventory {
      * Clears the inventory cache
      */
     public static function clearCache() {
-        self::$cache = array();
+        self::$cache = [];
     }
 
     /**
@@ -198,11 +198,11 @@ class GameInventory {
      * Updates the contents of the backpack using Steam Web API
      */
     public function fetch() {
-        $params = array('SteamID' => $this->steamId64);
+        $params = ['SteamID' => $this->steamId64];
         $result = WebApi::getJSONData("IEconItems_{$this->getAppId()}", 'GetPlayerItems', 1, $params);
 
-        $this->items = array();
-        $this->preliminaryItems = array();
+        $this->items = [];
+        $this->preliminaryItems = [];
         foreach ($result->items as $itemData) {
             if ($itemData != null) {
                 $inventoryClass = new \ReflectionClass(get_class($this));

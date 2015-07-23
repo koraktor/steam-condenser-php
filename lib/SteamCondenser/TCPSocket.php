@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2014, Sebastian Staudt
+ * Copyright (c) 2008-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -46,8 +46,8 @@ class TCPSocket extends Socket {
 
             socket_set_nonblock($this->socket);
             @socket_connect($this->socket, $ipAddress, $portNumber);
-            $write = array($this->socket);
-            $read = $except = array();
+            $write = [$this->socket];
+            $read = $except = null;
             $sec = floor($timeout / 1000);
             $usec = $timeout % 1000;
             if(!socket_select($read, $write, $except, $sec, $usec)) {

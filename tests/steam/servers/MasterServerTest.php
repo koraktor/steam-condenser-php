@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2012-2014, Sebastian Staudt
+ * Copyright (c) 2012-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -26,8 +26,8 @@ class TestableMasterServer extends MasterServer {
 class MasterServerTest extends \PHPUnit_Framework_TestCase {
 
     public function setUp() {
-        $this->socket = $this->getMockBuilder('\SteamCondenser\Servers\Sockets\MasterServerSocket')->disableOriginalConstructor()->setMethods(array('getReply', 'send'))->getMock();
-        $this->server = $this->getMockBuilder('\SteamCondenser\Servers\TestableMasterServer')->disableOriginalConstructor()->setMethods(array('rotateIp'))->getMock();
+        $this->socket = $this->getMockBuilder('\SteamCondenser\Servers\Sockets\MasterServerSocket')->disableOriginalConstructor()->setMethods(['getReply', 'send'])->getMock();
+        $this->server = $this->getMockBuilder('\SteamCondenser\Servers\TestableMasterServer')->disableOriginalConstructor()->setMethods(['rotateIp'])->getMock();
 
         $this->server->socket = $this->socket;
 
@@ -43,7 +43,7 @@ class MasterServerTest extends \PHPUnit_Framework_TestCase {
         $this->socket->expects($this->at(2))->method('send')->with($this->isInstanceOf('\SteamCondenser\Servers\Packets\A2MGETSERVERSBATCH2Packet'));
         $this->socket->expects($this->at(3))->method('getReply')->will($this->returnValue(new M2ASERVERBATCHPacket("\xA\x7F\0\0\x2\x69\x87\x7F\0\0\x2\x69\x88\0\0\0\0\0\0")));
 
-        $this->assertEquals(array(array('127.0.0.1', 27015), array('127.0.0.1', 27016), array('127.0.0.2', 27015), array('127.0.0.2', 27016)), $this->server->getServers());
+        $this->assertEquals([['127.0.0.1', 27015], ['127.0.0.1', 27016], ['127.0.0.2', 27015], ['127.0.0.2', 27016]], $this->server->getServers());
     }
 
     public function testGetServersDisrupted() {
@@ -54,7 +54,7 @@ class MasterServerTest extends \PHPUnit_Framework_TestCase {
         $this->socket->expects($this->at(4))->method('send')->with($this->isInstanceOf('\SteamCondenser\Servers\Packets\A2MGETSERVERSBATCH2Packet'));
         $this->socket->expects($this->at(5))->method('getReply')->will($this->returnValue(new M2ASERVERBATCHPacket("\xA\x7F\0\0\x2\x69\x87\x7F\0\0\x2\x69\x88\0\0\0\0\0\0")));
 
-        $this->assertEquals(array(array('127.0.0.1', 27015), array('127.0.0.1', 27016), array('127.0.0.2', 27015), array('127.0.0.2', 27016)), $this->server->getServers());
+        $this->assertEquals([['127.0.0.1', 27015], ['127.0.0.1', 27016], ['127.0.0.2', 27015], ['127.0.0.2', 27016]], $this->server->getServers());
     }
 
     public function testGetServersFailed() {
@@ -81,7 +81,7 @@ class MasterServerTest extends \PHPUnit_Framework_TestCase {
         $this->socket->expects($this->at(2))->method('send')->with($this->isInstanceOf('\SteamCondenser\Servers\Packets\A2MGETSERVERSBATCH2Packet'));
         $this->socket->expects($this->at(3))->method('getReply')->will($this->throwException(new TimeoutException()));
 
-        $this->assertEquals(array(array('127.0.0.1', 27015), array('127.0.0.1', 27016)), $this->server->getServers(MasterServer::REGION_ALL, 'filter', true));
+        $this->assertEquals([['127.0.0.1', 27015], ['127.0.0.1', 27016]], $this->server->getServers(MasterServer::REGION_ALL, 'filter', true));
     }
 
     public function testGetServersSwapIp() {
@@ -97,7 +97,7 @@ class MasterServerTest extends \PHPUnit_Framework_TestCase {
         $this->socket->expects($this->at(8))->method('send')->with($this->isInstanceOf('\SteamCondenser\Servers\Packets\A2MGETSERVERSBATCH2Packet'));
         $this->socket->expects($this->at(9))->method('getReply')->will($this->returnValue(new M2ASERVERBATCHPacket("\xA\x7F\0\0\x2\x69\x87\x7F\0\0\x2\x69\x88\0\0\0\0\0\0")));
 
-        $this->assertEquals(array(array('127.0.0.1', 27015), array('127.0.0.1', 27016), array('127.0.0.2', 27015), array('127.0.0.2', 27016)), $this->server->getServers());
+        $this->assertEquals([['127.0.0.1', 27015], ['127.0.0.1', 27016], ['127.0.0.2', 27015], ['127.0.0.2', 27016]], $this->server->getServers());
     }
 
     public function testSetRetries() {

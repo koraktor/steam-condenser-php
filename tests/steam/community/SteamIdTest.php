@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2009-2014, Sebastian Staudt
+ * Copyright (c) 2009-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -67,8 +67,8 @@ class SteamIdTest extends \PHPUnit_Framework_TestCase {
     public function testFetch() {
         $data = new \SimpleXMLElement(getFixture('sonofthor.xml'));
         $mockBuilder = $this->getMockBuilder('\SteamCondenser\Community\SteamId');
-        $mockBuilder->setConstructorArgs(array('Son_of_Thor', false));
-        $mockBuilder->setMethods(array('getData'));
+        $mockBuilder->setConstructorArgs(['Son_of_Thor', false]);
+        $mockBuilder->setMethods(['getData']);
         $steamId = $mockBuilder->getMock();
         $steamId->expects($this->once())->method('getData')->with('http://steamcommunity.com/id/son_of_thor?xml=1')->will($this->returnValue($data));
         $steamId->fetchData();
@@ -92,8 +92,8 @@ class SteamIdTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testResolveVanityUrl() {
-        $webApi = $this->getMockBuilder('\SteamCondenser\Community\WebApi')->setMethods(array('_getJSON'))->disableOriginalConstructor()->getMock();
-        $webApi->expects($this->once())->method('_getJSON')->with('ISteamUser', 'ResolveVanityURL', 1, array('vanityurl' => 'koraktor'))->will($this->returnValue('{ "response": { "success": 1, "steamid": "76561197961384956" } }'));
+        $webApi = $this->getMockBuilder('\SteamCondenser\Community\WebApi')->setMethods(['_getJSON'])->disableOriginalConstructor()->getMock();
+        $webApi->expects($this->once())->method('_getJSON')->with('ISteamUser', 'ResolveVanityURL', 1, ['vanityurl' => 'koraktor'])->will($this->returnValue('{ "response": { "success": 1, "steamid": "76561197961384956" } }'));
         $this->webApiInstance->setValue($webApi);
 
         $steamId64 = SteamId::resolveVanityUrl('koraktor');
@@ -101,8 +101,8 @@ class SteamIdTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testResolveUnknownVanityUrl() {
-        $webApi = $this->getMockBuilder('\SteamCondenser\Community\WebApi')->setMethods(array('_getJSON'))->disableOriginalConstructor()->getMock();
-        $webApi->expects($this->once())->method('_getJSON')->with('ISteamUser', 'ResolveVanityURL', 1, array('vanityurl' => 'unknown'))->will($this->returnValue('{ "response": { "success": 42 } }'));
+        $webApi = $this->getMockBuilder('\SteamCondenser\Community\WebApi')->setMethods(['_getJSON'])->disableOriginalConstructor()->getMock();
+        $webApi->expects($this->once())->method('_getJSON')->with('ISteamUser', 'ResolveVanityURL', 1, ['vanityurl' => 'unknown'])->will($this->returnValue('{ "response": { "success": 42 } }'));
         $this->webApiInstance->setValue($webApi);
 
         $this->assertNull(SteamId::resolveVanityUrl('unknown'));

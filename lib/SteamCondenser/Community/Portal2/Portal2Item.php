@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2011-2014, Sebastian Staudt
+ * Copyright (c) 2011-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -24,7 +24,7 @@ class Portal2Item extends GameItem {
     /**
      * @var array The names of the bots available in Portal 2
      */
-    private static $BOTS = array('pbody', 'atlas');
+    private static $BOTS = ['pbody', 'atlas'];
 
     /**
      * @var array
@@ -42,7 +42,7 @@ class Portal2Item extends GameItem {
     public function __construct(Portal2Inventory $inventory, $itemData) {
         parent::__construct($inventory, $itemData);
 
-        $this->equipped = array();
+        $this->equipped = [];
         for($botId = 0; $botId < sizeof(self::$BOTS); $botId++) {
             $this->equipped[self::$BOTS[$botId]] = (($itemData->inventory & (1 << 16 + $botId)) != 0);
         }
@@ -54,7 +54,7 @@ class Portal2Item extends GameItem {
      * @return array The names of the bots this player has equipped this item
      */
     public function getBotsEquipped() {
-        $botsEquipped = array();
+        $botsEquipped = [];
         foreach($this->equipped as $botId => $equipped) {
             if($equipped) {
                 $botsEquipped[] = $botId;

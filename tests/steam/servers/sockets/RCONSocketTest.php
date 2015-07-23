@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2012-2014, Sebastian Staudt
+ * Copyright (c) 2012-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -24,7 +24,7 @@ class RCONSocketTest extends \PHPUnit_Framework_TestCase {
 
     public function setUp() {
         $this->socketBuilder = $this->getMockBuilder('\SteamCondenser\Servers\Sockets\TestableRCONSocket');
-        $this->socketBuilder->setConstructorArgs(array('127.0.0.1', 27015));
+        $this->socketBuilder->setConstructorArgs(['127.0.0.1', 27015]);
     }
 
     public function testConstructor() {
@@ -61,7 +61,7 @@ class RCONSocketTest extends \PHPUnit_Framework_TestCase {
 
     public function testGetReply() {
         $buffer = $this->getMockBuilder('\SteamCondenser\ByteBuffer')->disableOriginalConstructor()->getMock();
-        $this->socketBuilder->setMethods(array('receivePacket'));
+        $this->socketBuilder->setMethods(['receivePacket']);
         $socket = $this->socketBuilder->getMock();
         $socket->buffer = $buffer;
 
@@ -78,7 +78,7 @@ class RCONSocketTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testConnectionDropped() {
-        $this->socketBuilder->setMethods(array('receivePacket'));
+        $this->socketBuilder->setMethods(['receivePacket']);
         $socket = $this->socketBuilder->getMock();
         $tcpSocket = $this->getMock('\SteamCondenser\TCPSocket');
         $tcpSocket->expects($this->once())->method('close');
@@ -89,7 +89,7 @@ class RCONSocketTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testConnectionReset() {
-        $this->socketBuilder->setMethods(array('receivePacket'));
+        $this->socketBuilder->setMethods(['receivePacket']);
         $socket = $this->socketBuilder->getMock();
         $tcpSocket = $this->getMock('\SteamCondenser\TCPSocket');
         $tcpSocket->expects($this->once())->method('close');

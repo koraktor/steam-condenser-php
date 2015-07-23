@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2014, Sebastian Staudt
+ * Copyright (c) 2008-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -15,7 +15,7 @@ class SourceSocketTest extends \PHPUnit_Framework_TestCase {
     public function setUp() {
         $this->socketBuilder = $this->getMockBuilder('\SteamCondenser\Servers\Sockets\SourceSocket');
         $this->socketBuilder->disableOriginalConstructor();
-        $this->socketBuilder->setMethods(array('receivePacket'));
+        $this->socketBuilder->setMethods(['receivePacket']);
         $this->socket = $this->socketBuilder->getMock();
 
         $this->buffer = $this->getMockBuilder('\SteamCondenser\ByteBuffer')->disableOriginalConstructor()->getMock();

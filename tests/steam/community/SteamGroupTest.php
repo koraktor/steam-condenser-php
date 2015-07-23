@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2009-2014, Sebastian Staudt
+ * Copyright (c) 2009-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -61,8 +61,8 @@ class SteamGroupTest extends \PHPUnit_Framework_TestCase {
     public function testFetchMembers() {
         $data = new \SimpleXMLElement(getFixture('valve-members.xml'));
         $mockBuilder = $this->getMockBuilder('\SteamCondenser\Community\SteamGroup');
-        $mockBuilder->setConstructorArgs(array('valve', false));
-        $mockBuilder->setMethods(array('getData'));
+        $mockBuilder->setConstructorArgs(['valve', false]);
+        $mockBuilder->setMethods(['getData']);
         $group = $mockBuilder->getMock();
         $group->expects($this->once())->method('getData')->with('http://steamcommunity.com/groups/valve/memberslistxml?p=1')->will($this->returnValue($data));
         $group->fetchMembers();
@@ -87,8 +87,8 @@ class SteamGroupTest extends \PHPUnit_Framework_TestCase {
     public function testMemberCount() {
         $data = new \SimpleXMLElement(getFixture('valve-members.xml'));
         $mockBuilder = $this->getMockBuilder('\SteamCondenser\Community\SteamGroup');
-        $mockBuilder->setConstructorArgs(array('valve', false));
-        $mockBuilder->setMethods(array('getData'));
+        $mockBuilder->setConstructorArgs(['valve', false]);
+        $mockBuilder->setMethods(['getData']);
         $group = $mockBuilder->getMock();
         $group->expects($this->once())->method('getData')->with('http://steamcommunity.com/groups/valve/memberslistxml?p=1')->will($this->returnValue($data));
 

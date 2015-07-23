@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2014, Sebastian Staudt
+ * Copyright (c) 2008-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -146,7 +146,7 @@ abstract class Socket {
      * @return bool whether data arrived on this socket before the timeout
      */
     public function select($timeout = 0) {
-        $read = array($this->socket);
+        $read = [$this->socket];
         $write = null;
         $except = null;
 

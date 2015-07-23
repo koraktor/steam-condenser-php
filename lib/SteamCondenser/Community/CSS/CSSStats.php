@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2010-2014, Sebastian Staudt
+ * Copyright (c) 2010-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -25,20 +25,21 @@ class CSSStats extends GameStats {
     /**
      * @var array The names of the maps in Counter-Strike: Source
      */
-    protected static $MAPS = array( 'cs_assault', 'cs_compound',
-           'cs_havana', 'cs_italy', 'cs_militia', 'cs_office', 'de_aztec',
-           'de_cbble', 'de_chateau', 'de_dust', 'de_dust2', 'de_inferno',
-           'de_nuke', 'de_piranesi', 'de_port', 'de_prodigy', 'de_tides',
-           'de_train' );
+    protected static $MAPS = ['cs_assault', 'cs_compound', 'cs_havana',
+            'cs_italy', 'cs_militia', 'cs_office', 'de_aztec', 'de_cbble',
+            'de_chateau', 'de_dust', 'de_dust2', 'de_inferno', 'de_nuke',
+            'de_piranesi', 'de_port', 'de_prodigy', 'de_tides', 'de_train'
+    ];
 
     /**
      * @var array The names of the weapons in Counter-Strike: Source
      */
-    protected static $WEAPONS = array( 'deagle', 'usp', 'glock', 'p228',
-            'elite', 'fiveseven', 'awp', 'ak47', 'm4a1', 'aug', 'sg552',
-            'sg550', 'galil', 'famas', 'scout', 'g3sg1', 'p90', 'mp5navy',
-            'tmp', 'mac10', 'ump45', 'm3', 'xm1014', 'm249', 'knife',
-            'grenade' );
+    protected static $WEAPONS = [
+            'deagle', 'usp', 'glock', 'p228', 'elite', 'fiveseven', 'awp',
+            'ak47', 'm4a1', 'aug', 'sg552', 'sg550', 'galil', 'famas', 'scout',
+            'g3sg1', 'p90', 'mp5navy', 'tmp', 'mac10', 'ump45', 'm3', 'xm1014',
+            'm249', 'knife', 'grenade'
+    ];
 
     private $lastMatchStats;
 
@@ -55,8 +56,8 @@ class CSSStats extends GameStats {
 
         if($this->isPublic()) {
             $statsData = $this->xmlData->stats;
-            $this->lastMatchStats = array();
-            $this->totalStats     = array();
+            $this->lastMatchStats = [];
+            $this->totalStats     = [];
 
             $this->lastMatchStats['costPerKill'] = (float) $statsData->lastmatch->costkill;
             $this->lastMatchStats['ctWins'] = (int) $statsData->lastmatch->ct_wins;
@@ -128,7 +129,7 @@ class CSSStats extends GameStats {
         }
 
         if($this->mapStats == null) {
-            $this->mapStats = array();
+            $this->mapStats = [];
             $mapsData = $this->xmlData->stats->maps;
 
             foreach(self::$MAPS as $mapName) {
@@ -162,7 +163,7 @@ class CSSStats extends GameStats {
         }
 
         if($this->weaponStats == null) {
-            $this->weaponStats = array();
+            $this->weaponStats = [];
             $weaponData = $this->xmlData->stats->weapons;
 
             foreach(self::$WEAPONS as $weaponName) {

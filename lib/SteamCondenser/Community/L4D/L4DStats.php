@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2009-2014, Sebastian Staudt
+ * Copyright (c) 2009-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -45,7 +45,7 @@ class L4DStats extends AbstractL4DStats {
 
         if(empty($this->survivalStats)) {
             parent::getSurvivalStats();
-            $this->survivalStats['maps'] = array();
+            $this->survivalStats['maps'] = [];
             foreach($this->xmlData->stats->survival->maps->children() as $mapData) {
                 $this->survivalStats['maps'][$mapData->getName()] = new L4DMap($mapData);
             }
@@ -68,7 +68,7 @@ class L4DStats extends AbstractL4DStats {
         }
 
         if(empty($this->weaponStats)) {
-          $this->weaponStats = array();
+          $this->weaponStats = [];
           foreach($this->xmlData->stats->weapons->children() as $weaponData) {
             $weaponName = $weaponData->getName();
             if($weaponName != 'molotov' && $weaponName != 'pipes') {

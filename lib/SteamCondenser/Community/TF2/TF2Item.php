@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2010-2014, Sebastian Staudt
+ * Copyright (c) 2010-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -24,8 +24,8 @@ class TF2Item extends GameItem {
     /**
      * @var array The names of the Team Fortress 2 classes
      */
-    private static $CLASSES = array('scout', 'sniper', 'soldier', 'demoman',
-                                    'medic', 'heavy', 'pyro', 'spy');
+    private static $CLASSES = ['scout', 'sniper', 'soldier', 'demoman',
+                                    'medic', 'heavy', 'pyro', 'spy'];
 
     /**
      * @var array
@@ -42,7 +42,7 @@ class TF2Item extends GameItem {
     public function __construct(TF2Inventory $inventory, $itemData) {
         parent::__construct($inventory, $itemData);
 
-        $this->equipped = array();
+        $this->equipped = [];
         foreach(self::$CLASSES as $classId => $className) {
             $this->equipped[$className] = ($itemData->inventory & (1 << 16 + $classId) != 0);
         }
@@ -56,7 +56,7 @@ class TF2Item extends GameItem {
      *         item
      */
     public function getClassesEquipped() {
-        $classesEquipped = array();
+        $classesEquipped = [];
         foreach($this->equipped as $classId => $equipped) {
             if($equipped) {
                 $classesEquipped[] = $classId;

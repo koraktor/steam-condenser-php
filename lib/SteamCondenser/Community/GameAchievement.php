@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2014, Sebastian Staudt
+ * Copyright (c) 2008-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -77,10 +77,10 @@ class GameAchievement {
      *         Steam's Web API fails
      */
     public static function getGlobalPercentages($appId) {
-        $params = array('gameid' => $appId);
+        $params = ['gameid' => $appId];
         $data = json_decode(WebApi::getJSON('ISteamUserStats', 'GetGlobalAchievementPercentagesForApp', 2, $params));
 
-        $percentages = array();
+        $percentages = [];
         foreach($data->achievementpercentages->achievements as $achievementData) {
             $percentages[$achievementData->name] = (float) $achievementData->percent;
         }

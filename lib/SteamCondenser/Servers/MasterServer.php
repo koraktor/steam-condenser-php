@@ -169,7 +169,7 @@ class MasterServer extends Server {
         $finished    = false;
         $portNumber  = 0;
         $hostName    = '0.0.0.0';
-        $serverArray = array();
+        $serverArray = [];
 
         while(true) {
             $failCount = 0;
@@ -185,7 +185,7 @@ class MasterServer extends Server {
                             $portNumber = $serverString[1];
 
                             if($hostName != '0.0.0.0' && $portNumber != 0) {
-                                $serverArray[] = array($hostName, $portNumber);
+                                $serverArray[] = [$hostName, $portNumber];
                             } else {
                                 $finished = true;
                             }

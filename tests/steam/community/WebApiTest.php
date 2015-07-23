@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2012-2014, Sebastian Staudt
+ * Copyright (c) 2012-2015, Sebastian Staudt
  */
 
 namespace SteamCondenser\Community;
@@ -36,63 +36,63 @@ class WebApiTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testGetJSON() {
-        $webApi = $this->getMockBuilder('\SteamCondenser\Community\WebApi')->setMethods(array('_load'))->disableOriginalConstructor()->getMock();
-        $webApi->expects($this->once())->method('_load')->with('json', 'interface', 'method', 2, array('test' => 'param'));
+        $webApi = $this->getMockBuilder('\SteamCondenser\Community\WebApi')->setMethods(['_load'])->disableOriginalConstructor()->getMock();
+        $webApi->expects($this->once())->method('_load')->with('json', 'interface', 'method', 2, ['test' => 'param']);
         $this->instance->setValue($webApi);
 
-        WebApi::getJSON('interface', 'method', 2, array('test' => 'param'));
+        WebApi::getJSON('interface', 'method', 2, ['test' => 'param']);
     }
 
     public function testGetJSONData() {
         $data = '{ "result": { "status": 1 } }';
-        $webApi = $this->getMockBuilder('\SteamCondenser\Community\WebApi')->setMethods(array('_getJSON'))->disableOriginalConstructor()->getMock();
-        $webApi->expects($this->once())->method('_getJSON')->with('interface', 'method', 2, array('test' => 'param'))->will($this->returnValue($data));
+        $webApi = $this->getMockBuilder('\SteamCondenser\Community\WebApi')->setMethods(['_getJSON'])->disableOriginalConstructor()->getMock();
+        $webApi->expects($this->once())->method('_getJSON')->with('interface', 'method', 2, ['test' => 'param'])->will($this->returnValue($data));
         $this->instance->setValue($webApi);
 
-        $result = WebApi::getJSONData('interface', 'method', 2, array('test' => 'param'));
+        $result = WebApi::getJSONData('interface', 'method', 2, ['test' => 'param']);
         $this->assertEquals(1, $result->status);
     }
 
     public function testGetJSONDataError() {
         $data = '{ "result": { "status": 2, "statusDetail": "error" } }';
-        $webApi = $this->getMockBuilder('\SteamCondenser\Community\WebApi')->setMethods(array('_getJSON'))->disableOriginalConstructor()->getMock();
-        $webApi->expects($this->once())->method('_getJSON')->with('interface', 'method', 2, array('test' => 'param'))->will($this->returnValue($data));
+        $webApi = $this->getMockBuilder('\SteamCondenser\Community\WebApi')->setMethods(['_getJSON'])->disableOriginalConstructor()->getMock();
+        $webApi->expects($this->once())->method('_getJSON')->with('interface', 'method', 2, ['test' => 'param'])->will($this->returnValue($data));
         $this->instance->setValue($webApi);
 
         $this->setExpectedException('\SteamCondenser\Exceptions\WebApiException', 'The Web API request failed with the following error: error (status code: 2).');
 
-        WebApi::getJSONData('interface', 'method', 2, array('test' => 'param'));
+        WebApi::getJSONData('interface', 'method', 2, ['test' => 'param']);
     }
 
     public function testLoad() {
         $data = 'data';
-        $webApi = $this->getMockBuilder('\SteamCondenser\Community\WebApi')->setMethods(array('request'))->disableOriginalConstructor()->getMock();
+        $webApi = $this->getMockBuilder('\SteamCondenser\Community\WebApi')->setMethods(['request'])->disableOriginalConstructor()->getMock();
         $webApi->expects($this->once())->method('request')->with('https://api.steampowered.com/interface/method/v0002/?test=param&format=json&key=0123456789ABCDEF0123456789ABCDEF')->will($this->returnValue($data));
         $this->instance->setValue($webApi);
 
-        $this->assertEquals('data', WebApi::load('json', 'interface', 'method', 2, array('test' => 'param')));
+        $this->assertEquals('data', WebApi::load('json', 'interface', 'method', 2, ['test' => 'param']));
     }
 
     public function testLoadInsecure() {
         WebApi::setSecure(false);
 
         $data = 'data';
-        $webApi = $this->getMockBuilder('\SteamCondenser\Community\WebApi')->setMethods(array('request'))->disableOriginalConstructor()->getMock();
+        $webApi = $this->getMockBuilder('\SteamCondenser\Community\WebApi')->setMethods(['request'])->disableOriginalConstructor()->getMock();
         $webApi->expects($this->once())->method('request')->with('http://api.steampowered.com/interface/method/v0002/?test=param&format=json&key=0123456789ABCDEF0123456789ABCDEF')->will($this->returnValue($data));
         $this->instance->setValue($webApi);
 
-        $this->assertEquals('data', WebApi::load('json', 'interface', 'method', 2, array('test' => 'param')));
+        $this->assertEquals('data', WebApi::load('json', 'interface', 'method', 2, ['test' => 'param']));
     }
 
     public function testLoadWithoutKey() {
         WebApi::setApiKey(null);
 
         $data = 'data';
-        $webApi = $this->getMockBuilder('\SteamCondenser\Community\WebApi')->setMethods(array('request'))->disableOriginalConstructor()->getMock();
+        $webApi = $this->getMockBuilder('\SteamCondenser\Community\WebApi')->setMethods(['request'])->disableOriginalConstructor()->getMock();
         $webApi->expects($this->once())->method('request')->with('https://api.steampowered.com/interface/method/v0002/?test=param&format=json')->will($this->returnValue($data));
         $this->instance->setValue($webApi);
 
-        $this->assertEquals('data', WebApi::load('json', 'interface', 'method', 2, array('test' => 'param')));
+        $this->assertEquals('data', WebApi::load('json', 'interface', 'method', 2, ['test' => 'param']));
     }
 
 }
