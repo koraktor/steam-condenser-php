@@ -17,17 +17,13 @@ class MasterServerSocketTest extends \PHPUnit_Framework_TestCase {
         $this->socketBuilder->disableOriginalConstructor();
         $this->socketBuilder->setMethods(['receivePacket']);
         $this->socket = $this->socketBuilder->getMock();
+        $this->socket->setLogger(\SteamCondenser\getLogger(get_class($this->socket)));
 
         $this->buffer = $this->getMockBuilder('\SteamCondenser\ByteBuffer')->disableOriginalConstructor()->getMock();
         $reflectionSocket = new \ReflectionObject($this->socket);
         $bufferProperty = $reflectionSocket->getProperty('buffer');
         $bufferProperty->setAccessible(true);
         $bufferProperty->setValue($this->socket, $this->buffer);
-
-        $log = new \ReflectionProperty('\SteamCondenser\Servers\Sockets\MasterServerSocket', 'log');
-        $log->setAccessible(true);
-        $log->setValue(new \Monolog\Logger('\SteamCondenser\Servers\Sockets\MasterServerSocket'));
-        $log->getValue()->pushHandler(new \Monolog\Handler\NullHandler());
     }
 
     public function testIncorrectPacket() {

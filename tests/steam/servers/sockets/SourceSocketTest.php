@@ -17,6 +17,7 @@ class SourceSocketTest extends \PHPUnit_Framework_TestCase {
         $this->socketBuilder->disableOriginalConstructor();
         $this->socketBuilder->setMethods(['receivePacket']);
         $this->socket = $this->socketBuilder->getMock();
+        $this->socket->setLogger(\SteamCondenser\getLogger(get_class($this->socket)));
 
         $this->buffer = $this->getMockBuilder('\SteamCondenser\ByteBuffer')->disableOriginalConstructor()->getMock();
         $reflectionSocket = new \ReflectionObject($this->socket);

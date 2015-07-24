@@ -301,6 +301,7 @@ class GameServerTest extends \PHPUnit_Framework_TestCase {
 
     public function testHandleUnexpectedResponse() {
         $server = $this->serverBuilder->setMethods(['initSocket', 'getReply', 'rconAuth', 'rconExec', 'sendRequest'])->getMock();
+        $server->setLogger(\SteamCondenser\getLogger(get_class($server)));
         $server->expects($this->exactly(2))->method('sendRequest')->with($this->isInstanceOf('\SteamCondenser\Servers\Packets\A2SPLAYERPacket'));
 
         $packet1 = $this->getMockBuilder('\SteamCondenser\Servers\Packets\S2CCHALLENGEPacket')->disableOriginalConstructor()->setMethods(['getChallengeNumber'])->getMock();

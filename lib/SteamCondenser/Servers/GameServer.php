@@ -37,11 +37,6 @@ abstract class GameServer extends Server {
     const REQUEST_RULES     = 3;
 
     /**
-     * @var \Monolog\Logger The Monolog logger for this class
-     */
-    private static $log;
-
-    /**
      * @var int The challenge number to communicate with the server
      */
     protected $challengeNumber;
@@ -158,10 +153,6 @@ abstract class GameServer extends Server {
         parent::__construct($address, $port);
 
         $this->rconAuthenticated = false;
-
-        if (!isset(self::$log)) {
-            self::$log = new \Monolog\Logger('GameServer');
-        }
     }
 
     /**
@@ -328,7 +319,7 @@ abstract class GameServer extends Server {
         }
 
         if(!($responsePacket instanceof $expectedResponse)) {
-            self::$log->addInfo("Expected {$expectedResponse}, got " . get_class($responsePacket) . '.');
+            $this->logger->info("Expected {$expectedResponse}, got " . get_class($responsePacket) . '.');
             if($repeatOnFailure) {
                 $this->handleResponseForRequest($requestType, false);
             }

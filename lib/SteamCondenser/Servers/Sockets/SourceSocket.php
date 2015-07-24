@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2014, Sebastian Staudt
+ * Copyright (c) 2008-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -24,11 +24,6 @@ use SteamCondenser\Servers\Packets\SteamPacketFactory;
 class SourceSocket extends SteamSocket {
 
     /**
-     * @var \Monolog\Logger The Monolog logger for this class
-     */
-    private static $log;
-
-    /**
      * Creates a new UDP socket to communicate with the Source server on the
      * given IP address and port
      *
@@ -38,10 +33,6 @@ class SourceSocket extends SteamSocket {
      */
     public function __construct($ipAddress, $portNumber = 27015) {
         parent::__construct($ipAddress, $portNumber);
-
-        if (!isset(self::$log)) {
-            self::$log = new \Monolog\Logger('SourceSocket');
-        }
     }
 
     /**
@@ -75,7 +66,7 @@ class SourceSocket extends SteamSocket {
 
                 $splitPackets[$packetNumber] = $this->buffer->get();
 
-                self::$log->addDebug("Received packet $packetNumber of $packetCount for request #$requestId");
+                $this->logger->debug("Received packet $packetNumber of $packetCount for request #$requestId");
 
                 if(sizeof($splitPackets) < $packetCount) {
                     try {
@@ -98,9 +89,9 @@ class SourceSocket extends SteamSocket {
         }
 
         if($isCompressed) {
-            self::$log->addDebug("Received compressed reply of type \"" . get_class($packet) . "\"");
+            $this->logger->debug("Received compressed reply of type \"" . get_class($packet) . "\"");
         } else {
-            self::$log->addDebug("Received reply of type \"" . get_class($packet) . "\"");
+            $this->logger->debug("Received reply of type \"" . get_class($packet) . "\"");
         }
 
         return $packet;

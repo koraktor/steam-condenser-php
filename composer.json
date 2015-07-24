@@ -26,6 +26,7 @@
         "phpunit/phpunit": "~4.1.3"
     },
     "autoload": {
+        "files": [ "lib/SteamCondenser.php" ],
         "psr-4": { "SteamCondenser\\": "lib/SteamCondenser" }
     }
 }

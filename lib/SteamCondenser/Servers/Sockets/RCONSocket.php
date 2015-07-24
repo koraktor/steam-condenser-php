@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2014, Sebastian Staudt
+ * Copyright (c) 2008-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -13,6 +13,7 @@ namespace SteamCondenser\Servers\Sockets;
 use Monolog\Logger;
 use SteamCondenser\ByteBuffer;
 use SteamCondenser\Exceptions\ConnectionResetException;
+use SteamCondenser\SteamCondenser;
 use SteamCondenser\TCPSocket;
 use SteamCondenser\Servers\Packets\SteamPacket;
 use SteamCondenser\Servers\Packets\RCON\RCONPacketFactory;
@@ -29,11 +30,6 @@ use SteamCondenser\Servers\Packets\RCON\RCONPacketFactory;
  * @subpackage sockets
  */
 class RCONSocket extends SteamSocket {
-
-    /**
-     * @var \Monolog\Logger The Monolog logger for this class
-     */
-    private static $log;
 
     /**
      * @var string
@@ -54,9 +50,7 @@ class RCONSocket extends SteamSocket {
      * @param int $portNumber The port the server is listening on
      */
     public function __construct($ipAddress, $portNumber) {
-        if (!isset(self::$log)) {
-            self::$log = new Logger('\SteamCondenser\Servers\Sockets\RCONSocket');
-        }
+        $this->logger = \SteamCondenser\getLogger(get_class($this));
 
         $this->buffer = ByteBuffer::allocate(1400);
         $this->ipAddress = $ipAddress;
@@ -121,7 +115,7 @@ class RCONSocket extends SteamSocket {
 
         $packet = RCONPacketFactory::getPacketFromData($packetData);
 
-        self::$log->addDebug('Received packet of type ' . get_class($packet));
+        $this->logger->debug('Received packet of type ' . get_class($packet));
 
         return $packet;
     }

@@ -10,6 +10,8 @@
 
 namespace SteamCondenser\Servers;
 
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
 use SteamCondenser\Exceptions\SteamCondenserException;
 
 /**
@@ -22,7 +24,7 @@ use SteamCondenser\Exceptions\SteamCondenserException;
  * @package    steam-condenser
  * @subpackage servers
  */
-abstract class Server {
+abstract class Server implements LoggerAwareInterface {
 
     /**
      * @var array The currently selected IP address of this server
@@ -38,6 +40,11 @@ abstract class Server {
      * @var int The index of the currently selected IP address
      */
     protected $ipIndex;
+
+    /**
+     * @var
+     */
+    protected $logger;
 
     /**
      * @var int The port of this server
@@ -77,6 +84,7 @@ abstract class Server {
 
         $this->ipAddress = $this->ipAddresses[0];
 
+        $this->logger = \SteamCondenser\getLogger(get_class($this));
 
         $this->initSocket();
     }
@@ -116,6 +124,13 @@ abstract class Server {
         $this->initSocket();
 
         return $this->ipIndex == 0;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setLogger(LoggerInterface $logger) {
+        $this->logger = $logger;
     }
 
     /**

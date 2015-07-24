@@ -10,6 +10,8 @@
 
 namespace SteamCondenser\Community;
 
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
 use SteamCondenser\Exceptions\WebApiException;
 
 /**
@@ -21,12 +23,12 @@ use SteamCondenser\Exceptions\WebApiException;
  * @package    steam-condenser
  * @subpackage community
  */
-class WebApi {
+class WebApi implements LoggerAwareInterface {
 
     /**
-     * @var \Monolog\Logger The Monolog logger for this class
+     * @var LoggerInterface The logger for this class
      */
-    private static $log;
+    private $logger;
 
     /**
      * @var string
@@ -132,7 +134,7 @@ class WebApi {
     private static function instance() {
         if (self::$instance == null) {
             self::$instance = new WebApi();
-            self::$log = new \Monolog\Logger('WebApi');
+            self::$instance->setLogger(\SteamCondenser\getLogger(get_class()));
         }
 
         return self::$instance;
@@ -243,7 +245,7 @@ class WebApi {
      * @throws WebApiException if the request failed
      */
     protected function request($url) {
-        self::$log->addDebug("Querying Steam Web API: " . str_replace(self::$apiKey, 'SECRET', $url));
+        $this->logger->debug("Querying Steam Web API: " . str_replace(self::$apiKey, 'SECRET', $url));
 
         $data = @file_get_contents($url);
 
@@ -258,6 +260,13 @@ class WebApi {
         }
 
         return $data;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setLogger(LoggerInterface $logger) {
+        $this->logger = $logger;
     }
 
 }

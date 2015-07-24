@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2014, Sebastian Staudt
+ * Copyright (c) 2008-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -22,11 +22,6 @@ use \SteamCondenser\Servers\Packets\SteamPacketFactory;
  * @subpackage sockets
  */
 class GoldSrcSocket extends SteamSocket {
-
-    /**
-     * @var \Monolog\Logger The Monolog logger for this class
-     */
-    private static $log;
 
     /**
      * @var boolean
@@ -51,11 +46,8 @@ class GoldSrcSocket extends SteamSocket {
      */
     public function __construct($ipAddress, $portNumber = 27015, $isHLTV = false) {
         parent::__construct($ipAddress, $portNumber);
-        $this->isHLTV = $isHLTV;
 
-        if (!isset(self::$log)) {
-            self::$log = new \Monolog\Logger('GoldSrcSocket');
-        }
+        $this->isHLTV = $isHLTV;
     }
 
     /**
@@ -80,7 +72,7 @@ class GoldSrcSocket extends SteamSocket {
 
                 $splitPackets[$packetNumber - 1] = $this->buffer->get();
 
-                self::$log->addDebug("Received packet $packetNumber of $packetCount for request #$requestId");
+                $this->logger->debug("Received packet $packetNumber of $packetCount for request #$requestId");
 
                 if(sizeof($splitPackets) < $packetCount) {
                     try {
@@ -98,7 +90,7 @@ class GoldSrcSocket extends SteamSocket {
             $packet = SteamPacketFactory::getPacketFromData($this->buffer->get());
         }
 
-        self::$log->addDebug("Received packet of type \"" . get_class($packet) . "\"");
+        $this->logger->debug("Received packet of type \"" . get_class($packet) . "\"");
 
         return $packet;
     }

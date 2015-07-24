@@ -3,13 +3,15 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2014, Sebastian Staudt
+ * Copyright (c) 2008-2015, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
 
 namespace SteamCondenser\Servers\Sockets;
 
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
 use SteamCondenser\ByteBuffer;
 use SteamCondenser\UDPSocket;
 use SteamCondenser\Exceptions\ConnectionResetException;
@@ -25,12 +27,7 @@ use SteamCondenser\Servers\Packets\SteamPacket;
  * @package    steam-condenser
  * @subpackage sockets
  */
-abstract class SteamSocket {
-
-    /**
-     * @var \Monolog\Logger The Monolog logger for this class
-     */
-    private static $log;
+abstract class SteamSocket implements LoggerAwareInterface {
 
     /**
      * @var int The default socket timeout
@@ -41,6 +38,11 @@ abstract class SteamSocket {
      * @var ByteBuffer
      */
     protected $buffer;
+
+    /**
+     * @var LoggerInterface The logger for this instance
+     */
+    protected $logger;
 
     /**
      * @var UDPSocket
@@ -69,9 +71,7 @@ abstract class SteamSocket {
      * @param int $portNumber The port the server is listening on
      */
     public function __construct($ipAddress, $portNumber = 27015) {
-        if (!isset(self::$log)) {
-            self::$log = new \Monolog\Logger('SteamSocket');
-        }
+        $this->logger = \SteamCondenser\getLogger(get_class($this));
 
         $this->socket = new UDPSocket();
         $this->socket->connect($ipAddress, $portNumber, 0);
@@ -151,9 +151,16 @@ abstract class SteamSocket {
      * @see SteamPacket::__toString()
      */
     public function send(SteamPacket $dataPacket) {
-        self::$log->addDebug("Sending packet of type \"" . get_class($dataPacket) . "\"...");
+        $this->logger->debug("Sending packet of type \"" . get_class($dataPacket) . "\"...");
 
         $this->socket->send($dataPacket->__toString());
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setLogger(LoggerInterface $logger) {
+        $this->logger = $logger;
     }
 
 }
