@@ -28,6 +28,17 @@ class SteamIdTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('STEAM_0:0:12345', $steamId);
     }
 
+    public function testConvertCommunityIdToSteamId3() {
+        $steamId = SteamId::convertCommunityIdToSteamId3('76561197960497430');
+        $this->assertEquals('[U:1:231702]', $steamId);
+
+        $steamId = SteamId::convertCommunityIdToSteamId3('76561197998273743');
+        $this->assertEquals('[U:1:38008015]', $steamId);
+
+        $steamId = SteamId::convertCommunityIdToSteamId3('76561198000009691');
+        $this->assertEquals('[U:1:39743963]', $steamId);
+    }
+
     public function testConvertSteamIdToCommunityId() {
         $steamId64 = SteamId::convertSteamIdToCommunityId('STEAM_0:0:12345');
         $this->assertEquals('76561197960290418', $steamId64);
@@ -36,6 +47,9 @@ class SteamIdTest extends \PHPUnit_Framework_TestCase {
     public function testConvertUIdToCommunityId() {
         $steamId64 = SteamId::convertSteamIdToCommunityId('[U:1:12345]');
         $this->assertEquals('76561197960278073', $steamId64);
+
+        $steamId64 = SteamId::convertSteamIdToCommunityId('[U:1:39743963]');
+        $this->assertEquals('76561198000009691', $steamId64);
     }
 
     public function testCacheSteamId64() {

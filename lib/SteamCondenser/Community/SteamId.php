@@ -111,6 +111,26 @@ class SteamId extends XMLData {
 
         return "STEAM_0:$steamId1:$steamId2";
     }
+
+    /**
+     * Converts a 64bit numeric SteamID as used by the Steam Community to the
+     * modern SteamID format (also known as SteamID 3)
+     *
+     * @param string communityId The SteamID string as used by the Steam
+     *        Community
+     * @return string The converted SteamID, like `[U:1:12345]`
+     * @throws SteamCondenserException if the community ID is to small
+     */
+    public static function convertCommunityIdToSteamId3($communityId) {
+        // Only the public universe (1) is supported
+        $steamId1 = 1;
+        $steamId2 = bcsub($communityId, 76561197960265728);
+
+        if ($steamId2 <= 0) {
+            throw new SteamCondenserException("SteamID $communityId is too small.");
+        }
+
+        return "[U:$steamId1:$steamId2]";
     }
 
     /**
