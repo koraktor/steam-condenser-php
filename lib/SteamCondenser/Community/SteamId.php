@@ -100,16 +100,17 @@ class SteamId extends XMLData {
      * @throws SteamCondenserException if the community ID is to small
      */
     public static function convertCommunityIdToSteamId($communityId) {
-        $steamId1  = substr($communityId, -1) % 2;
-        $steamId2a = intval(substr($communityId, 0, 4)) - 7656;
-        $steamId2b = substr($communityId, 4) - 1197960265728;
-        $steamId2b = $steamId2b - $steamId1;
+        $steamId1 = bcmod($communityId, 2);
+        $steamId2 = bcsub($communityId, 76561197960265728);
 
-        if($steamId2a <= 0 && $steamId2b <= 0) {
+        if ($steamId2 <= 0) {
             throw new SteamCondenserException("SteamID $communityId is too small.");
         }
 
-        return "STEAM_0:$steamId1:" . (($steamId2a + $steamId2b) / 2);
+        $steamId2 = ($steamId2 - $steamId1) / 2;
+
+        return "STEAM_0:$steamId1:$steamId2";
+    }
     }
 
     /**
@@ -128,12 +129,10 @@ class SteamId extends XMLData {
         }
         if (preg_match('/^STEAM_[0-1]:[0-1]:[0-9]+$/', $steamId)) {
             $steamId = explode(':', substr($steamId, 8));
-            $steamId = $steamId[0] + $steamId[1] * 2 + 1197960265728;
-            return '7656' . $steamId;
+            return bcadd($steamId[0] + $steamId[1] * 2, 76561197960265728);
         } elseif (preg_match('/^\[U:[0-1]:[0-9]+\]$/', $steamId)) {
             $steamId = explode(':', substr($steamId, 3, strlen($steamId) - 1));
-            $steamId = $steamId[0] + $steamId[1] + 1197960265727;
-            return '7656' . $steamId;
+            return bcadd($steamId[0] + $steamId[1], 76561197960265727);
         } else {
             throw new SteamCondenserException("SteamID \"$steamId\" doesn't have the correct format.");
         }

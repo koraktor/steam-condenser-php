@@ -22,6 +22,7 @@ Composer will install this for you.
 
 The following extensions are required:
 
+* `bcmath` (for Steam ID conversions)
 * `bz2` (for Source servers sending compressed responses)
 * `json` (for the Web API features)
 * `simplexml` (for the Steam Community features)
