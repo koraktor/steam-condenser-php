@@ -48,6 +48,11 @@ class SteamId extends XMLData {
     private $games;
 
     /**
+     * @var array
+     */
+    private $groups;
+
+    /**
      * @var bool
      */
     private $limited;
@@ -296,12 +301,6 @@ class SteamId extends XMLData {
             }
         }
 
-        if(!empty($profile->groups)) {
-            foreach($profile->groups->group as $group) {
-                $this->groups[] = SteamGroup::create((string) $group->groupID64, false);
-            }
-        }
-
         if(!empty($profile->weblinks)) {
             foreach($profile->weblinks->weblink as $link) {
                 $this->links[htmlspecialchars_decode((string) $link->title)] = (string) $link->link;
@@ -352,6 +351,27 @@ class SteamId extends XMLData {
             $playtimes = [(int) ($recent * 60), (int) ($total * 60)];
             $this->playtimes[$appId] = $playtimes;
         }
+    }
+
+    /**
+     * Fetches the groups this user is member of
+     *
+     * Uses the ISteamUser/GetUserGroupList interface.
+     *
+     * @return array The groups of this user
+     * @see getGroups()
+     */
+    public function fetchGroups() {
+        $params = ['steamid' => $this->steamId64];
+        $groupsData = WebApi::getJSON('ISteamUser', 'GetUserGroupList', 1, $params);
+
+        $this->groups = [];
+        $result = json_decode($groupsData);
+        foreach ($result->response->groups as $groupData) {
+            $this->groups[] = SteamGroup::create($groupData->gid, false);
+        }
+
+        return $this->groups;
     }
 
     /**
@@ -491,6 +511,20 @@ class SteamId extends XMLData {
         } else {
             return GameStats::createGameStats($this->customUrl, $game->getShortName());
         }
+    }
+
+    /**
+     * Returns all groups where this user is a member
+     *
+     * @return array The groups of this user
+     * @see fetchGroups()
+     */
+    public function getGroups() {
+        if (empty($this->groups)) {
+            $this->fetchGroups();
+        }
+
+        return $this->groups;
     }
 
     /**
