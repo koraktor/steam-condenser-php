@@ -362,7 +362,7 @@ class SteamId extends XMLData {
      * @see getGroups()
      */
     public function fetchGroups() {
-        $params = ['steamid' => $this->steamId64];
+        $params = ['steamid' => $this->getSteamId64()];
         $groupsData = WebApi::getJSON('ISteamUser', 'GetUserGroupList', 1, $params);
 
         $this->groups = [];
@@ -570,9 +570,18 @@ class SteamId extends XMLData {
     }
 
     /**
-     * @return String
+     * Returns this user's 64bit SteamID
+     *
+     * If the SteamID is not known yet it is resolved from the vanity URL.
+     *
+     * @return string This user's 64bit SteamID
+     * @see resolveVanityUrl
      */
     public function getSteamId64() {
+        if (empty($this->steamId64)) {
+            $this->steamId64 = self::resolveVanityUrl($this->customUrl);
+        }
+
         return $this->steamId64;
     }
 
