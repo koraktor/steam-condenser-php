@@ -325,7 +325,7 @@ class SteamId extends XMLData {
         $friendsData = $this->getData($this->getBaseUrl() . '/friends?xml=1');
         $this->friends = [];
         foreach($friendsData->friends->friend as $friend) {
-            $this->friends[] = SteamId::create((string) $friend, false);
+            $this->friends[] = self::create((string) $friend, false);
         }
     }
 
@@ -493,24 +493,14 @@ class SteamId extends XMLData {
     /**
      * Returns the stats for the given game for the owner of this SteamID
      *
-     * @param mixed $id The full or short name or the application ID of the
-     *        game stats should be fetched for
+     * @param int $appId The application ID of the game stats should be fetched
+     *        for
      * @return GameStats The statistics for the game with the given name
      * @throws SteamCondenserException if the user does not own this game or it
      *         does not have any stats
      */
-    public function getGameStats($id) {
-        $game = $this->findGame($id);
-
-        if(!$game->hasStats()) {
-            throw new SteamCondenserException("\"{$game->getName()}\" does not have stats.");
-        }
-
-        if(empty($this->customUrl)) {
-            return GameStats::createGameStats($this->steamId64, $game->getShortName());
-        } else {
-            return GameStats::createGameStats($this->customUrl, $game->getShortName());
-        }
+    public function getGameStats($appId) {
+        return GameStats::create($this->getId(), $appId);
     }
 
     /**

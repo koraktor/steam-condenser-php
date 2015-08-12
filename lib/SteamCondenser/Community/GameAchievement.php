@@ -10,6 +10,8 @@
 
 namespace SteamCondenser\Community;
 
+use SteamCondenser\Community\GameAchievement\Instance;
+
 /**
  * The GameAchievement class represents a specific achievement for a single
  * game and for a single user
@@ -29,9 +31,9 @@ class GameAchievement {
     private $apiName;
 
     /**
-     * @var SteamGame
+     * @var bool
      */
-    private $game;
+    protected $hidden;
 
     /**
      * @var string
@@ -44,24 +46,9 @@ class GameAchievement {
     private $iconOpenUrl;
 
     /**
-     * @var string
+     * @var GameStatsSchema
      */
-    private $name;
-
-    /**
-     * @var int
-     */
-    private $timestamp;
-
-    /**
-     * @var SteamId
-     */
-    private $user;
-
-    /**
-     * @var bool
-     */
-    private $unlocked;
+    protected $schema;
 
     /**
      * Loads the global unlock percentages of all achievements for the given
@@ -92,25 +79,15 @@ class GameAchievement {
      * Creates the achievement with the given name for the given user and game
      * and achievement data
      *
-     * @param SteamId $user The Steam ID of the player this achievement belongs
-     *        to
-     * @param SteamGame $game The game this achievement belongs to
-     * @param \SimpleXMLElement $achievementData The achievement data extracted
-     *        from XML
+     * @param GameStatsSchema $schema The game this achievement belongs to
+     * @param \stdClass $data The achievement data extracted from the game schema
      */
-    public function __construct(SteamId $user, SteamGame $game, \SimpleXMLElement $achievementData) {
-        $this->apiName       = (string) $achievementData->apiname;
-        $this->description   = (string) $achievementData->description;
-        $this->game          = $game;
-        $this->iconClosedUrl = (string) $achievementData->iconClosed;
-        $this->iconOpenUrl   = (string) $achievementData->iconOpen;
-        $this->name          = (string) $achievementData->name;
-        $this->unlocked      = (bool)(int) $achievementData->attributes()->closed;
-        $this->user          = $user;
-
-        if($this->unlocked && $achievementData->unlockTimestamp != null) {
-            $this->timestamp = (int) $achievementData->unlockTimestamp;
-        }
+    public function __construct(GameStatsSchema $schema, $data) {
+        $this->apiName = $data->name;
+        $this->schema = $schema;
+        $this->hidden = $data->hidden == 1;
+        $this->iconClosedUrl = $data->icon;
+        $this->iconOpenUrl = $data->icongray;
     }
 
     /**
@@ -120,24 +97,6 @@ class GameAchievement {
      */
     public function getApiName() {
         return $this->apiName;
-    }
-
-    /**
-     * Returns the description of this achievement
-     *
-     * @return string The description of this achievement
-     */
-    public function getDescription() {
-        return $this->description;
-    }
-
-    /**
-     * Returns the game this achievement belongs to
-     *
-     * @return SteamGame The game this achievement belongs to
-     */
-    public function getGame() {
-        return $this->game;
     }
 
     /**
@@ -159,39 +118,34 @@ class GameAchievement {
     }
 
     /**
-     * Returns the name of this achievement
+     * Returns an instance of this achievement for the given user and the given
+     * unlock state
      *
-     * @return string The name of this achievement
+     * @param SteamId $user The user the instance should be returned for
+     * @param bool $unlocked The state of the achievement for this user
+     * @return Instance The achievement instance for this user
      */
-    public function getName() {
-        return $this->name;
+    public function getInstance(SteamId $user, $unlocked) {
+        return new Instance($this, $user, $unlocked);
     }
 
     /**
-     * Returns the time this achievement has been unlocked by its owner
+     * Returns the stats schema of the game this achievement belongs to
      *
-     * @return int The time this achievement has been unlocked
+     * @return GameStatsSchema The stats schema of game this achievement
+     *         belongs to
      */
-    public function getTimestamp() {
-        return $this->timestamp;
+    public function getSchema() {
+        return $this->schema;
     }
 
     /**
-     * Returns the SteamID of the user who owns this achievement
+     * Returns whether this achievement is hidden
      *
-     * @return SteamId The SteamID of this achievement's owner
+     * @return bool <var>true</var> if this achievement is hidden
      */
-    public function getUser() {
-        return $this->user;
+    public function isHidden() {
+        return $this->hidden;
     }
 
-    /**
-     * Returns whether this achievement has been unlocked by its owner
-     *
-     * @return bool <var>true</var> if the achievement has been unlocked by the
-     *         user
-     */
-    public function isUnlocked() {
-        return $this->unlocked;
-    }
 }
