@@ -96,8 +96,8 @@ class SteamGame {
      */
     public static function checkUpToDate($appId, $version) {
         $params = ['appid' => $appId, 'version' => $version];
-        $result = WebApi::getJSON('ISteamApps', 'UpToDateCheck', 1, $params);
-        $result = json_decode($result)->response;
+        $result = WebApi::getJSONObject('ISteamApps', 'UpToDateCheck', 1, $params);
+        $result = $result->response;
         if(!$result->success) {
             throw new SteamCondenserException($result->error);
         }
@@ -223,8 +223,7 @@ class SteamGame {
      */
     public function getPlayerCount() {
         $params = ['appid' => $this->appId];
-        $result = WebApi::getJSON('ISteamUserStats', 'GetNumberOfCurrentPlayers', 1, $params);
-        $result = json_decode($result);
+        $result = WebApi::getJSONObject('ISteamUserStats', 'GetNumberOfCurrentPlayers', 1, $params);
 
         return $result->response->player_count;
     }

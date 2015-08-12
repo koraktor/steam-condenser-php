@@ -60,7 +60,7 @@ class TF2GoldenWrench {
         if(self::$goldenWrenches == null) {
             self::$goldenWrenches = [];
 
-            $data = json_decode(WebApi::getJSON('ITFItems_440', 'GetGoldenWrenches', 2));
+            $data = WebApi::getJSONObject('ITFItems_440', 'GetGoldenWrenches', 2);
             foreach($data->results->wrenches as $wrenchData) {
                 self::$goldenWrenches[] = new TF2GoldenWrench($wrenchData);
             }

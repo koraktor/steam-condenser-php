@@ -64,8 +64,8 @@ class WebApi implements LoggerAwareInterface {
      * @return array The list of interfaces and methods
      */
     public static function getInterfaces() {
-        $data = self::getJSON('ISteamWebAPIUtil', 'GetSupportedAPIList');
-        return json_decode($data)->apilist->interfaces;
+        $data = self::getJSONObject('ISteamWebAPIUtil', 'GetSupportedAPIList');
+        return $data->apilist->interfaces;
     }
 
     /**
@@ -80,7 +80,32 @@ class WebApi implements LoggerAwareInterface {
      * @return string Data is returned as a JSON-encoded string.
      */
     public static function getJSON($interface, $method, $version = 1, $params = null) {
-        return self::instance()->_getJSON($interface, $method, $version, $params);
+        return self::load('json', $interface, $method, $version, $params);
+    }
+
+    /**
+     * Fetches JSON data from Steam Web API using the specified interface,
+     * method and version. Additional parameters are supplied via HTTP GET.
+     *
+     * This will also check for some common error codes that are provided by
+     * some Web API interface methods.
+     *
+     * @param string $interface The Web API interface to call, e.g. ISteamUser
+     * @param string $method The Web API method to call, e.g.
+     *        GetPlayerSummaries
+     * @param int $version The API method version to use
+     * @param array $params Additional parameters to supply via HTTP GET
+     * @return \stdClass Data is returned as a json_decoded object
+     * @throws WebApiException In case of any request failure
+     */
+    public static function getJSONData($interface, $method, $version = 1, $params = null) {
+        $result = self::getJSONObject($interface, $method, $version, $params)->result;
+
+        if($result->status != 1) {
+            throw new WebApiException(WebApiException::STATUS_BAD, $result->status, $result->statusDetail);
+        }
+
+        return $result;
     }
 
     /**
@@ -93,9 +118,10 @@ class WebApi implements LoggerAwareInterface {
      * @param int $version The API method version to use
      * @param array $params Additional parameters to supply via HTTP GET
      * @return \stdClass Data is returned as a json_decoded object
+     * @throws WebApiException In case of any request failure
      */
-    public static function getJSONData($interface, $method, $version = 1, $params = null) {
-        return self::instance()->_getJSONData($interface, $method, $version, $params);
+    public static function getJSONObject($interface, $method, $version = 1, $params = null) {
+        return json_decode(self::getJSON($interface, $method, $version, $params));
     }
 
     /**
@@ -161,44 +187,6 @@ class WebApi implements LoggerAwareInterface {
      * instances
      */
     private function __construct() {}
-
-    /**
-     * Fetches JSON data from Steam Web API using the specified interface,
-     * method and version. Additional parameters are supplied via HTTP GET.
-     *
-     * @param string $interface The Web API interface to call, e.g. ISteamUser
-     * @param string $method The Web API method to call, e.g.
-     *        GetPlayerSummaries
-     * @param int $version The API method version to use
-     * @param array $params Additional parameters to supply via HTTP GET
-     * @return string Data is returned as a JSON-encoded string.
-     */
-    protected function _getJSON($interface, $method, $version = 1, $params = null) {
-        return $this->load('json', $interface, $method, $version, $params);
-    }
-
-    /**
-     * Fetches JSON data from Steam Web API using the specified interface,
-     * method and version. Additional parameters are supplied via HTTP GET.
-     *
-     * @param string $interface The Web API interface to call, e.g. ISteamUser
-     * @param string $method The Web API method to call, e.g.
-     *        GetPlayerSummaries
-     * @param int $version The API method version to use
-     * @param array $params Additional parameters to supply via HTTP GET
-     * @return \stdClass Data is returned as a json_decoded object
-     * @throws WebApiException In case of any request failure
-     */
-    protected function _getJSONData($interface, $method, $version = 1, $params = null) {
-        $data = $this->getJSON($interface, $method, $version, $params);
-        $result = json_decode($data)->result;
-
-        if($result->status != 1) {
-            throw new WebApiException(WebApiException::STATUS_BAD, $result->status, $result->statusDetail);
-        }
-
-        return $result;
-    }
 
     /**
      * Fetches data from Steam Web API using the specified interface, method

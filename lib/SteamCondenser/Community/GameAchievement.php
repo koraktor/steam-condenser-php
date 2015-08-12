@@ -65,7 +65,7 @@ class GameAchievement {
      */
     public static function getGlobalPercentages($appId) {
         $params = ['gameid' => $appId];
-        $data = json_decode(WebApi::getJSON('ISteamUserStats', 'GetGlobalAchievementPercentagesForApp', 2, $params));
+        $data = WebApi::getJSONObject('ISteamUserStats', 'GetGlobalAchievementPercentagesForApp', 2, $params);
 
         $percentages = [];
         foreach($data->achievementpercentages->achievements as $achievementData) {

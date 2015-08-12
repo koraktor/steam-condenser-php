@@ -89,7 +89,7 @@ class AppNews {
      */
     public static function getNewsForApp($appId, $count = 5, $maxLength = null) {
         $params = ['appid' => $appId, 'count' => $count, 'maxlength' => $maxLength];
-        $data = json_decode(WebApi::getJSON('ISteamNews', 'GetNewsForApp', 2, $params));
+        $data = WebApi::getJSONObject('ISteamNews', 'GetNewsForApp', 2, $params);
 
         $newsItems = [];
         foreach($data->appnews->newsitems as $newsData) {

@@ -219,8 +219,7 @@ class SteamId extends XMLData {
     public static function resolveVanityUrl($vanityUrl) {
         $params = ['vanityurl' => $vanityUrl];
 
-        $json = WebApi::getJSON('ISteamUser', 'ResolveVanityURL', 1, $params);
-        $result = json_decode($json);
+        $result = WebApi::getJSONObject('ISteamUser', 'ResolveVanityURL', 1, $params);
         $result = $result->response;
 
         if ($result->success != 1) {
@@ -363,10 +362,9 @@ class SteamId extends XMLData {
      */
     public function fetchGroups() {
         $params = ['steamid' => $this->getSteamId64()];
-        $groupsData = WebApi::getJSON('ISteamUser', 'GetUserGroupList', 1, $params);
+        $result = WebApi::getJSONObject('ISteamUser', 'GetUserGroupList', 1, $params);
 
         $this->groups = [];
-        $result = json_decode($groupsData);
         foreach ($result->response->groups as $groupData) {
             $this->groups[] = SteamGroup::create($groupData->gid, false);
         }

@@ -68,7 +68,7 @@ class GameStats {
         $this->steamId64 = $this->user->getSteamId64();
 
         $params = [ 'appid' => $this->schema->getAppId(), 'steamid' => $this->steamId64 ];
-        $data = json_decode(WebApi::getJSON('ISteamUserStats', 'GetUserStatsForGame', 2, $params));
+        $data = WebApi::getJSONObject('ISteamUserStats', 'GetUserStatsForGame', 2, $params);
 
         $this->achievements = [];
         foreach ($data->playerstats->achievements as $achievement) {

@@ -161,7 +161,7 @@ class GameStatsSchema {
 
     protected function fetchLanguage($language) {
         $params = [ 'appid' => $this->appId, 'l' => $language ];
-        $data = json_decode(WebApi::getJSON('ISteamUserStats', 'GetSchemaForGame', 2, $params));
+        $data = WebApi::getJSONObject('ISteamUserStats', 'GetSchemaForGame', 2, $params);
 
         return $data->game;
     }
