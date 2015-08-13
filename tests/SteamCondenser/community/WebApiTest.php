@@ -45,8 +45,8 @@ class WebApiTest extends \PHPUnit_Framework_TestCase {
 
     public function testGetJSONData() {
         $data = '{ "result": { "status": 1 } }';
-        $webApi = $this->getMockBuilder('\SteamCondenser\Community\WebApi')->setMethods(['_getJSON'])->disableOriginalConstructor()->getMock();
-        $webApi->expects($this->once())->method('_getJSON')->with('interface', 'method', 2, ['test' => 'param'])->will($this->returnValue($data));
+        $webApi = $this->getMockBuilder('\SteamCondenser\Community\WebApi')->setMethods(['_load'])->disableOriginalConstructor()->getMock();
+        $webApi->expects($this->once())->method('_load')->with('json', 'interface', 'method', 2, ['test' => 'param'])->will($this->returnValue($data));
         $this->instance->setValue($webApi);
 
         $result = WebApi::getJSONData('interface', 'method', 2, ['test' => 'param']);
@@ -55,8 +55,8 @@ class WebApiTest extends \PHPUnit_Framework_TestCase {
 
     public function testGetJSONDataError() {
         $data = '{ "result": { "status": 2, "statusDetail": "error" } }';
-        $webApi = $this->getMockBuilder('\SteamCondenser\Community\WebApi')->setMethods(['_getJSON'])->disableOriginalConstructor()->getMock();
-        $webApi->expects($this->once())->method('_getJSON')->with('interface', 'method', 2, ['test' => 'param'])->will($this->returnValue($data));
+        $webApi = $this->getMockBuilder('\SteamCondenser\Community\WebApi')->setMethods(['_load'])->disableOriginalConstructor()->getMock();
+        $webApi->expects($this->once())->method('_load')->with('json', 'interface', 'method', 2, ['test' => 'param'])->will($this->returnValue($data));
         $this->instance->setValue($webApi);
 
         $this->setExpectedException('\SteamCondenser\Exceptions\WebApiException', 'The Web API request failed with the following error: error (status code: 2).');

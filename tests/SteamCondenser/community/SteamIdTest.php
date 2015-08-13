@@ -106,8 +106,8 @@ class SteamIdTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testResolveVanityUrl() {
-        $webApi = $this->getMockBuilder('\SteamCondenser\Community\WebApi')->setMethods(['_getJSON'])->disableOriginalConstructor()->getMock();
-        $webApi->expects($this->once())->method('_getJSON')->with('ISteamUser', 'ResolveVanityURL', 1, ['vanityurl' => 'koraktor'])->will($this->returnValue('{ "response": { "success": 1, "steamid": "76561197961384956" } }'));
+        $webApi = $this->getMockBuilder('\SteamCondenser\Community\WebApi')->setMethods(['_load'])->disableOriginalConstructor()->getMock();
+        $webApi->expects($this->once())->method('_load')->with('json', 'ISteamUser', 'ResolveVanityURL', 1, ['vanityurl' => 'koraktor'])->will($this->returnValue('{ "response": { "success": 1, "steamid": "76561197961384956" } }'));
         $this->webApiInstance->setValue($webApi);
 
         $steamId64 = SteamId::resolveVanityUrl('koraktor');
@@ -115,8 +115,8 @@ class SteamIdTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testResolveUnknownVanityUrl() {
-        $webApi = $this->getMockBuilder('\SteamCondenser\Community\WebApi')->setMethods(['_getJSON'])->disableOriginalConstructor()->getMock();
-        $webApi->expects($this->once())->method('_getJSON')->with('ISteamUser', 'ResolveVanityURL', 1, ['vanityurl' => 'unknown'])->will($this->returnValue('{ "response": { "success": 42 } }'));
+        $webApi = $this->getMockBuilder('\SteamCondenser\Community\WebApi')->setMethods(['_load'])->disableOriginalConstructor()->getMock();
+        $webApi->expects($this->once())->method('_load')->with('json', 'ISteamUser', 'ResolveVanityURL', 1, ['vanityurl' => 'unknown'])->will($this->returnValue('{ "response": { "success": 42 } }'));
         $this->webApiInstance->setValue($webApi);
 
         $this->assertNull(SteamId::resolveVanityUrl('unknown'));
