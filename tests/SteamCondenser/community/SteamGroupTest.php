@@ -65,7 +65,7 @@ class SteamGroupTest extends \PHPUnit_Framework_TestCase {
         $mockBuilder->setMethods(['getData']);
         $group = $mockBuilder->getMock();
         $group->expects($this->once())->method('getData')->with('http://steamcommunity.com/groups/valve/memberslistxml?p=1')->will($this->returnValue($data));
-        $group->fetchMembers();
+        $group->fetch();
 
         $this->assertEquals('http://media.steampowered.com/steamcommunity/public/images/avatars/1d/1d8baf5a2b5968ae5ca65d7a971c02e222c9a17e_full.jpg', $group->getAvatarFullUrl());
         $this->assertEquals('http://media.steampowered.com/steamcommunity/public/images/avatars/1d/1d8baf5a2b5968ae5ca65d7a971c02e222c9a17e.jpg', $group->getAvatarIconUrl());

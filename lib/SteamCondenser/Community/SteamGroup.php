@@ -19,6 +19,8 @@ namespace SteamCondenser\Community;
  */
 class SteamGroup extends XMLData {
 
+    use Cacheable;
+
     const AVATAR_URL = 'http://media.steampowered.com/steamcommunity/public/images/avatars/%s/%s%s.jpg';
 
     /**
@@ -35,11 +37,6 @@ class SteamGroup extends XMLData {
      * @var string
      */
     private $customUrl;
-
-    /**
-     * @var int
-     */
-    private $fetchTime;
 
     /**
      * @var int
@@ -66,48 +63,8 @@ class SteamGroup extends XMLData {
      */
     private $summary;
 
-    /**
-     * Returns whether the requested group is already cached
-     *
-     * @param string $id The custom URL of the group specified by the group
-     *        admin or the 64bit group ID
-     * @return bool <var>true</var> if this group is already cached
-     */
-    public static function isCached($id) {
-        return array_key_exists(strtolower($id), self::$steamGroups);
-    }
-
-    /**
-     * Clears the group cache
-     */
-    public static function clearCache() {
-        self::$steamGroups = [];
-    }
-
-    /**
-     * Creates a new <var>SteamGroup</var> instance or gets an existing one
-     * from the cache for the group with the given ID
-     *
-     * @param string $id The custom URL of the group specified by the group
-     *        admin or the 64bit group ID
-     * @param bool $fetch if <var>true</var> the groups's data is loaded into
-     *        the object
-     * @param bool $bypassCache If <var>true</var> an already cached instance
-     *        for this group will be ignored and a new one will be created
-     * @return SteamGroup The <var>SteamGroup</var> instance of the requested
-     *         group
-     */
-    public static function create($id, $fetch = true, $bypassCache = false) {
-        $id = strtolower($id);
-        if(self::isCached($id) && !$bypassCache) {
-            $group = self::$steamGroups[$id];
-            if($fetch && !$group->isFetched()) {
-                $group->fetchMembers();
-            }
-            return $group;
-        } else {
-            return new SteamGroup($id, $fetch);
-        }
+    public static function initialize() {
+        self::cacheableWithIds('customUrl', 'groupId64');
     }
 
     /**
@@ -116,46 +73,15 @@ class SteamGroup extends XMLData {
      *
      * @param string $id The custom URL of the group specified by the group
      *        admin or the 64bit group ID
-     * @param bool $fetch if <var>true</var> the groups's data is loaded into
-     *        the object
      */
-    public function __construct($id, $fetch = true) {
+    public function __construct($id) {
         if(is_numeric($id)) {
             $this->groupId64 = $id;
         } else {
             $this->customUrl = $id;
         }
 
-        $this->fetched = false;
         $this->members = [];
-
-        if($fetch) {
-            $this->fetchMembers();
-        }
-
-        $this->cache();
-    }
-
-    /**
-     * Loads information about and members of this group
-     *
-     * This includes the ID, name, headline, summary and avatar and custom URL.
-     *
-     * This might take several HTTP requests as the Steam Community splits this
-     * data over several XML documents if the group has lots of members.
-     */
-    public function fetchMembers() {
-        if(empty($this->memberCount) || sizeof($this->members) == $this->memberCount) {
-            $page = 0;
-        } else {
-            $page = 1;
-        }
-
-        do {
-            $totalPages = $this->fetchPage(++$page);
-        } while($page < $totalPages);
-
-        $this->fetchTime = time();
     }
 
     /**
@@ -210,15 +136,6 @@ class SteamGroup extends XMLData {
      */
     public function getCustomUrl() {
         return $this->customUrl;
-    }
-
-    /**
-     * Returns the time this group has been fetched
-     *
-     * @return int The timestamp of the last fetch time
-     */
-    public function getFetchTime() {
-        return $this->fetchTime;
     }
 
     /**
@@ -295,34 +212,6 @@ class SteamGroup extends XMLData {
     }
 
     /**
-     * Returns whether the data for this group has already been fetched
-     *
-     * @return bool <var>true</var> if the group's members have been fetched
-     */
-    public function isFetched() {
-        return !empty($this->fetchTime);
-    }
-
-    /**
-     * Saves this SteamGroup in the cache
-     *
-     * @return bool <var>false</var> if this group is already cached
-     */
-    private function cache() {
-        if (!array_key_exists($this->groupId64, self::$steamGroups)) {
-            self::$steamGroups[$this->groupId64] = $this;
-            if(!empty($this->customUrl) &&
-               !array_key_exists($this->customUrl, self::$steamGroups)) {
-               self::$steamGroups[$this->customUrl] = $this;
-            }
-
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
      * Fetches a specific page of the member listing of this group
      *
      * @param int $page The member page to fetch
@@ -346,10 +235,34 @@ class SteamGroup extends XMLData {
         $totalPages = (int) $memberData->totalPages;
 
         foreach($memberData->members->steamID64 as $member) {
-            array_push($this->members, SteamId::create($member, false));
+            array_push($this->members, SteamId::create((string) $member, false));
         }
 
         return $totalPages;
     }
 
+    /**
+     * Loads information about and members of this group
+     *
+     * This includes the ID, name, headline, summary and avatar and custom URL.
+     *
+     * This might take several HTTP requests as the Steam Community splits this
+     * data over several XML documents if the group has lots of members.
+     */
+    protected function internalFetch() {
+        if(empty($this->memberCount) || sizeof($this->members) == $this->memberCount) {
+            $page = 0;
+        } else {
+            $page = 1;
+        }
+
+        do {
+            $totalPages = $this->fetchPage(++$page);
+        } while($page < $totalPages);
+
+        $this->fetchTime = time();
+    }
+
 }
+
+SteamGroup::initialize();

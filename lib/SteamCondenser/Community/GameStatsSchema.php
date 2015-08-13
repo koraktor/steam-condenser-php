@@ -12,6 +12,8 @@ namespace SteamCondenser\Community;
 
 class GameStatsSchema {
 
+    use Cacheable;
+
     /**
      * @var string
      */
@@ -66,8 +68,6 @@ class GameStatsSchema {
 
     protected function __construct($appId) {
         $this->appId = $appId;
-
-        $this->addLanguage(self::getDefaultLanguage());
     }
 
     public function __toString() {
@@ -166,4 +166,10 @@ class GameStatsSchema {
         return $data->game;
     }
 
+    protected function internalFetch() {
+        $this->addLanguage(self::getDefaultLanguage());
+    }
+
 }
+
+GameStatsSchema::initialize();

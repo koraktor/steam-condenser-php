@@ -26,6 +26,8 @@ use SteamCondenser\Community\AlienSwarmStats;
  */
 class GameStats {
 
+    use Cacheable;
+
     /**
      * @var GameAchievement[]
      */
@@ -51,6 +53,9 @@ class GameStats {
      */
     protected $values;
 
+    public static function initialize() {
+        self::cacheableWithIds('appId', 'steamId64');
+    }
 
     /**
      * Creates a <var>GameStats</var> object and fetches data from the Steam
@@ -103,5 +108,9 @@ class GameStats {
         return sizeof($this->achievements) / sizeof($this->schema->getAchievements());
     }
 
+    protected function internalFetch() {
+    }
 
 }
+
+GameStats::initialize();

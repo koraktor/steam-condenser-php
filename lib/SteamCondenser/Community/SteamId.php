@@ -22,20 +22,12 @@ use SteamCondenser\Exceptions\SteamCondenserException;
  */
 class SteamId extends XMLData {
 
-    /**
-     * @var array
-     */
-    private static $steamIds = [];
+    use Cacheable;
 
     /**
      * @var string
      */
     private $customUrl;
-
-    /**
-     * @var int
-     */
-    private $fetchTime;
 
     /**
      * @var array
@@ -78,24 +70,6 @@ class SteamId extends XMLData {
     private $tradeBanState;
 
     /**
-     * Returns whether the requested Steam ID is already cached
-     *
-     * @param string $id The custom URL of the Steam ID specified by the player
-     *        or the 64bit SteamID
-     * @return bool <var>true</var> if this Steam ID is already cached
-     */
-    public static function isCached($id) {
-        return array_key_exists(strtolower($id), self::$steamIds);
-    }
-
-    /**
-     * Clears the Steam ID cache
-     */
-    public static function clearCache() {
-        self::$steamIds = [];
-    }
-
-    /**
      * Converts a 64bit numeric SteamID as used by the Steam Community to a
      * SteamID as reported by game servers
      *
@@ -121,7 +95,7 @@ class SteamId extends XMLData {
      * Converts a 64bit numeric SteamID as used by the Steam Community to the
      * modern SteamID format (also known as SteamID 3)
      *
-     * @param string communityId The SteamID string as used by the Steam
+     * @param string $communityId The SteamID string as used by the Steam
      *        Community
      * @return string The converted SteamID, like `[U:1:12345]`
      * @throws SteamCondenserException if the community ID is to small
@@ -164,32 +138,6 @@ class SteamId extends XMLData {
     }
 
     /**
-     * Creates a new <var>SteamID</var> instance or gets an existing one from
-     * the cache for the profile with the given ID
-     *
-     * @param string $id The custom URL of the Steam ID specified by player or
-     *        the 64bit SteamID
-     * @param bool $fetch if <var>true</var> the profile's data is loaded into
-     *        the object
-     * @param bool $bypassCache If <var>true</var> an already cached instance
-     *        for this Steam ID will be ignored and a new one will be created
-     * @return SteamId The <var>SteamId</var> instance of the requested profile
-     */
-    public static function create($id, $fetch = true, $bypassCache = false) {
-        $id = strtolower($id);
-        if(self::isCached($id) && !$bypassCache) {
-            $steamId = self::$steamIds[$id];
-            if($fetch && !$steamId->isFetched()) {
-                $steamId->fetchData();
-            }
-
-            return $steamId;
-        } else {
-            return new SteamId($id, $fetch);
-        }
-    }
-
-    /**
      * Creates a new <var>SteamId</var> instance using a SteamID as used on
      * servers
      *
@@ -205,7 +153,11 @@ class SteamId extends XMLData {
      * @see __construct()
      */
     public static function getFromSteamId($steamId) {
-        return new SteamId(self::convertSteamIdToCommunityId($steamId));
+        return SteamId::create(self::convertSteamIdToCommunityId($steamId));
+    }
+
+    public static function initialize() {
+        self::cacheableWithIds('customUrl', 'steamId64');
     }
 
     /**
@@ -234,79 +186,15 @@ class SteamId extends XMLData {
      *
      * @param string $id The custom URL of the group specified by the player
      *        or the 64bit SteamID
-     * @param boolean $fetch if <var>true</var> the profile's data is loaded
-     *        into the object
      * @throws SteamCondenserException if the Steam ID data is not available,
      *         e.g. when it is private
      */
-    public function __construct($id, $fetch = true) {
+    public function __construct($id) {
         if(is_numeric($id)) {
             $this->steamId64 = $id;
         } else {
             $this->customUrl = strtolower($id);
         }
-
-        if($fetch) {
-            $this->fetchData();
-        }
-
-        $this->cache();
-    }
-
-    /**
-     * Fetchs data from the Steam Community by querying the XML version of the
-     * profile specified by the ID of this Steam ID
-     *
-     * @throws SteamCondenserException if the Steam ID data is not available,
-     *         e.g. when it is private, or when it cannot be parsed
-     */
-    public function fetchData() {
-        $profile = $this->getData($this->getBaseUrl() . '?xml=1');
-
-        if(!empty($profile->error)) {
-            throw new SteamCondenserException((string) $profile->error);
-        }
-
-        if(!empty($profile->privacyMessage)) {
-            throw new SteamCondenserException((string) $profile->privacyMessage);
-        }
-
-        $this->nickname      = htmlspecialchars_decode((string) $profile->steamID);
-        $this->steamId64     = (string) $profile->steamID64;
-        $this->limited       = (bool)(int) $profile->isLimitedAccount;
-        $this->tradeBanState = (string) $profile->tradeBanState;
-        $this->vacBanned     = (bool)(int) $profile->vacBanned;
-
-        $this->imageUrl = substr((string) $profile->avatarIcon, 0, -4);
-        $this->onlineState = (string) $profile->onlineState;
-        $this->privacyState = (string) $profile->privacyState;
-        $this->stateMessage = (string) $profile->stateMessage;
-        $this->visibilityState = (int) $profile->visibilityState;
-
-        if($this->isPublic()) {
-            $this->customUrl = strtolower((string) $profile->customURL);
-            $this->headLine = htmlspecialchars_decode((string) $profile->headline);
-            $this->hoursPlayed = (float) $profile->hoursPlayed2Wk;
-            $this->location = (string) $profile->location;
-            $this->memberSince = (string) $profile->memberSince;
-            $this->realName = htmlspecialchars_decode((string) $profile->realname);
-            $this->steamRating = (float) $profile->steamRating;
-            $this->summary = htmlspecialchars_decode((string) $profile->summary);
-        }
-
-        if(!empty($profile->mostPlayedGames)) {
-            foreach($profile->mostPlayedGames->mostPlayedGame as $mostPlayedGame) {
-                $this->mostPlayedGames[(string) $mostPlayedGame->gameName] = (float) $mostPlayedGame->hoursPlayed;
-            }
-        }
-
-        if(!empty($profile->weblinks)) {
-            foreach($profile->weblinks->weblink as $link) {
-                $this->links[htmlspecialchars_decode((string) $link->title)] = (string) $link->link;
-            }
-        }
-
-        $this->fetchTime = time();
     }
 
     /**
@@ -433,15 +321,6 @@ class SteamId extends XMLData {
      */
     public function getCustomUrl() {
         return $this->customUrl;
-    }
-
-    /**
-     * Returns the time this group has been fetched
-     *
-     * @return int The timestamp of the last fetch time
-     */
-    public function getFetchTime() {
-        return $this->fetchTime;
     }
 
     /**
@@ -613,22 +492,66 @@ class SteamId extends XMLData {
     }
 
     /**
+     * Fetchs data from the Steam Community by querying the XML version of the
+     * profile specified by the ID of this Steam ID
+     *
+     * @throws SteamCondenserException if the Steam ID data is not available,
+     *         e.g. when it is private, or when it cannot be parsed
+     */
+    protected function internalFetch() {
+        $profile = $this->getData($this->getBaseUrl() . '?xml=1');
+
+        if(!empty($profile->error)) {
+            throw new SteamCondenserException((string) $profile->error);
+        }
+
+        if(!empty($profile->privacyMessage)) {
+            throw new SteamCondenserException((string) $profile->privacyMessage);
+        }
+
+        $this->nickname      = htmlspecialchars_decode((string) $profile->steamID);
+        $this->steamId64     = (string) $profile->steamID64;
+        $this->limited       = (bool)(int) $profile->isLimitedAccount;
+        $this->tradeBanState = (string) $profile->tradeBanState;
+        $this->vacBanned     = (bool)(int) $profile->vacBanned;
+
+        $this->imageUrl = substr((string) $profile->avatarIcon, 0, -4);
+        $this->onlineState = (string) $profile->onlineState;
+        $this->privacyState = (string) $profile->privacyState;
+        $this->stateMessage = (string) $profile->stateMessage;
+        $this->visibilityState = (int) $profile->visibilityState;
+
+        if($this->isPublic()) {
+            $this->customUrl = strtolower((string) $profile->customURL);
+            $this->headLine = htmlspecialchars_decode((string) $profile->headline);
+            $this->hoursPlayed = (float) $profile->hoursPlayed2Wk;
+            $this->location = (string) $profile->location;
+            $this->memberSince = (string) $profile->memberSince;
+            $this->realName = htmlspecialchars_decode((string) $profile->realname);
+            $this->steamRating = (float) $profile->steamRating;
+            $this->summary = htmlspecialchars_decode((string) $profile->summary);
+        }
+
+        if(!empty($profile->mostPlayedGames)) {
+            foreach($profile->mostPlayedGames->mostPlayedGame as $mostPlayedGame) {
+                $this->mostPlayedGames[(string) $mostPlayedGame->gameName] = (float) $mostPlayedGame->hoursPlayed;
+            }
+        }
+
+        if(!empty($profile->weblinks)) {
+            foreach($profile->weblinks->weblink as $link) {
+                $this->links[htmlspecialchars_decode((string) $link->title)] = (string) $link->link;
+            }
+        }
+    }
+
+    /**
      * Returns whether the owner of this Steam ID is VAC banned
      *
      * @return bool <var>true</var> if the user has been banned by VAC
      */
     public function isBanned() {
         return $this->vacBanned;
-    }
-
-    /**
-     * Returns whether the data for this Steam ID has already been fetched
-     *
-     * @return bool <var>true</var> if the Steam ID's data has been
-     *         fetched
-     */
-    public function isFetched() {
-        return !empty($this->fetchTime);
     }
 
     /**
@@ -668,23 +591,6 @@ class SteamId extends XMLData {
         return $this->privacyState == 'public';
     }
 
-    /**
-     * Saves this <var>SteamId</var> instance in the cache
-     *
-     * @return bool <var>false</var> if this Steam ID is already cached
-     */
-    private function cache() {
-        if(!array_key_exists($this->steamId64, self::$steamIds)) {
-            self::$steamIds[$this->steamId64] = $this;
-            if(!empty($this->customUrl) &&
-               !array_key_exists($this->customUrl, self::$steamIds)) {
-               self::$steamIds[$this->customUrl] = $this;
-            }
-
-            return true;
-        }
-
-        return false;
-    }
-
 }
+
+SteamId::initialize();

@@ -85,7 +85,7 @@ class SteamIdTest extends \PHPUnit_Framework_TestCase {
         $mockBuilder->setMethods(['getData']);
         $steamId = $mockBuilder->getMock();
         $steamId->expects($this->once())->method('getData')->with('http://steamcommunity.com/id/son_of_thor?xml=1')->will($this->returnValue($data));
-        $steamId->fetchData();
+        $steamId->fetch();
 
         $this->assertEquals('76561197983311154', $steamId->getSteamId64());
         $this->assertTrue($steamId->isFetched());

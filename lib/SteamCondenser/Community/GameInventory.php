@@ -25,12 +25,11 @@ use SteamCondenser\Community\TF2\TF2Inventory;
  */
 class GameInventory {
 
-    const ITEM_CLASS = 'GameItem';
+    use Cacheable {
+        Cacheable::create as createCacheable;
+    }
 
-    /**
-     * @var array
-     */
-    public static $cache = [];
+    const ITEM_CLASS = 'GameItem';
 
     /**
      * @var string
@@ -73,13 +72,6 @@ class GameInventory {
     protected $user;
 
     /**
-     * Clears the inventory cache
-     */
-    public static function clearCache() {
-        self::$cache = [];
-    }
-
-    /**
      * This checks the cache for an existing inventory. If it exists it is
      * returned. Otherwise a new inventory is created.
      *
@@ -96,50 +88,33 @@ class GameInventory {
             $steamId64 = SteamId::resolveVanityUrl($steamId);
         }
 
-        if (self::isCached($appId, $steamId64) && !$bypassCache) {
-            $inventory = self::$cache[$appId][$steamId64];
-            if ($fetchNow && !$inventory->isFetched()) {
-                $inventory->fetch();
-            }
-            return $inventory;
-        } else {
-            switch ($appId) {
-                case Dota2BetaInventory::APP_ID:
-                    $inventoryClass = 'Dota2\\Dota2BetaInventory';
-                    break;
-                case Dota2Inventory::APP_ID:
-                    $inventoryClass = 'Dota2\\Dota2Inventory';
-                    break;
-                case Portal2Inventory::APP_ID:
-                    $inventoryClass = 'Portal2\\Portal2Inventory';
-                    break;
-                case TF2BetaInventory::APP_ID:
-                    $inventoryClass = 'TF2\\TF2BetaInventory';
-                    break;
-                case TF2Inventory::APP_ID:
-                    $inventoryClass = 'TF2\\TF2Inventory';
-                    break;
-                default:
-                    $inventoryClass = 'GameInventory';
-            }
-
-            $inventoryClass = "\\SteamCondenser\\Community\\$inventoryClass";
-
-            return new $inventoryClass($appId, $steamId64, $fetchNow);
+        switch ($appId) {
+            case DotA2BetaInventory::APP_ID:
+                $inventoryClass = 'Dota2\\Dota2BetaInventory';
+                break;
+            case DotA2Inventory::APP_ID:
+                $inventoryClass = 'Dota2\\Dota2Inventory';
+                break;
+            case Portal2Inventory::APP_ID:
+                $inventoryClass = 'Portal2\\Portal2Inventory';
+                break;
+            case TF2BetaInventory::APP_ID:
+                $inventoryClass = 'TF2\\TF2BetaInventory';
+                break;
+            case TF2Inventory::APP_ID:
+                $inventoryClass = 'TF2\\TF2Inventory';
+                break;
+            default:
+                $inventoryClass = 'GameInventory';
         }
+
+        self::overwriteClass("\\SteamCondenser\\Community\\$inventoryClass");
+
+        return self::createCacheable($appId, $steamId64, $bypassCache, $fetchNow);
     }
 
-    /**
-     * Returns whether the requested inventory is already cached
-     *
-     * @param int $appId The application ID of the game
-     * @param string $steamId64 The 64bit Steam ID of the user
-     * @return bool <var>true</var> if the inventory of the given user for the
-     *         given game is already cached
-     */
-    public static function isCached($appId, $steamId64) {
-        return array_key_exists($appId, self::$cache) &&
-               array_key_exists($steamId64, self::$cache[$appId]);
+    public static function initialize() {
+        self::cacheableWithIds(['appId', 'steamId64']);
     }
 
     /**
@@ -160,64 +135,12 @@ class GameInventory {
      *
      * @param int $appId The application ID of the game
      * @param string $steamId64 The 64bit Steam ID of the user
-     * @param bool $fetchNow Whether the data should be fetched now
      * @throws \SteamCondenser\Exceptions\WebApiException on Web API errors
      */
-    protected function __construct($appId, $steamId64, $fetchNow = true) {
+    protected function __construct($appId, $steamId64) {
         $this->appId = $appId;
         $this->steamId64 = $steamId64;
         $this->user = SteamId::create($steamId64, false);
-
-        if ($fetchNow) {
-            $this->fetch();
-        }
-
-        $this->cache();
-
-        array_keys(self::$cache);
-        array_keys(self::$cache[$appId]);
-    }
-
-    /**
-     * Saves this inventory in the cache
-     *
-     * @return bool <var>false</var> if this inventory is already cached
-     */
-    public function cache() {
-        if (array_key_exists($this->appId, self::$cache) &&
-            array_key_exists($this->steamId64, self::$cache[$this->appId])) {
-            return false;
-        }
-
-        self::$cache[$this->appId][$this->steamId64] = $this;
-
-        return true;
-    }
-
-    /**
-     * Updates the contents of the backpack using Steam Web API
-     */
-    public function fetch() {
-        $params = ['SteamID' => $this->steamId64];
-        $result = WebApi::getJSONData("IEconItems_{$this->getAppId()}", 'GetPlayerItems', 1, $params);
-
-        $this->items = [];
-        $this->preliminaryItems = [];
-        foreach ($result->items as $itemData) {
-            if ($itemData != null) {
-                $inventoryClass = new \ReflectionClass(get_class($this));
-                $namespace = $inventoryClass->getNamespaceName();
-                $itemClass = $namespace . '\\' . $inventoryClass->getConstant('ITEM_CLASS');
-                $item = new $itemClass($this, $itemData);
-                if ($item->isPreliminary()) {
-                    $this->preliminaryItems[] = $item;
-                } else {
-                    $this->items[$item->getBackpackPosition() - 1] = $item;
-                }
-            }
-        }
-
-        $this->fetchDate = time();
     }
 
     /**
@@ -294,13 +217,27 @@ class GameInventory {
     }
 
     /**
-     * Returns whether the items contained in this inventory have been already
-     * fetched
-     *
-     * @return bool Whether the contents backpack have been fetched
+     * Updates the contents of the backpack using Steam Web API
      */
-    public function isFetched() {
-        return !empty($this->fetchDate);
+    protected function internalFetch() {
+        $params = ['SteamID' => $this->steamId64];
+        $result = WebApi::getJSONData("IEconItems_{$this->getAppId()}", 'GetPlayerItems', 1, $params);
+
+        $this->items = [];
+        $this->preliminaryItems = [];
+        foreach ($result->items as $itemData) {
+            if ($itemData != null) {
+                $inventoryClass = new \ReflectionClass(get_class());
+                $namespace = $inventoryClass->getNamespaceName();
+                $itemClass = $namespace . '\\' . $inventoryClass->getConstant('ITEM_CLASS');
+                $item = new $itemClass($this, $itemData);
+                if ($item->isPreliminary()) {
+                    $this->preliminaryItems[] = $item;
+                } else {
+                    $this->items[$item->getBackpackPosition() - 1] = $item;
+                }
+            }
+        }
     }
 
     /**
@@ -313,3 +250,5 @@ class GameInventory {
     }
 
 }
+
+GameInventory::initialize();
