@@ -24,11 +24,6 @@ class SteamGroup extends XMLData {
     const AVATAR_URL = 'http://media.steampowered.com/steamcommunity/public/images/avatars/%s/%s%s.jpg';
 
     /**
-     * @var array
-     */
-    private static $steamGroups = [];
-
-    /**
      * @var string
      */
     private $avatarHash;
@@ -47,6 +42,11 @@ class SteamGroup extends XMLData {
      * @var string
      */
     private $headline;
+
+    /**
+     * @var int
+     */
+    private $memberCount;
 
     /**
      * @var array
@@ -164,7 +164,7 @@ class SteamGroup extends XMLData {
      * multiple requests for big groups.
      *
      * @return int The number of this group's members
-     * @see #fetchPage()
+     * @see fetchPage()
      */
     public function getMemberCount() {
         if(empty($this->memberCount)) {
@@ -183,11 +183,11 @@ class SteamGroup extends XMLData {
      * If the members haven't been fetched yet, this is done now.
      *
      * @return array The Steam ID's of the members of this group
-     * @see #fetchMembers()
+     * @see fetch()
      */
     public function getMembers() {
         if(sizeof($this->members) != $this->memberCount) {
-            $this->fetchMembers();
+            $this->fetch();
         }
 
         return $this->members;
@@ -216,7 +216,7 @@ class SteamGroup extends XMLData {
      *
      * @param int $page The member page to fetch
      * @return int The total number of pages of this group's member listing
-     * @see #fetchMembers()
+     * @see fetch()
      */
     private function fetchPage($page) {
         $url = "{$this->getBaseUrl()}/memberslistxml?p=$page";
