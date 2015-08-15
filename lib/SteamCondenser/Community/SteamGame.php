@@ -30,6 +30,16 @@ class SteamGame {
     private $appId;
 
     /**
+     * @var bool
+     */
+    private $hasStats;
+
+    /**
+     * @var string
+     */
+    private $iconHash;
+
+    /**
      * @var string
      */
     private $logoHash;
@@ -40,24 +50,18 @@ class SteamGame {
     private $name;
 
     /**
-     * @var string
-     */
-    private $shortName;
-
-    /**
      * Creates a new or cached instance of the game specified by the given XML
      * data
      *
-     * @param int $appId The application ID of the game
-     * @param \SimpleXMLElement $gameData The XML data of the game
+     * @param \stdClass $gameData The Web API data of the game
      * @return SteamGame The game instance for the given data
      * @see __construct()
      */
-    public static function create($appId, \SimpleXMLElement $gameData) {
-        if(array_key_exists($appId, self::$games)) {
-            return self::$games[$appId];
+    public static function create(\stdClass $gameData) {
+        if(array_key_exists($gameData->appid, self::$games)) {
+            return self::$games[$gameData->appid];
         } else {
-            return new SteamGame($appId, $gameData);
+            return new SteamGame($gameData);
         }
     }
 
@@ -107,34 +111,18 @@ class SteamGame {
     /**
      * Creates a new instance of a game with the given data and caches it
      *
-     * @param int $appId The application ID of the game
-     * @param \SimpleXMLElement $gameData The XML data of the game
+     * @param \stdClass $gameData The Web API data of the game
      */
-    private function __construct($appId, \SimpleXMLElement $gameData) {
-        $this->appId = $appId;
-
-        if(!empty($gameData->name)) {
-            $logoUrl = (string) $gameData->logo;
-            $this->name = (string) $gameData->name;
-            if($gameData->globalStatsLink != null && !empty($gameData->globalStatsLink)) {
-                preg_match('#http://steamcommunity.com/stats/([^?/]+)/achievements/#', (string) $gameData->globalStatsLink, $shortName);
-                $this->shortName = strtolower($shortName[1]);
-            } else {
-                $this->shortName = null;
-            }
-        } else {
-            $this->iconUrl = (string) $gameData->gameIcon;
-            $logoUrl = (string) $gameData->gameLogo;
-            $this->name = (string) $gameData->gameName;
-            $this->shortName = strtolower((string) $gameData->gameFriendlyName);
+    private function __construct(\stdClass $gameData) {
+        $this->appId = $gameData->appid;
+        if (array_key_exists('playtime_2weeks', get_object_vars($gameData))) {
+            $this->hasStats = $gameData->has_community_visible_stats === true;
         }
+        $this->iconHash = $gameData->img_icon_url;
+        $this->logoHash = $gameData->img_logo_url;
+        $this->name = $gameData->name;
 
-        preg_match("#/$appId/([0-9a-f]+).jpg#", $logoUrl, $logoHash);
-        if (!empty($logoHash)) {
-            $this->logoHash = strtolower($logoHash[1]);
-        }
-
-        self::$games[$appId] = $this;
+        self::$games[$this->appId] = $this;
     }
 
     /**
@@ -147,17 +135,15 @@ class SteamGame {
     }
 
     /**
-     * Returns a unique identifier for this game
+     * Returns the URL for the logo thumbnail image of this game
      *
-     * This is either the numeric application ID or the unique short name
-     *
-     * @return mixed The application ID or short name of the game
+     * @return string The URL for the game logo thumbnail
      */
-    public function getId() {
-        if((string) $this->appId == $this->shortName) {
-            return $this->appId;
+    public function getIconUrl() {
+        if ($this->iconHash == null) {
+            return null;
         } else {
-            return $this->shortName;
+            return "http://media.steampowered.com/steamcommunity/public/images/apps/{$this->appId}/{$this->iconHash}.jpg";
         }
     }
 
@@ -169,7 +155,7 @@ class SteamGame {
      * @return GameLeaderboard The matching leaderboard if available
      */
     public function getLeaderboard($id) {
-        return GameLeaderboard::getLeaderboard($this->shortName, $id);
+        return GameLeaderboard::getLeaderboard($this->appId, $id);
     }
 
     /**
@@ -178,7 +164,7 @@ class SteamGame {
      * @return array The leaderboards for this game
      */
     public function getLeaderboards() {
-        return GameLeaderboard::getLeaderboards($this->shortName);
+        return GameLeaderboard::getLeaderboards($this->appId);
     }
 
     /**
@@ -229,17 +215,6 @@ class SteamGame {
     }
 
     /**
-     * Returns the short name of this game (also known as "friendly name")
-     *
-     * @return string|null
-     *   The short name of this game, or null if this game does not have a
-     *   short name.
-     */
-    public function getShortName() {
-        return $this->shortName;
-    }
-
-    /**
      * Returns the URL of this game's page in the Steam Store
      *
      * @return string This game's store page
@@ -259,7 +234,7 @@ class SteamGame {
             return null;
         }
 
-        return GameStats::create($steamId, $this->shortName);
+        return GameStats::create($steamId, $this->appId);
     }
 
     /**
@@ -268,7 +243,7 @@ class SteamGame {
      * @return bool <var>true</var> if this game has stats
      */
     public function hasStats() {
-        return $this->shortName != null;
+        return $this->hasStats();
     }
 
     /**

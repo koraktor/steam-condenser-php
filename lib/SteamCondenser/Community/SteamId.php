@@ -224,20 +224,26 @@ class SteamId extends XMLData {
      *         data
      */
     private function fetchGames() {
-        $gamesData = $this->getData($this->getBaseUrl() . '/games?xml=1');
+        $params = [
+                'steamid' => $this->getSteamId64(),
+                'include_appinfo' => 1,
+                'include_played_free_games' => 1
+        ];
+        $gamesData = WebApi::getJSONObject('IPlayerService', 'GetOwnedGames', 1, $params);
 
-        $this->games = [];
-        $this->playtimes = [];
-
-        foreach($gamesData->games->game as $gameData) {
-            $appId = (int) $gameData->appID;
-            $game = SteamGame::create($appId, $gameData);
-            $this->games[$appId] = $game;
-            $recent = (float) $gameData->hoursLast2Weeks;
-            $total = (float) str_replace(',', '', $gameData->hoursOnRecord);
-            $playtimes = [(int) ($recent * 60), (int) ($total * 60)];
-            $this->playtimes[$appId] = $playtimes;
+        foreach ($gamesData->response->games as $gameData) {
+            $game = SteamGame::create($gameData);
+            $this->games[$game->getAppId()] = $game;
+            if (array_key_exists('playtime_2weeks', get_object_vars($gameData))) {
+                $recent = $gameData->playtime_2weeks;
+            } else {
+                $recent = 0;
+            }
+            $total = $gameData->playtime_forever;
+            $this->playtimes[$game->getAppId()] = [$recent, $total];
         }
+
+        return $this->games;
     }
 
     /**
@@ -258,39 +264,6 @@ class SteamId extends XMLData {
         }
 
         return $this->groups;
-    }
-
-    /**
-     * Tries to find a game instance with the given application ID or full name
-     * or short name
-     *
-     * @param mixed $id The full or short name or the application ID of the
-     *        game
-     * @return SteamGame The game found with the given ID
-     * @throws SteamCondenserException if the user does not own the game or no
-     *         game with the given ID exists
-     */
-    private function findGame($id) {
-        $game = null;
-        foreach($this->getGames() as $currentGame) {
-            if($currentGame->getAppId() == $id ||
-               $currentGame->getShortName() == $id ||
-               $currentGame->getName() == $id) {
-                $game = $currentGame;
-                break;
-            }
-        }
-
-        if($game == null) {
-            if(is_int($id)) {
-                $message = "This SteamID does not own a game with application ID {$id}.";
-            } else {
-                $message = "This SteamID does not own the game \"{$id}\".";
-            }
-            throw new SteamCondenserException($message);
-        }
-
-        return $game;
     }
 
     /**
@@ -356,7 +329,7 @@ class SteamId extends XMLData {
      *
      * If the friends haven't been fetched yet, this is done now.
      *
-     * @return array The games this user owns
+     * @return SteamGame[] The games this user owns
      * @see fetchGames()
      */
     public function getGames() {
@@ -456,30 +429,32 @@ class SteamId extends XMLData {
      * Returns the time in minutes this user has played this game in the last
      * two weeks
      *
-     * @param mixed $id The full or short name or the application ID of the
-     *        game
+     * @param int $appId The application ID of the game
      * @return int The number of minutes this user played the given game in the
      *         last two weeks
      */
-    public function getRecentPlaytime($id) {
-        $game = $this->findGame($id);
-        $playtimes = $this->playtimes[$game->getAppId()];
+    public function getRecentPlaytime($appId) {
+        if (empty($this->playtimes)) {
+            $this->fetchGames();
+        }
 
-        return $playtimes[0];
+        var_dump($this->playtimes);
+
+        return $this->playtimes[$appId][0];
     }
 
     /**
      * Returns the total time in minutes this user has played this game
      *
-     * @param mixed $id The full or short name or the application ID of the
-     *        game
+     * @param int $appId The application ID of the game
      * @return int The total number of minutes this user played the given game
      */
-    public function getTotalPlaytime($id) {
-        $game = $this->findGame($id);
-        $playtimes = $this->playtimes[$game->getAppId()];
+    public function getTotalPlaytime($appId) {
+        if (empty($this->playtimes)) {
+            $this->fetchGames();
+        }
 
-        return $playtimes[1];
+        return $this->playtimes[$appId][1];
     }
 
     /**
