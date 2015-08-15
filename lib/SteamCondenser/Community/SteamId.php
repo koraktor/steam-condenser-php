@@ -434,8 +434,6 @@ class SteamId extends XMLData {
             $this->fetchGames();
         }
 
-        var_dump($this->playtimes);
-
         return $this->playtimes[$appId][0];
     }
 
