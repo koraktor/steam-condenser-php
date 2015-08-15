@@ -204,7 +204,6 @@ class WebApi implements LoggerAwareInterface {
      *                may be 'json', 'vdf' or 'xml').
      */
     protected function _load($format, $interface, $method, $version = 1, $params = null) {
-        $version = str_pad($version, 4, '0', STR_PAD_LEFT);
         $protocol = (self::$secure) ? 'https' : 'http';
         $url = "$protocol://api.steampowered.com/$interface/$method/v$version/";
 
