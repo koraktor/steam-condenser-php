@@ -384,11 +384,7 @@ class SteamId extends XMLData {
      * @return string The 64bit numeric SteamID or the custom URL
      */
     public function getId() {
-        if($this->customUrl == null) {
-            return $this->steamId64;
-        } else {
-            return $this->customUrl;
-        }
+        return $this->customUrl ?: $this->steamId64;
     }
 
     /**

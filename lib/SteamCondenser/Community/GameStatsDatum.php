@@ -48,9 +48,7 @@ class GameStatsDatum {
     }
 
     public function getName($language = null) {
-        if ($language == null) {
-            $language = GameStatsSchema::getDefaultLanguage();
-        }
+        $language = $language ?: GameStatsSchema::getDefaultLanguage();
         $this->schema->getDatumNames($language)[$this->apiName];
     }
 
