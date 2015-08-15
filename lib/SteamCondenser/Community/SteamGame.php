@@ -243,7 +243,7 @@ class SteamGame {
      * @return bool <var>true</var> if this game has stats
      */
     public function hasStats() {
-        return $this->hasStats();
+        return $this->hasStats;
     }
 
     /**
