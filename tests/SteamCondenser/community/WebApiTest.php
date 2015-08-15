@@ -67,7 +67,7 @@ class WebApiTest extends \PHPUnit_Framework_TestCase {
     public function testLoad() {
         $data = 'data';
         $webApi = $this->getMockBuilder('\SteamCondenser\Community\WebApi')->setMethods(['request'])->disableOriginalConstructor()->getMock();
-        $webApi->expects($this->once())->method('request')->with('https://api.steampowered.com/interface/method/v0002/?test=param&format=json&key=0123456789ABCDEF0123456789ABCDEF')->will($this->returnValue($data));
+        $webApi->expects($this->once())->method('request')->with('https://api.steampowered.com/interface/method/v2/?test=param&format=json&key=0123456789ABCDEF0123456789ABCDEF')->will($this->returnValue($data));
         $this->instance->setValue($webApi);
 
         $this->assertEquals('data', WebApi::load('json', 'interface', 'method', 2, ['test' => 'param']));
@@ -78,7 +78,7 @@ class WebApiTest extends \PHPUnit_Framework_TestCase {
 
         $data = 'data';
         $webApi = $this->getMockBuilder('\SteamCondenser\Community\WebApi')->setMethods(['request'])->disableOriginalConstructor()->getMock();
-        $webApi->expects($this->once())->method('request')->with('http://api.steampowered.com/interface/method/v0002/?test=param&format=json&key=0123456789ABCDEF0123456789ABCDEF')->will($this->returnValue($data));
+        $webApi->expects($this->once())->method('request')->with('http://api.steampowered.com/interface/method/v2/?test=param&format=json&key=0123456789ABCDEF0123456789ABCDEF')->will($this->returnValue($data));
         $this->instance->setValue($webApi);
 
         $this->assertEquals('data', WebApi::load('json', 'interface', 'method', 2, ['test' => 'param']));
@@ -89,7 +89,7 @@ class WebApiTest extends \PHPUnit_Framework_TestCase {
 
         $data = 'data';
         $webApi = $this->getMockBuilder('\SteamCondenser\Community\WebApi')->setMethods(['request'])->disableOriginalConstructor()->getMock();
-        $webApi->expects($this->once())->method('request')->with('https://api.steampowered.com/interface/method/v0002/?test=param&format=json')->will($this->returnValue($data));
+        $webApi->expects($this->once())->method('request')->with('https://api.steampowered.com/interface/method/v2/?test=param&format=json')->will($this->returnValue($data));
         $this->instance->setValue($webApi);
 
         $this->assertEquals('data', WebApi::load('json', 'interface', 'method', 2, ['test' => 'param']));
