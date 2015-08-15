@@ -234,7 +234,7 @@ class SteamId extends XMLData {
         foreach ($gamesData->response->games as $gameData) {
             $game = SteamGame::create($gameData);
             $this->games[$game->getAppId()] = $game;
-            if (array_key_exists('playtime_2weeks', get_object_vars($gameData))) {
+            if (property_exists($gameData, 'playtime_2weeks')) {
                 $recent = $gameData->playtime_2weeks;
             } else {
                 $recent = 0;

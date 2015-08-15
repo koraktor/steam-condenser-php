@@ -115,7 +115,7 @@ class SteamGame {
      */
     private function __construct(\stdClass $gameData) {
         $this->appId = $gameData->appid;
-        if (array_key_exists('playtime_2weeks', get_object_vars($gameData))) {
+        if (property_exists($gameData, 'playtime_2weeks')) {
             $this->hasStats = $gameData->has_community_visible_stats === true;
         }
         $this->iconHash = $gameData->img_icon_url;
