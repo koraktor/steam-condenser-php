@@ -259,7 +259,7 @@ class SteamGame {
             return null;
         }
 
-        return GameStats::createGameStats($steamId, $this->shortName);
+        return GameStats::create($steamId, $this->shortName);
     }
 
     /**
