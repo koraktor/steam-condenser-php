@@ -110,7 +110,7 @@ class GameInventory {
 
         self::overwriteClass("\\SteamCondenser\\Community\\$inventoryClass");
 
-        return self::createCacheable($appId, $steamId64, $bypassCache, $fetchNow);
+        return self::createCacheable($appId, $steamId64, $fetchNow, $bypassCache);
     }
 
     public static function initialize() {

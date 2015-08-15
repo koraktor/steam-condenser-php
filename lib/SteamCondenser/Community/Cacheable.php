@@ -70,9 +70,9 @@ trait Cacheable {
      * cacheable class. Additionally, the following parameters are dynamically
      * added:
      *
-     * @param bool $bypassCache If <var>true</var> the cache will not be hit
      * @param bool $fetch If <var>true</var> the object’s <var>fetch()</var>
      *        method will be called
+     * @param bool $bypassCache If <var>true</var> the cache will not be hit
      * @return mixed A new object or a matching cached one
      */
     public static function create() {
