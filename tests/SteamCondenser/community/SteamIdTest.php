@@ -95,14 +95,20 @@ class SteamIdTest extends \PHPUnit_Framework_TestCase {
         $steamId = new SteamId('76561197983311154', false);
 
         $this->assertEquals('76561197983311154', $steamId->getSteamId64());
-        $this->assertEquals('http://steamcommunity.com/profiles/76561197983311154', $steamId->getBaseUrl());
+
+        $baseUrl = (new \ReflectionObject($steamId))->getMethod('getBaseUrl');
+        $baseUrl->setAccessible(true);
+        $this->assertEquals('http://steamcommunity.com/profiles/76561197983311154', $baseUrl->invoke($steamId));
     }
 
     public function testBaseUrlCustomUrl() {
         $steamId = new SteamId('Son_of_Thor', false);
 
         $this->assertEquals('son_of_thor', $steamId->getCustomUrl());
-        $this->assertEquals('http://steamcommunity.com/id/son_of_thor', $steamId->getBaseUrl());
+
+        $baseUrl = (new \ReflectionObject($steamId))->getMethod('getBaseUrl');
+        $baseUrl->setAccessible(true);
+        $this->assertEquals('http://steamcommunity.com/id/son_of_thor', $baseUrl->invoke($steamId));
     }
 
     public function testResolveVanityUrl() {
