@@ -208,7 +208,7 @@ class SteamId extends XMLData {
      * @throws SteamCondenserException if an error occurs while parsing the
      *         data
     */
-    private function fetchFriends() {
+    public function fetchFriends() {
         $friendsData = $this->getData($this->getBaseUrl() . '/friends?xml=1');
         $this->friends = [];
         foreach($friendsData->friends->friend as $friend) {
@@ -223,7 +223,7 @@ class SteamId extends XMLData {
      * @throws SteamCondenserException if an error occurs while parsing the
      *         data
      */
-    private function fetchGames() {
+    public function fetchGames() {
         $params = [
                 'steamid' => $this->getSteamId64(),
                 'include_appinfo' => 1,
@@ -273,7 +273,7 @@ class SteamId extends XMLData {
      *
      * @return string The base URL for this SteamID
      */
-    public function getBaseUrl() {
+    protected function getBaseUrl() {
         if(empty($this->customUrl)) {
             return "http://steamcommunity.com/profiles/{$this->steamId64}";
         } else {
