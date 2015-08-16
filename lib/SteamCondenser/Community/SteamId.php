@@ -203,8 +203,8 @@ class SteamId extends XMLData {
      * This creates a new <var>SteamId</var> instance for each of the friends
      * without fetching their data.
      *
+     * @return SteamId[]
      * @see getFriends()
-     * @see __construct()
      * @throws SteamCondenserException if an error occurs while parsing the
      *         data
     */
@@ -214,6 +214,8 @@ class SteamId extends XMLData {
         foreach($friendsData->friends->friend as $friend) {
             $this->friends[] = self::create((string) $friend, false);
         }
+
+        return $this->friends;
     }
 
     /**
@@ -251,7 +253,7 @@ class SteamId extends XMLData {
      *
      * Uses the ISteamUser/GetUserGroupList interface.
      *
-     * @return array The groups of this user
+     * @return SteamGroup[] The groups of this user
      * @see getGroups()
      */
     public function fetchGroups() {
@@ -301,15 +303,11 @@ class SteamId extends XMLData {
      *
      * If the friends haven't been fetched yet, this is done now.
      *
-     * @return array The friends of this user
+     * @return SteamId[] The friends of this user
      * @see fetchFriends()
      */
     public function getFriends() {
-        if(empty($this->friends)) {
-            $this->fetchFriends();
-        }
-
-        return $this->friends;
+        return $this->friends ?: $this->fetchFriends();
     }
 
     /**
@@ -333,11 +331,7 @@ class SteamId extends XMLData {
      * @see fetchGames()
      */
     public function getGames() {
-        if(empty($this->games)) {
-            $this->fetchGames();
-        }
-
-        return $this->games;
+        return $this->games ?: $this->fetchGames();
     }
 
     /**
@@ -356,15 +350,11 @@ class SteamId extends XMLData {
     /**
      * Returns all groups where this user is a member
      *
-     * @return array The groups of this user
+     * @return SteamGroup[] The groups of this user
      * @see fetchGroups()
      */
     public function getGroups() {
-        if (empty($this->groups)) {
-            $this->fetchGroups();
-        }
-
-        return $this->groups;
+        return $this->groups ?: $this->fetchGroups();
     }
 
     /**
