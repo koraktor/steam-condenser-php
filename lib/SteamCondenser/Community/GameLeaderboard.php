@@ -78,8 +78,12 @@ class GameLeaderboard {
     public static function getLeaderboard($gameName, $id) {
         $leaderboards = self::getLeaderboards($gameName);
 
-        if(is_int($id)) {
-            return $leaderboards[$id];
+        if (is_int($id)) {
+            if (array_key_exists($id, $leaderboards)) {
+                return $leaderboards[$id];
+            } else {
+                return null;
+            }
         } else {
             foreach(array_values($leaderboards) as $board) {
                 if($board->getName() == $id) {
@@ -93,7 +97,7 @@ class GameLeaderboard {
      * Returns an array containing all of a game's leaderboards
      *
      * @param string $gameName The name of the game
-     * @return array The leaderboards for this game
+     * @return GameLeaderboard[] The leaderboards for this game
      */
     public static function getLeaderboards($gameName) {
         if(!array_key_exists($gameName, self::$leaderboards)) {
@@ -191,20 +195,16 @@ class GameLeaderboard {
      * @param mixed $steamId The 64bit SteamID or the <var>SteamId</var> object
      *        of the user
      * @return GameLeaderboardEntry The entry of the user if available
+     * @throws SteamCondenserException if the XML data is marked as erroneous
      */
     public function getEntryForSteamId($steamId) {
-        if(is_object($steamId)) {
+        if (is_object($steamId)) {
             $id = $steamId->getSteamId64();
         } else {
             $id = $steamId;
         }
 
-        $fullurl = sprintf('%s&steamid=%s', $this->url, $id);
-        $xml = new \SimpleXMLElement(file_get_contents($fullurl));
-
-        if(!empty($xml->error)) {
-            throw new SteamCondenserException((string) $xml->error);
-        }
+        $xml = $this->loadDataForSteamId($id);
 
         foreach($xml->entries->entry as $entryData) {
             if($entryData->steamid == $id) {
@@ -219,31 +219,15 @@ class GameLeaderboard {
      * Returns an array of entries on this leaderboard for the user with the
      * given SteamID and his/her friends
      *
-     * @param mixed $steamId The 64bit SteamID or the <var>SteamId</var> object
-     *        of the user
+     * @param string|SteamId $steamId The 64bit SteamID or the
+     *        <var>SteamId</var> object of the user
      * @return array The entries of the user and his/her friends
+     * @throws SteamCondenserException if the XML data is marked as erroneous
      */
     public function getEntryForSteamIdFriends($steamId) {
-        if(is_object($steamId)) {
-            $id = $steamId->getSteamId64();
-        } else {
-            $id = $steamId;
-        }
+        $xml = $this->loadDataForSteamId($steamId);
 
-        $fullurl = sprintf('%s&steamid=%s', $this->url, $id);
-        $xml = new \SimpleXMLElement(file_get_contents($fullurl));
-
-        if(!empty($xml->error)) {
-            throw new SteamCondenserException((string) $xml->error);
-        }
-
-        $entries = [];
-        foreach($xml->entries->entry as $entryData) {
-            $rank = (int) $entryData->rank;
-            $entries[$rank] = new GameLeaderboardEntry($entryData, $this);
-        }
-
-        return $entries;
+        return $this->parseEntries($xml);
     }
 
     /**
@@ -254,7 +238,9 @@ class GameLeaderboard {
      *
      * @param int $first The first entry to return from the leaderboard
      * @param int $last The last entry to return from the leaderboard
-     * @return array The entries that match the given rank range
+     * @return GameLeaderboardEntry[] The entries that match the given rank range
+     * @throws SteamCondenserException if the XML data is marked as erroneous
+     *         or the range is incorrect
      */
     public function getEntryRange($first, $last) {
         if($last < $first) {
@@ -264,13 +250,62 @@ class GameLeaderboard {
             throw new SteamCondenserException('Leaderboard entry lookup is currently limited to a maximum of 5001 entries per request.');
         }
 
-        $fullurl = sprintf('%s&start=%d&end=%d', $this->url, $first, $last);
-        $xml = new \SimpleXMLElement(file_get_contents($fullurl));
+        $xml = $this->loadData(['start' => $first, 'end' => $last]);
 
-        if(!empty($xml->error)) {
+        return $this->parseEntries($xml);
+    }
+
+    /**
+     * Loads leaderboard data for the given parameters
+     *
+     * @param array $params The parameters for the leaderboard data
+     * @return \SimpleXMLElement The requested XML Data
+     * @throws SteamCondenserException if the XML data is marked as erroneous
+     */
+    protected function loadData(array $params) {
+        $url = $this->url;
+        if (!empty($params)) {
+            $url_params = [];
+            foreach($params as $k => $v) {
+                $url_params[] = "$k=$v";
+            }
+            $url .= '&' . join('&', $url_params);
+        }
+
+        $xml = new \SimpleXMLElement(file_get_contents($url));
+
+        if (!empty($xml->error)) {
             throw new SteamCondenserException((string) $xml->error);
         }
 
+        return $xml;
+    }
+
+    /**
+     * Loads leaderboard data for the given user
+     *
+     * @param string|SteamId $steamId The 64bit SteamID or the
+     *        <var>SteamId</var> object of the user
+     * @return \SimpleXMLElement The XML data for the given user
+     * @throws SteamCondenserException if the XML data is marked as erroneous
+     */
+    protected function loadDataForSteamId($steamId) {
+        if (is_object($steamId)) {
+            $id = $steamId->getSteamId64();
+        } else {
+            $id = $steamId;
+        }
+
+        return $this->loadData(['steamid' => $id]);
+    }
+
+    /**
+     * Parses leaderboard entries from the given XML data
+     *
+     * @param \SimpleXMLElement $xml The XML data to parse
+     * @return GameLeaderboardEntry The leaderboard entries for the given data
+     */
+    protected function parseEntries(\SimpleXMLElement $xml) {
         $entries = [];
         foreach($xml->entries->entry as $entryData) {
             $rank = (int) $entryData->rank;
@@ -279,4 +314,5 @@ class GameLeaderboard {
 
         return $entries;
     }
+
 }
