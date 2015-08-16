@@ -151,12 +151,8 @@ trait Cacheable {
      */
     public static function isCached($id) {
         $findId = function($id, $cache) use (&$findId) {
-            if (is_array($id)) {
-                $ids = $id;
-                $id = array_shift($ids);
-            } else {
-                $ids = null;
-            }
+            self::selectIds($id, $ids);
+
             if (is_string($id)) {
                 $id = strtolower($id);
             }
@@ -174,6 +170,15 @@ trait Cacheable {
         self::$className = $className;
     }
 
+    protected static function selectIds(&$id, &$ids) {
+        if (is_array($id)) {
+            $ids = $id;
+            $id = array_shift($ids);
+        } else {
+            $ids = null;
+        }
+    }
+
     /**
      * Saves this object in the cache
      *
@@ -181,12 +186,7 @@ trait Cacheable {
      */
     protected function cache() {
         $cacheInstance = function($id, &$cache) use (&$cacheInstance) {
-            if (is_array($id)) {
-                $ids = $id;
-                $id = array_shift($ids);
-            } else {
-                $ids = null;
-            }
+            self::selectIds($id, $ids);
 
             if (empty($ids)) {
                 $cache[$id] = $this;
