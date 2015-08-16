@@ -506,12 +506,6 @@ class SteamId extends XMLData {
                 $this->mostPlayedGames[(string) $mostPlayedGame->gameName] = (float) $mostPlayedGame->hoursPlayed;
             }
         }
-
-        if(!empty($profile->weblinks)) {
-            foreach($profile->weblinks->weblink as $link) {
-                $this->links[htmlspecialchars_decode((string) $link->title)] = (string) $link->link;
-            }
-        }
     }
 
     /**
