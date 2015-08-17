@@ -43,7 +43,7 @@ class Portal2Item extends GameItem {
         parent::__construct($inventory, $itemData);
 
         $this->equipped = [];
-        for($botId = 0; $botId < sizeof(self::$BOTS); $botId++) {
+        foreach (self::$BOTS as $botId => $botName) {
             $this->equipped[self::$BOTS[$botId]] = (($itemData->inventory & (1 << 16 + $botId)) != 0);
         }
     }
