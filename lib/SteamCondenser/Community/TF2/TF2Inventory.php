@@ -23,7 +23,7 @@ class TF2Inventory extends GameInventory {
 
     const APP_ID = 440;
 
-    const ITEM_CLASS = 'TF2Item';
+    const ITEM_CLASS = '\SteamCondenser\Community\TF2\TF2Item';
 
     /**
      * This checks the cache for an existing inventory. If it exists it is

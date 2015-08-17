@@ -227,9 +227,8 @@ class GameInventory {
         $this->preliminaryItems = [];
         foreach ($result->items as $itemData) {
             if ($itemData != null) {
-                $inventoryClass = new \ReflectionClass(get_class());
-                $namespace = $inventoryClass->getNamespaceName();
-                $itemClass = $namespace . '\\' . $inventoryClass->getConstant('ITEM_CLASS');
+                $inventoryClass = get_called_class();
+                $itemClass = $inventoryClass::ITEM_CLASS;
                 $item = new $itemClass($this, $itemData);
                 if ($item->isPreliminary()) {
                     $this->preliminaryItems[] = $item;

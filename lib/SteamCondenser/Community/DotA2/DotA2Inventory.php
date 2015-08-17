@@ -23,7 +23,7 @@ class DotA2Inventory extends GameInventory {
 
     const APP_ID = 570;
 
-    const ITEM_CLASS = 'DotA2Item';
+    const ITEM_CLASS = '\SteamCondenser\Community\DotA2\DotA2Item';
 
     /**
      * This checks the cache for an existing inventory. If it exists it is

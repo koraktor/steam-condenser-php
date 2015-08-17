@@ -23,7 +23,7 @@ class Portal2Inventory extends GameInventory {
 
     const APP_ID = 620;
 
-    const ITEM_CLASS = 'Portal2Item';
+    const ITEM_CLASS = '\SteamCondenser\Community\Portal2\Portal2Item';
 
     /**
      * This checks the cache for an existing inventory. If it exists it is
