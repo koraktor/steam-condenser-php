@@ -115,15 +115,8 @@ trait Cacheable {
      */
     protected function cachedInstance() {
         $findInstance = function($id, $cache) use (&$findInstance) {
-            if (is_array($id)) {
-                $ids = $id;
-                $id = array_shift($ids);
-            } else {
-                $ids = null;
-            }
-            if (is_string($id)) {
-                $id = strtolower($id);
-            }
+            self::selectIds($id, $ids);
+
             if (array_key_exists($id, $cache)) {
                 return (empty($ids)) ?
                         $cache[$id] : $findInstance($id, $cache[$id]);
@@ -153,9 +146,6 @@ trait Cacheable {
         $findId = function($id, $cache) use (&$findId) {
             self::selectIds($id, $ids);
 
-            if (is_string($id)) {
-                $id = strtolower($id);
-            }
             if (array_key_exists($id, $cache)) {
                 return (is_array($ids)) ? $findId($id, $cache[$id]) : true;
             }
@@ -176,6 +166,10 @@ trait Cacheable {
             $id = array_shift($ids);
         } else {
             $ids = null;
+        }
+
+        if (is_string($id)) {
+            $id = strtolower($id);
         }
     }
 
