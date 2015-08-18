@@ -41,32 +41,17 @@ abstract class SteamPacketFactory {
             case SteamPacket::S2A_INFO_DETAILED_HEADER:
                 return new S2AINFODETAILEDPacket($data);
 
-            case SteamPacket::A2S_INFO_HEADER:
-                return new A2SINFOPacket();
-
             case SteamPacket::S2A_INFO2_HEADER:
                 return new S2AINFO2Packet($data);
-
-            case SteamPacket::A2S_PLAYER_HEADER:
-                return new A2SPLAYERPacket();
 
             case SteamPacket::S2A_PLAYER_HEADER:
                 return new S2APLAYERPacket($data);
 
-            case SteamPacket::A2S_RULES_HEADER:
-                return new A2SRULESPacket();
-
             case SteamPacket::S2A_RULES_HEADER:
                 return new S2ARULESPacket($data);
 
-            case SteamPacket::A2S_SERVERQUERY_GETCHALLENGE_HEADER:
-                return new A2SSERVERQUERYGETCHALLENGEPacket();
-
             case SteamPacket::S2C_CHALLENGE_HEADER:
                 return new S2CCHALLENGEPacket($data);
-
-            case SteamPacket::A2M_GET_SERVERS_BATCH2_HEADER:
-                return new A2MGETSERVERSBATCH2Packet($data);
 
             case SteamPacket::M2A_SERVER_BATCH_HEADER:
                 return new M2ASERVERBATCHPacket($data);
