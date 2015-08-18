@@ -80,11 +80,7 @@ abstract class SteamPacketFactory {
      * @see packetFromData()
      */
     public static function reassemblePacket($splitPackets, $isCompressed = false, $packetChecksum = 0) {
-        $packetData = '';
-
-        foreach($splitPackets as $splitPacket) {
-            $packetData .= $splitPacket;
-        }
+        $packetData = join('', $splitPackets);
 
         if($isCompressed) {
             $packetData = bzdecompress($packetData);
