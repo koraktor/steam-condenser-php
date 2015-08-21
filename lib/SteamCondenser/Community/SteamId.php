@@ -490,12 +490,6 @@ class SteamId extends XMLData {
             $this->steamRating = (float) $profile->steamRating;
             $this->summary = htmlspecialchars_decode((string) $profile->summary);
         }
-
-        if(!empty($profile->mostPlayedGames)) {
-            foreach($profile->mostPlayedGames->mostPlayedGame as $mostPlayedGame) {
-                $this->mostPlayedGames[(string) $mostPlayedGame->gameName] = (float) $mostPlayedGame->hoursPlayed;
-            }
-        }
     }
 
     /**
