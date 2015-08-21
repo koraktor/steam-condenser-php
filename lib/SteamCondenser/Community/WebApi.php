@@ -234,7 +234,7 @@ class WebApi implements LoggerAwareInterface {
     protected function request($url) {
         $this->logger->debug("Querying Steam Web API: " . str_replace(self::$apiKey, 'SECRET', $url));
 
-        $data = @file_get_contents($url);
+        $data = file_get_contents($url);
 
         if(empty($data)) {
             preg_match('/^.* (\d{3}) (.*)$/', $http_response_header[0], $http_status);

@@ -43,7 +43,7 @@ class UDPSocket extends Socket {
             if(!$this->socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP)) {
                 throw new SocketException(socket_last_error($this->socket));
             }
-            if(@!socket_connect($this->socket, $ipAddress, $portNumber)) {
+            if(!socket_connect($this->socket, $ipAddress, $portNumber)) {
                 throw new SocketException(socket_last_error($this->socket));
             }
             socket_set_block($this->socket);

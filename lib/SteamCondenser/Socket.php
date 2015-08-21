@@ -89,9 +89,9 @@ abstract class Socket {
     public function close() {
         if(!empty($this->socket)) {
             if($this->socketsEnabled) {
-                @socket_close($this->socket);
+                socket_close($this->socket);
             } else {
-                @fclose($this->socket);
+                fclose($this->socket);
             }
             $this->socket = null;
         }
