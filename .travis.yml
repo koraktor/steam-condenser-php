@@ -20,4 +20,4 @@ notifications:
   webhooks:
     urls:
       - https://webhooks.gitter.im/e/8229d26a4f90bcc6cd67
-script: vendor/bin/phpunit --bootstrap ./tests/bootstrap.php tests
+script: vendor/bin/phpunit --bootstrap ./tests/bootstrap.php --coverage-clover build/logs/clover.xml tests
