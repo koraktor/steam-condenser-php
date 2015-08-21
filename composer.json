@@ -22,7 +22,6 @@
         "monolog/monolog": "~1.10"
     },
     "require-dev": {
-        "codeclimate/php-test-reporter": "dev-master",
         "phpdocumentor/phpdocumentor": "~2.6.1",
         "phpunit/phpunit": "~4.1.3"
     },

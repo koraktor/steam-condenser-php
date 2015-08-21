@@ -7,17 +7,13 @@ php:
  - hhvm
  - nightly
 before_script: composer install
-after_script:
- - vendor/bin/test-reporter
 matrix:
   allow_failures:
     - php: hhvm
     - php: nightly
   fast_finish: true
-addons:
-  codeclimate: true
 notifications:
   webhooks:
     urls:
       - https://webhooks.gitter.im/e/8229d26a4f90bcc6cd67
-script: vendor/bin/phpunit --bootstrap ./tests/bootstrap.php --coverage-clover build/logs/clover.xml tests
+script: vendor/bin/phpunit --bootstrap ./tests/bootstrap.php tests
