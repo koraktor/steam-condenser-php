@@ -45,7 +45,7 @@ class TCPSocket extends Socket {
             }
 
             socket_set_nonblock($this->socket);
-            @socket_connect($this->socket, $ipAddress, $portNumber);
+            socket_connect($this->socket, $ipAddress, $portNumber);
             $write = [$this->socket];
             $read = $except = null;
             $sec = floor($timeout / 1000);
@@ -62,7 +62,7 @@ class TCPSocket extends Socket {
 
             socket_set_block($this->socket);
         } else {
-            if (!$this->socket = @fsockopen("tcp://$ipAddress", $portNumber, $socketErrno, $socketErrstr, $timeout / 1000)) {
+            if (!$this->socket = fsockopen("tcp://$ipAddress", $portNumber, $socketErrno, $socketErrstr, $timeout / 1000)) {
                 throw new SocketException($socketErrstr);
             }
             stream_set_blocking($this->socket, true);
