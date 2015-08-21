@@ -76,6 +76,7 @@ class MasterServerTest extends \PHPUnit_Framework_TestCase {
         $this->socket->expects($this->at(1))->method('getReply')->will($this->returnValue(new M2ASERVERBATCHPacket("\xA\x7F\0\0\x1\x69\x87\x7F\0\0\x1\x69\x88")));
         $this->socket->expects($this->at(2))->method('send')->with($this->isInstanceOf('\SteamCondenser\Servers\Packets\A2MGETSERVERSBATCH2Packet'));
         $this->socket->expects($this->at(3))->method('getReply')->will($this->throwException(new TimeoutException()));
+        $this->server->expects($this->exactly(1))->method('rotateIp')->will($this->returnValue(true));
 
         $this->assertEquals([['127.0.0.1', 27015], ['127.0.0.1', 27016]], $this->server->getServers(MasterServer::REGION_ALL, 'filter', true));
     }
