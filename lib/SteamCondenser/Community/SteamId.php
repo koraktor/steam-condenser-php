@@ -487,7 +487,6 @@ class SteamId extends XMLData {
             $this->location = (string) $profile->location;
             $this->memberSince = (string) $profile->memberSince;
             $this->realName = htmlspecialchars_decode((string) $profile->realname);
-            $this->steamRating = (float) $profile->steamRating;
             $this->summary = htmlspecialchars_decode((string) $profile->summary);
         }
     }
