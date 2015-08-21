@@ -179,9 +179,10 @@ class MasterServer extends Server {
                 } while(!$finished);
                 break;
             } catch(TimeoutException $e) {
-                if ($force) {
-                    break;
-                } else if($this->rotateIp()) {
+                if ($this->rotateIp()) {
+                    if ($force) {
+                        break;
+                    }
                     throw $e;
                 }
                 $this->logger->info("Request to master server failed, retrying {$this->ipAddress}...");
