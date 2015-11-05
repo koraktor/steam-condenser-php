@@ -189,7 +189,7 @@ class MasterServer extends Server {
             }
         }
 
-        return $serverArray;
+        return array_unique($serverArray, SORT_REGULAR);
     }
 
     /**
