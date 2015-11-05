@@ -26,16 +26,8 @@ abstract class TestableGameServer extends GameServer {
 
     public $socket;
 
-    public function getReply() {
-        return parent::getReply();
-    }
-
     public function handleResponseForRequest($request, $repeatOnFailure = true) {
         parent::handleResponseForRequest($request, $repeatOnFailure);
-    }
-
-    public function sendRequest(Packets\SteamPacket $packet) {
-        parent::sendRequest($packet);
     }
 
 }
@@ -47,32 +39,13 @@ class GameServerTest extends \PHPUnit_Framework_TestCase {
         $this->serverBuilder->disableOriginalConstructor();
     }
 
-    public function testGetReply() {
-        $packet = $this->getMockForAbstractClass('\SteamCondenser\Servers\Packets\SteamPacket', ['']);
-
-        $socket = $this->getMockBuilder('\SteamCondenser\Servers\Sockets\SteamSocket')->disableOriginalConstructor()->setMethods(['getReply'])->getMock();
-        $socket->expects($this->once())->method('getReply')->will($this->returnValue($packet));
-        $server = $this->getMockForAbstractClass('\SteamCondenser\Servers\TestableGameServer', ['127.0.0.1']);
-        $server->socket = $socket;
-
-        $this->assertEquals($packet, $server->getReply());
-    }
-
-    public function testSendRequest() {
-        $packet = $this->getMockForAbstractClass('\SteamCondenser\Servers\Packets\SteamPacket', ['']);
-
-        $socket = $this->getMockBuilder('\SteamCondenser\Servers\Sockets\SteamSocket')->disableOriginalConstructor()->setMethods(['getReply', 'send'])->getMock();
-        $socket->expects($this->once())->method('send')->with($packet);
-        $server = $this->getMockForAbstractClass('\SteamCondenser\Servers\TestableGameServer', ['127.0.0.1']);
-        $server->socket = $socket;
-
-        $server->sendRequest($packet);
-    }
-
     public function testUpdatePing() {
-        $server = $this->serverBuilder->setMethods(['getReply', 'initSocket', 'rconAuth', 'rconExec', 'sendRequest'])->getMock();
-        $server->expects($this->once())->method('sendRequest')->with($this->isInstanceOf('\SteamCondenser\Servers\Packets\A2SINFOPacket'));
-        $server->expects($this->once())->method('getReply')->will($this->returnCallback(function() { usleep(50000); }));
+        $socket = $this->getMockBuilder('\SteamCondenser\Servers\Sockets\SteamSocket')->setMethods(['getReply', 'send'])->disableOriginalConstructor()->getMock();
+        $socket->expects($this->once())->method('send')->with($this->isInstanceOf('\SteamCondenser\Servers\Packets\A2SINFOPacket'));
+        $socket->expects($this->once())->method('getReply')->will($this->returnCallback(function() { usleep(50000); }));
+
+        $server = $this->serverBuilder->setMethods(['initSocket', 'rconAuth', 'rconExec'])->getMock();
+        $server->socket = $socket;
 
         $server->updatePing();
         $this->assertAttributeGreaterThanOrEqual(50, 'ping', $server);
@@ -248,12 +221,15 @@ class GameServerTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testHandleChallengeRequest() {
-        $server = $this->serverBuilder->setMethods(['initSocket', 'getReply', 'rconAuth', 'rconExec', 'sendRequest'])->getMock();
-        $server->expects($this->once())->method('sendRequest')->with($this->isInstanceOf('\SteamCondenser\Servers\Packets\A2SPLAYERPacket'));
+        $server = $this->serverBuilder->setMethods(['initSocket', 'rconAuth', 'rconExec'])->getMock();
 
         $packet = $this->getMockBuilder('\SteamCondenser\Servers\Packets\S2CCHALLENGEPacket')->disableOriginalConstructor()->setMethods(['getChallengeNumber'])->getMock();
         $packet->expects($this->once())->method('getChallengeNumber')->will($this->returnValue(1234));
-        $server->expects($this->once())->method('getReply')->will($this->returnValue($packet));
+
+        $socket = $this->getMockBuilder('\SteamCondenser\Servers\Sockets\SteamSocket')->setMethods(['getReply', 'send'])->disableOriginalConstructor()->getMock();
+        $socket->expects($this->once())->method('send')->with($this->isInstanceOf('\SteamCondenser\Servers\Packets\A2SPLAYERPacket'));
+        $socket->expects($this->once())->method('getReply')->will($this->returnValue($packet));
+        $server->socket = $socket;
 
         $server->handleResponseForRequest(GameServer::REQUEST_CHALLENGE);
 
@@ -261,12 +237,15 @@ class GameServerTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testHandleInfoRequest() {
-        $server = $this->serverBuilder->setMethods(['initSocket', 'getReply', 'rconAuth', 'rconExec', 'sendRequest'])->getMock();
-        $server->expects($this->once())->method('sendRequest')->with($this->isInstanceOf('\SteamCondenser\Servers\Packets\A2SINFOPacket'));
+        $server = $this->serverBuilder->setMethods(['initSocket', 'rconAuth', 'rconExec'])->getMock();
 
         $packet = $this->getMockBuilder('\SteamCondenser\Servers\Packets\S2AINFOBasePacket')->disableOriginalConstructor()->setMethods(['getInfo'])->getMock();
         $packet->expects($this->once())->method('getInfo')->will($this->returnValue(['test' => 'test']));
-        $server->expects($this->once())->method('getReply')->will($this->returnValue($packet));
+
+        $socket = $this->getMockBuilder('\SteamCondenser\Servers\Sockets\SteamSocket')->setMethods(['getReply', 'send'])->disableOriginalConstructor()->getMock();
+        $socket->expects($this->once())->method('send')->with($this->isInstanceOf('\SteamCondenser\Servers\Packets\A2SINFOPacket'));
+        $socket->expects($this->once())->method('getReply')->will($this->returnValue($packet));
+        $server->socket = $socket;
 
         $server->handleResponseForRequest(GameServer::REQUEST_INFO);
 
@@ -274,12 +253,15 @@ class GameServerTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testHandlePlayersRequest() {
-        $server = $this->serverBuilder->setMethods(['initSocket', 'getReply', 'rconAuth', 'rconExec', 'sendRequest'])->getMock();
-        $server->expects($this->once())->method('sendRequest')->with($this->isInstanceOf('\SteamCondenser\Servers\Packets\A2SPLAYERPacket'));
+        $server = $this->serverBuilder->setMethods(['initSocket', 'rconAuth', 'rconExec'])->getMock();
 
         $packet = $this->getMockBuilder('\SteamCondenser\Servers\Packets\S2APLAYERPacket')->disableOriginalConstructor()->setMethods(['getPlayerHash'])->getMock();
         $packet->expects($this->once())->method('getPlayerHash')->will($this->returnValue(['test' => 'test']));
-        $server->expects($this->once())->method('getReply')->will($this->returnValue($packet));
+
+        $socket = $this->getMockBuilder('\SteamCondenser\Servers\Sockets\SteamSocket')->setMethods(['getReply', 'send'])->disableOriginalConstructor()->getMock();
+        $socket->expects($this->once())->method('send')->with($this->isInstanceOf('\SteamCondenser\Servers\Packets\A2SPLAYERPacket'));
+        $socket->expects($this->once())->method('getReply')->will($this->returnValue($packet));
+        $server->socket = $socket;
 
         $server->handleResponseForRequest(GameServer::REQUEST_PLAYER);
 
@@ -287,12 +269,15 @@ class GameServerTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testHandleRulesRequest() {
-        $server = $this->serverBuilder->setMethods(['initSocket', 'getReply', 'rconAuth', 'rconExec', 'sendRequest'])->getMock();
-        $server->expects($this->once())->method('sendRequest')->with($this->isInstanceOf('\SteamCondenser\Servers\Packets\A2SRULESPacket'));
+        $server = $this->serverBuilder->setMethods(['initSocket', 'rconAuth', 'rconExec'])->getMock();
 
         $packet = $this->getMockBuilder('\SteamCondenser\Servers\Packets\S2ARULESPacket')->disableOriginalConstructor()->setMethods(['getRulesArray'])->getMock();
         $packet->expects($this->once())->method('getRulesArray')->will($this->returnValue(['test' => 'test']));
-        $server->expects($this->once())->method('getReply')->will($this->returnValue($packet));
+
+        $socket = $this->getMockBuilder('\SteamCondenser\Servers\Sockets\SteamSocket')->setMethods(['getReply', 'send'])->disableOriginalConstructor()->getMock();
+        $socket->expects($this->once())->method('send')->with($this->isInstanceOf('\SteamCondenser\Servers\Packets\A2SRULESPacket'));
+        $socket->expects($this->once())->method('getReply')->will($this->returnValue($packet));
+        $server->socket = $socket;
 
         $server->handleResponseForRequest(GameServer::REQUEST_RULES);
 
@@ -300,16 +285,19 @@ class GameServerTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testHandleUnexpectedResponse() {
-        $server = $this->serverBuilder->setMethods(['initSocket', 'getReply', 'rconAuth', 'rconExec', 'sendRequest'])->getMock();
+        $server = $this->serverBuilder->setMethods(['initSocket', 'rconAuth', 'rconExec'])->getMock();
         $server->setLogger(\SteamCondenser\getLogger(get_class($server)));
-        $server->expects($this->exactly(2))->method('sendRequest')->with($this->isInstanceOf('\SteamCondenser\Servers\Packets\A2SPLAYERPacket'));
 
         $packet1 = $this->getMockBuilder('\SteamCondenser\Servers\Packets\S2CCHALLENGEPacket')->disableOriginalConstructor()->setMethods(['getChallengeNumber'])->getMock();
         $packet1->expects($this->once())->method('getChallengeNumber')->will($this->returnValue(1234));
-        $server->expects($this->at(1))->method('getReply')->will($this->returnValue($packet1));
         $packet2 = $this->getMockBuilder('\SteamCondenser\Servers\Packets\S2APLAYERPacket')->disableOriginalConstructor()->setMethods(['getPlayerHash'])->getMock();
         $packet2->expects($this->once())->method('getPlayerHash')->will($this->returnValue(['test' => 'test']));
-        $server->expects($this->at(3))->method('getReply')->will($this->returnValue($packet2));
+
+        $socket = $this->getMockBuilder('\SteamCondenser\Servers\Sockets\SteamSocket')->setMethods(['getReply', 'send'])->disableOriginalConstructor()->getMock();
+        $socket->expects($this->exactly(2))->method('send')->with($this->isInstanceOf('\SteamCondenser\Servers\Packets\A2SPLAYERPacket'));
+        $socket->expects($this->at(1))->method('getReply')->will($this->returnValue($packet1));
+        $socket->expects($this->at(3))->method('getReply')->will($this->returnValue($packet2));
+        $server->socket = $socket;
 
         $server->handleResponseForRequest(GameServer::REQUEST_PLAYER);
 

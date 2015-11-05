@@ -257,15 +257,6 @@ abstract class GameServer extends Server {
     }
 
     /**
-     * Receives a response from the server
-     *
-     * @return SteamPacket The response packet replied by the server
-     */
-    protected function getReply() {
-        return $this->socket->getReply();
-    }
-
-    /**
      * Sends the specified request to the server and handles the returned
      * response
      *
@@ -302,9 +293,8 @@ abstract class GameServer extends Server {
                 throw new SteamCondenserException('Called with wrong request type.');
         }
 
-        $this->sendRequest($requestPacket);
-
-        $responsePacket = $this->getReply();
+        $this->socket->send($requestPacket);
+        $responsePacket = $this->socket->getReply();
 
         if($responsePacket instanceof S2AINFOBasePacket) {
             $this->infoHash = $responsePacket->getInfo();
@@ -362,15 +352,6 @@ abstract class GameServer extends Server {
     abstract public function rconExec($command);
 
     /**
-     * Sends a request packet to the server
-     *
-     * @param SteamPacket $requestData The request packet to send to the server
-     */
-    protected function sendRequest(SteamPacket $requestData) {
-        $this->socket->send($requestData);
-    }
-
-    /**
      * Sends a A2S_SERVERQUERY_GETCHALLENGE request to the server and updates
      * the challenge number used to communicate with this server
      *
@@ -397,9 +378,9 @@ abstract class GameServer extends Server {
      * @see initialize()
      */
     public function updatePing() {
-        $this->sendRequest(new A2SINFOPacket());
+        $this->socket->send(new A2SINFOPacket());
         $startTime = microtime(true);
-        $this->getReply();
+        $this->socket->getReply();
         $endTime = microtime(true);
         $this->ping = intval(round(($endTime - $startTime) * 1000));
 
