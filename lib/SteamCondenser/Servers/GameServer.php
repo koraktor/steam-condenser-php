@@ -52,7 +52,7 @@ abstract class GameServer extends Server {
     protected $ping;
 
     /**
-     * @var array The players playing on this server
+     * @var SteamPlayer[] The players playing on this server
      */
     protected $playerHash;
 

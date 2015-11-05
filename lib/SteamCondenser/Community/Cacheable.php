@@ -44,7 +44,7 @@ trait Cacheable {
     protected $fetchTime;
 
     /**
-     * Defines wich instance variables which should be used to index the cached
+     * Defines the instance variables which should be used to index the cached
      * objects
      *
      * The parameters provided will be used as the symbolic names of the

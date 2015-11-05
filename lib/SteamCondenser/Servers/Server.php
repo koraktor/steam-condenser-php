@@ -42,7 +42,7 @@ abstract class Server implements LoggerAwareInterface {
     protected $ipIndex;
 
     /**
-     * @var
+     * @var LoggerInterface
      */
     protected $logger;
 
