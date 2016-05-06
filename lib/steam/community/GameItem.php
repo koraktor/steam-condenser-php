@@ -3,7 +3,7 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2011-2013, Sebastian Staudt
+ * Copyright (c) 2011-2016, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -105,7 +105,6 @@ class GameItem {
         $this->inventory = $inventory;
 
         $this->defindex         = $itemData->defindex;
-        $this->backpackPosition = $itemData->inventory & 0xffff;
         $this->count            = $itemData->quantity;
         $this->id               = $itemData->id;
         $this->itemClass        = $this->getSchemaData()->item_class;
@@ -113,10 +112,17 @@ class GameItem {
         $this->name             = $this->getSchemaData()->item_name;
         $origins = $this->inventory->getItemSchema()->getOrigins();
         $this->originalId       = $itemData->original_id;
-        $this->preliminary      = ($itemData->inventory & 0x40000000) != 0;
+        $this->preliminary      = $itemData->inventory == 0 || ($itemData->inventory & 0x40000000) != 0;
         $qualities = $this->inventory->getItemSchema()->getQualities();
         $this->quality          = $qualities[$itemData->quality];
         $this->type             = $this->getSchemaData()->item_type_name;
+
+        $unpositioned = $itemData->inventory & 0x7f000000;
+        if ($this->isPreliminary() || $unpositioned > 0) {
+            $this->backpackPosition = $unpositioned >> 24;
+        } else {
+            $this->backpackPosition = ($itemData->inventory & 0xffff) << 8;
+        }
 
         if (property_exists($itemData, 'flag_cannot_craft')) {
             $this->craftable = !!$itemData->flag_cannot_craft;
