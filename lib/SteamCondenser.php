@@ -12,9 +12,10 @@
 
 namespace SteamCondenser;
 
+use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
-const VERSION = '1.3.9';
+const VERSION = '1.3.11';
 
 /**
  * Returns a Monolog logger with the given name
@@ -23,5 +24,7 @@ const VERSION = '1.3.9';
  * @return Logger The requested Monolog logger
  */
 function getLogger($name) {
-    return new Logger($name);
+    $logger = new Logger($name);
+    $logger->pushHandler(new StreamHandler("php://stdout"));
+    return $logger;
 }

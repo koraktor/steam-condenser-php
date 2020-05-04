@@ -1,6 +1,6 @@
 {
     "name": "koraktor/steam-condenser",
-    "version": "1.3.10",
+    "version": "1.3.11",
     "description": "The Steam Condenser is a library for querying the Steam Community, Source and GoldSrc game servers",
     "keywords": [ "steam", "query", "source", "goldsrc", "community", "webapi" ],
     "homepage": "http://koraktor.de/steam-condenser",
@@ -18,11 +18,10 @@
         "wiki": "https://github.com/koraktor/steam-condenser/wiki"
     },
     "require": {
-        "php": ">=5.4.0",
-        "monolog/monolog": "~1.10"
+        "php": "^7.2",
+        "monolog/monolog": "^2.0"
     },
     "require-dev": {
-        "phpdocumentor/phpdocumentor": "~2.6.1",
         "phpunit/phpunit": "~4.1.3"
     },
     "autoload": {
