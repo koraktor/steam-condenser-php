@@ -3,12 +3,12 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2011, Sebastian Staudt
+ * Copyright (c) 2008-2020, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
 
-require_once STEAM_CONDENSER_PATH . 'steam/packets/RequestPacketWithChallenge.php';
+require_once STEAM_CONDENSER_PATH . 'steam/packets/QueryPacket.php';
 
 /**
  * This packet class represents a A2S_PLAYER request send to a game server
@@ -23,7 +23,7 @@ require_once STEAM_CONDENSER_PATH . 'steam/packets/RequestPacketWithChallenge.ph
  * @subpackage packets
  * @see        GameServer::updatePlayerInfo()
  */
-class A2S_PLAYER_Packet extends RequestPacketWithChallenge {
+class A2S_PLAYER_Packet extends QueryPacket {
 
     /**
      * Creates a new A2S_PLAYER request object including the challenge number
@@ -32,6 +32,6 @@ class A2S_PLAYER_Packet extends RequestPacketWithChallenge {
      *        server
      */
     public function __construct($challengeNumber = 0xFFFFFFFF) {
-        parent::__construct(SteamPacket::A2S_PLAYER_HEADER, $challengeNumber);
+        parent::__construct(SteamPacket::A2S_PLAYER_HEADER, pack('V', $challengeNumber));
     }
 }

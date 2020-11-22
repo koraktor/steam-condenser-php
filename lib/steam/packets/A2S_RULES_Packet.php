@@ -3,12 +3,12 @@
  * This code is free software; you can redistribute it and/or modify it under
  * the terms of the new BSD License.
  *
- * Copyright (c) 2008-2011, Sebastian Staudt
+ * Copyright (c) 2008-2020, Sebastian Staudt
  *
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
 
-require_once STEAM_CONDENSER_PATH . 'steam/packets/RequestPacketWithChallenge.php';
+require_once STEAM_CONDENSER_PATH . 'steam/packets/QueryPacket.php';
 
 /**
  * This packet class represents a A2S_RULES request send to a game server
@@ -24,7 +24,7 @@ require_once STEAM_CONDENSER_PATH . 'steam/packets/RequestPacketWithChallenge.ph
  * @subpackage packets
  * @see        GameServer::updateRulesInfo()
  */
-class A2S_RULES_Packet extends RequestPacketWithChallenge {
+class A2S_RULES_Packet extends QueryPacket {
     /**
      * Creates a new A2S_RULES request object including the challenge number
      *
@@ -33,6 +33,6 @@ class A2S_RULES_Packet extends RequestPacketWithChallenge {
      */
     public function __construct($challengeNumber = 0xFFFFFFFF)
     {
-        parent::__construct(SteamPacket::A2S_RULES_HEADER, $challengeNumber);
+        parent::__construct(SteamPacket::A2S_RULES_HEADER, pack('V', $challengeNumber));
     }
 }
