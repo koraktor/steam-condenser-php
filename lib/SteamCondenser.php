@@ -24,7 +24,5 @@ const VERSION = '1.3.10';
  * @return Logger The requested Monolog logger
  */
 function getLogger($name) {
-    $logger = new Logger($name);
-    $logger->pushHandler(new StreamHandler("php://stdout"));
-    return $logger;
+    return new Logger($name);
 }
