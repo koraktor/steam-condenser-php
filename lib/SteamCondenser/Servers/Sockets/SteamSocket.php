@@ -159,7 +159,7 @@ abstract class SteamSocket implements LoggerAwareInterface {
     /**
      * @inheritdoc
      */
-    public function setLogger(LoggerInterface $logger) {
+    public function setLogger(LoggerInterface $logger): void {
         $this->logger = $logger;
     }
 
