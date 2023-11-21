@@ -20,7 +20,7 @@ use SteamCondenser\Exceptions\SocketException;
  * @author  Sebastian Staudt
  * @package steam-condenser
  */
-class UDPSocket extends Socket {
+class UDPSocket extends scSocket {
 
     /**
      * Connects the UDP socket to the host with the given IP address and port

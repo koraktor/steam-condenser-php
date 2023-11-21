@@ -21,7 +21,7 @@ use SteamCondenser\Exceptions\SocketException;
  * @author  Sebastian Staudt
  * @package steam-condenser
  */
-abstract class Socket {
+abstract class scSocket {
 
     /**
      * The IP address the socket is connected to
