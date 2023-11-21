@@ -57,3 +57,9 @@ included LICENSE file.
 Follow Steam Condenser on Google Plus+ via
 [+Steam Condenser](https://plus.google.com/b/109400543549250623875/109400543549250623875)
 or on Twitter via [@steamcondenser](https://twitter.com/steamcondenser).
+
+To get this working in Laravel 10 and php 8: Change two entries in the composer.json file, with these version numbers:
+        "monolog/monolog": "~3.5"
+and
+        "phpunit/phpunit": "^10.1"
+        
